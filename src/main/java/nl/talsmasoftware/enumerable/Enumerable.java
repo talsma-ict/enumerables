@@ -15,17 +15,25 @@
  */
 package nl.talsmasoftware.enumerable;
 
+import nl.talsmasoftware.enumerable.descriptions.DescriptionProvider;
+import nl.talsmasoftware.enumerable.descriptions.DescriptionProviderRegistry;
+import nl.talsmasoftware.enumerable.descriptions.Descriptions;
+
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import static java.lang.Character.toUpperCase;
 import static java.lang.reflect.Modifier.*;
 import static java.util.Arrays.asList;
 import static java.util.Collections.*;
@@ -55,16 +63,22 @@ import static java.util.Collections.*;
  * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
  */
 public abstract class Enumerable implements Comparable<Enumerable>, Serializable {
-    /**
-     * Serial version UID.
-     */
+
     private static final long serialVersionUID = 1L;
+
+    private static final Logger LOGGER = Logger.getLogger(Enumerable.class.getName());
 
     /**
      * Map from concrete subclass type to array of reflected constants.
      */
     private static final ConcurrentMap<Class<?>, Object> CONSTANTS_CACHE =
             new ConcurrentHashMap<Class<?>, Object>();
+
+    /**
+     * Recursion detection for descriptions.
+     */
+    private static final ConcurrentMap<Class<?>, ThreadLocal<Boolean>> DESCRIPTION_RECURSION =
+            new ConcurrentHashMap<Class<?>, ThreadLocal<Boolean>>();
 
     /**
      * The value of this abstract Enumerable type.
@@ -149,12 +163,23 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
      * @return The human-friendly description of this enumerable object.
      */
     public String getDescription() {
-        // TODO: Copy (and document) 'DescriptionProvider' concept.
-        String description = name();
-        if (description == null) return getValue();
-        else if (description.length() > 0)
-            description = toUpperCase(description.charAt(0)) + description.substring(1).toLowerCase(Locale.ENGLISH);
-        return description.replace('_', ' ');
+        String description = null;
+        final ThreadLocal<Boolean> recursionDetection = _descriptionRecursieDetection();
+        if (!recursionDetection.get()) {
+            try {
+                recursionDetection.set(true);
+                description = _descriptionFromProvider();
+            } catch (RuntimeException descriptionEx) {
+                final String name = name();
+                LOGGER.log(Level.FINE, "Obtaining description for {0}.{1} failed due to: {2}",
+                        new Object[]{getClass().getSimpleName(), name != null ? name : value,
+                                descriptionEx.getMessage(), descriptionEx});
+            } finally {
+                recursionDetection.remove();
+            }
+        }
+        return description == null ? Descriptions.defaultProvider().describe(this) : description;
+
     }
 
     /**
@@ -194,14 +219,6 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
     }
 
     /**
-     * @return De result of name() if present, otherwise the <code>value</code>.
-     */
-    private String _nameOrValue() {
-        final String name = name();
-        return name != null ? name : value;
-    }
-
-    /**
      * The implementation of <code>toString()</code> is importantly different from Java's {@link Enum} implementation,
      * which by default returns the {@link #name() name} of the enumeration constant.
      * The problem with this is, is that lazy developers can start depending on that behaviour and comparing with
@@ -235,57 +252,70 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
     }
 
     /**
-     * Geeft de daadwerkelijke (niet-geclonede) array met constanten voor het gevraagde type terug.
-     * Deze methode scheelt een clone, maar is daardoor tevens alleen voor intern gebruik en de array mag absoluut
-     * niet gemuteerd worden door aanroepers!
+     * Returns the description provider for this enumerable type in case one has been registered.
+     * In case no description provider was registered, the method may simply return <code>null</code>.
      *
-     * @param <E>  Het concrete Enumerable type.
-     * @param type Het concrete subtype.
-     * @return Haalt alle gedeclareerde public constanten van het concrete subtype op.
+     * @return The description provider for this enumerable type
+     * or <code>null</code> in case this type did not have a custom description provider registered.
+     */
+    protected DescriptionProvider descriptionProvider() {
+        _initConstants(); // This may also trigger an automatic description provider.
+        return DescriptionProviderRegistry.getInstance().getDescriptionProviderFor(getClass());
+    }
+
+
+    /**
+     * Returns the actual raw (un-cloned) array with constants for the requested type.
+     * This method saves a clone, but is therefore only intended for internal use and the resulting array may
+     * absolutely <strong>not</strong> be manipulated by callers!
+     *
+     * @param <E>            The actual enumerable type.
+     * @param enumerableType The enumerable type to obtain constant values of.
+     * @return All declarered public constants of the requested enumerable subtype.
      */
     @SuppressWarnings("unchecked")
-    private static <E extends Enumerable> E[] _rawValues(final Class<E> type) {
-        if (type == null) throw new IllegalArgumentException("Type is null.");
-        E[] values = (E[]) CONSTANTS_CACHE.get(type);
+    private static <E extends Enumerable> E[] _rawValues(final Class<E> enumerableType) {
+        if (enumerableType == null) throw new IllegalArgumentException("Enumerable type is null.");
+        E[] values = (E[]) CONSTANTS_CACHE.get(enumerableType);
         if (values == null) {
             final List<E> constants = new ArrayList<E>();
-            for (Field field : type.getDeclaredFields()) {
+            for (Field field : enumerableType.getDeclaredFields()) {
                 final int modifiers = field.getModifiers();
                 if (isStatic(modifiers) && isFinal(modifiers)) {
-                    if (isPublic(modifiers) && type.equals(field.getType())) {
+                    if (isPublic(modifiers) && enumerableType.equals(field.getType())) {
                         try {
                             final E foundConstant = (E) field.get(null);
                             ((Enumerable) foundConstant)._nameAndOrdinal =
                                     new NameAndOrdinal(constants.size(), field.getName());
                             constants.add(foundConstant);
                         } catch (IllegalAccessException iae) {
-                            throw new IllegalStateException(String.format("Mocht constante '%s.%s' niet lezen!",
-                                    type.getName(), field.getName()), iae);
+                            throw new IllegalStateException(String.format(
+                                    "Was not allowed to read constant \"%s.%s\"!",
+                                    enumerableType.getName(), field.getName()), iae);
                         }
-//                    } else {
-//                        registerOmschrijvingProvider(type, field);
+                    } else {
+                        _registerDescriptionProvider(enumerableType, field);
                     }
                 }
             }
-            CONSTANTS_CACHE.putIfAbsent(type, constants.toArray((E[]) Array.newInstance(type, constants.size())));
-            values = (E[]) CONSTANTS_CACHE.get(type);
+            CONSTANTS_CACHE.putIfAbsent(enumerableType, constants.toArray((E[]) Array.newInstance(enumerableType, constants.size())));
+            values = (E[]) CONSTANTS_CACHE.get(enumerableType);
         }
         return values;
     }
 
     /**
-     * Zoekt alle publeke constanten van het opgegeven type op die in het betreffende type zelf gedefinieerd staan.
+     * Finds all public constants of the requested enumerable subtype that have been declared in the class of the
+     * enumerable itself.
      * <p>
-     * <p>
-     * Deze constanten moeten <strong>public final static</strong> zijn.
-     * </p>
+     * These constants must be <strong>public final static</strong> fields.
      *
-     * @param <E>  Het concrete niet-abstracte Enumerable type.
-     * @param type Het concrete subtype.
-     * @return Haalt alle gedeclareerde public constanten van het concrete subtype op.
+     * @param <E>            The actual non-abstract enumerable subtype to obtain constants for.
+     * @param enumerableType The actual non-abstract enumerable subtype to obtain constants for.
+     * @return All declarered public constants of the enumerable subtype.
      */
-    public static <E extends Enumerable> E[] values(Class<E> type) {
-        return _rawValues(type).clone();
+    public static <E extends Enumerable> E[] values(Class<E> enumerableType) {
+        return _rawValues(enumerableType).clone();
     }
 
     /**
@@ -371,13 +401,14 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
     }
 
     /**
-     * Helper die uit bekende constanten vaste instanties teruggeeft (vergelijkbaar met enum parsing).
+     * Helper that can return fixed instances from known constants (comparable to enum parsing).
      *
-     * @param <E>     Het concrete niet-abstracte Enumerable type.
-     * @param type    Het concrete subtype van deze klasse (om constanten uit te halen).
-     * @param value   De te parsen constante waarde.
-     * @param factory De 'factory' om een nieuw waarde object mee aan te maken als het niet een van de constanten is.
-     * @return De herkende waarde of <code>null</code>.
+     * @param <E>     The actual non-abstract Enumerable type.
+     * @param type    The enumerable subtype of the value to be parsed (to obtain constants).
+     * @param value   The value to be parsed.
+     * @param factory A 'factory' implementation to create the new enumerable value instance with if no constant is
+     *                found.
+     * @return The parsed enumerable value or <code>null</code> if the parameter <code>value</code> was <code>null</code>.
      */
     protected static <E extends Enumerable> E parse(Class<E> type, CharSequence value, Callable<E> factory) {
         E parsed = null;
@@ -399,6 +430,15 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
             }
         }
         return parsed;
+    }
+
+    /**
+     * Initializes the constants for this class if that has not yet been done.
+     */
+    private void _initConstants() {
+        if (!CONSTANTS_CACHE.containsKey(getClass())) {
+            _rawValues(getClass());
+        }
     }
 
     /**
@@ -427,6 +467,64 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
             }
         }
     }
+
+    /**
+     * For each <code>Enumerable</code> type, a single 'recursion detection' instance will be created to prevent
+     * any stack overflows in recursive {@link #getDescription()} calls.
+     * This is necessary because we have relinquished control over descriptions through the {@link DescriptionProvider}
+     * mechanism and therefore have no longer full control over the {@link #getDescription} implementation.
+     */
+    private ThreadLocal<Boolean> _descriptionRecursieDetection() {
+        final Class<? extends Enumerable> myType = getClass();
+        ThreadLocal<Boolean> recursionDetection = DESCRIPTION_RECURSION.get(myType);
+        if (recursionDetection == null) {
+            DESCRIPTION_RECURSION.putIfAbsent(myType, new ThreadLocal<Boolean>() {
+                @Override
+                public Boolean initialValue() {
+                    return false;
+                }
+            });
+            recursionDetection = DESCRIPTION_RECURSION.get(myType);
+        }
+        return recursionDetection;
+    }
+
+    /**
+     * Registers a static final DescriptionProvider constant as description provider for this type.
+     */
+    private static <E extends Enumerable> void _registerDescriptionProvider(final Class<E> type, final Field field) {
+        if (DescriptionProvider.class.isAssignableFrom(field.getType())) {
+            synchronized (field) {
+                boolean accessible = field.isAccessible();
+                try {
+                    field.setAccessible(true);
+                    DescriptionProvider provider = (DescriptionProvider) field.get(null);
+                    DescriptionProviderRegistry.getInstance().registreerOmschrijvingProvider(type, provider);
+                } catch (IllegalAccessException iae) {
+                    LOGGER.log(Level.WARNING,
+                            "Not allowed to register DescriptionProvider for enumerable type \"{0}\" from field \"{1}\" due to: {2}",
+                            new Object[]{type.getName(), field, iae.getMessage(), iae});
+                } catch (RuntimeException rte) {
+                    LOGGER.log(Level.WARNING,
+                            "Error registering DescriptionProvider for enumerable type \"{0}\" from field \"{1}\" due to: {2}",
+                            new Object[]{type.getName(), field, rte.getMessage(), rte});
+                } finally {
+                    if (!accessible) {
+                        field.setAccessible(false);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @return The description from the provider, or <code>null</code> if none was found.
+     */
+    private String _descriptionFromProvider() {
+        DescriptionProvider provider = descriptionProvider();
+        return provider == null ? null : provider.describe(this);
+    }
+
 
     /**
      * Internal class to represent name and ordinal to be able to simulate standard Enum behaviour..

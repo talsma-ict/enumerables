@@ -56,9 +56,9 @@ import nl.talsmasoftware.enumerable.Enumerable;
  *      public String describe(Enumerable enumerable) {
  *          String description = Descriptions.defaultProvider().describe(enumerable);
  *          if (description == null || description.length() == 0) return description;
- *          StringBuilder reverse = new StringBuilder(value).reverse();
- *          reverse.setCharAt(reverse.length() - 1, Character.toLowerCase(reverse.charAt(reverse.length() - 1);
- *          reverse.setCharAt(0, Character.toUpperCase(reverse.charAt(0);
+ *          StringBuilder reverse = new StringBuilder(description).reverse();
+ *          reverse.setCharAt(reverse.length() - 1, Character.toLowerCase(reverse.charAt(reverse.length() - 1)));
+ *          reverse.setCharAt(0, Character.toUpperCase(reverse.charAt(0)));
  *          return reverse.toString();
  *      }
  *  }
