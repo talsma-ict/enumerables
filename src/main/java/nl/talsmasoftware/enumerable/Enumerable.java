@@ -499,7 +499,7 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
                 try {
                     field.setAccessible(true);
                     DescriptionProvider provider = (DescriptionProvider) field.get(null);
-                    DescriptionProviderRegistry.getInstance().registreerOmschrijvingProvider(type, provider);
+                    DescriptionProviderRegistry.getInstance().registerDescriptionProviderFor(type, provider);
                 } catch (IllegalAccessException iae) {
                     LOGGER.log(Level.WARNING,
                             "Not allowed to register DescriptionProvider for enumerable type \"{0}\" from field \"{1}\" due to: {2}",

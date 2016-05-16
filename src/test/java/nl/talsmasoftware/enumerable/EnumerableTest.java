@@ -16,12 +16,14 @@
 package nl.talsmasoftware.enumerable;
 
 import nl.talsmasoftware.enumerable.descriptions.DescriptionProvider;
+import nl.talsmasoftware.enumerable.descriptions.DescriptionProviderRegistry;
 import nl.talsmasoftware.enumerable.descriptions.Descriptions;
 import org.junit.Test;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static java.lang.Integer.signum;
 import static java.util.Locale.ENGLISH;
 import static nl.talsmasoftware.enumerable.descriptions.Descriptions.capitalize;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -236,208 +238,215 @@ public class EnumerableTest {
         assertThat(Enumerable.print(new BigCo("JBoss")), is(equalTo("JBoss")));
     }
 
-//    @Test
-//    public void testEquals() {
-//        assertTrue(Fruit.APPLE.equals(Fruit.APPLE));
-//        assertFalse(Fruit.APPLE.equals(BigCo.APPLE)); // Wel beide abstract Waardenlijst type..
-//        assertFalse(Fruit.APPLE.equals(Fruit.ORANGE));
-//        assertTrue(Fruit.APPLE.equals(new Fruit(Fruit.APPLE.getWaarde())));
-//        assertFalse(Fruit.APPLE.equals(Fruit.APPLE.getWaarde()));
-//    }
-//
-//    @Test
-//    public void testHashcode() {
-//        assertEquals(Fruit.APPLE.hashCode(), Fruit.APPLE.hashCode());
-//        assertEquals(Fruit.APPLE.hashCode(), new Fruit(Fruit.APPLE.getWaarde()).hashCode());
-//    }
-//
-//    @Test
-//    public void testToString() {
-//        assertEquals("Fruit{name=\"APPLE\", waarde=\"Apple\"}", Fruit.APPLE.toString());
-//        assertEquals("Fruit{name=\"APPLE\", waarde=\"Apple\"}", new Fruit(Fruit.APPLE.getWaarde()).toString());
-//        assertEquals("Fruit{waarde=\"Appel\"}", new Fruit("Appel").toString());
-//    }
-//
-//    @Test
-//    public void testGetOmschrijving() {
-//        assertEquals("Apple", Fruit.APPLE.getOmschrijving());
-//        assertEquals("Orange", Fruit.ORANGE.getOmschrijving());
-//        assertEquals("Apple", new Fruit(Fruit.APPLE.getWaarde()).getOmschrijving());
-//        assertEquals("Jboss", new BigCo("JBoss").getOmschrijving());
-//        assertEquals("Some company", new BigCo("SOME_COMPANY").getOmschrijving());
-//    }
-//
-//    @Test
-//    public void testOrdinal() {
-//        assertEquals(0, Fruit.APPLE.ordinal());
-//        assertEquals(1, Fruit.ORANGE.ordinal());
-//        assertEquals(0, new Fruit(Fruit.APPLE.getWaarde()).ordinal());
-//        assertEquals(Integer.MAX_VALUE, new Fruit("Appel").ordinal());
-//
-//        BigCo[] bigCo = Waardenlijst.values(BigCo.class);
-//        for (int i = 0; i < bigCo.length; i++) {
-//            assertEquals(i, bigCo[i].ordinal());
-//        }
-//
-//        Fruit[] fruit = Waardenlijst.values(Fruit.class);
-//        for (int i = 0; i < fruit.length; i++) {
-//            assertEquals(i, fruit[i].ordinal());
-//        }
-//    }
-//
-//    @Test
-//    public void testName() {
-//        assertEquals("APPLE", Fruit.APPLE.name());
-//        assertEquals("ORANGE", Fruit.ORANGE.name());
-//        assertEquals("APPLE", new Fruit(Fruit.APPLE.getWaarde()).name());
-//        assertEquals(null, new Fruit("Appel").name());
-//    }
-//
-//    @Test
-//    public void testCompareTo() {
-//        // Clearly an orange is bigger than an apple? ;-)
-//        assertEquals(-1, Integer.signum(Fruit.APPLE.compareTo(Fruit.ORANGE)));
-//        assertEquals(0, Integer.signum(Fruit.APPLE.compareTo(Fruit.APPLE)));
-//        assertEquals(0, Integer.signum(Fruit.ORANGE.compareTo(Fruit.ORANGE)));
-//        assertEquals(1, Integer.signum(Fruit.ORANGE.compareTo(Fruit.APPLE)));
-//
-//        // En hoe met niet-constanten?
-//        assertEquals(-1, Integer.signum(Fruit.APPLE.compareTo(new Fruit("Grapefruit"))));
-//        assertEquals(-1, Integer.signum(Fruit.ORANGE.compareTo(new Fruit("Grapefruit"))));
-//        assertEquals(0, Integer.signum(new Fruit("Grapefruit").compareTo(new Fruit("Grapefruit"))));
-//        assertEquals(-1, Integer.signum(new Fruit("Grapefruit").compareTo(new Fruit("Pineapple"))));
-//        assertEquals(-1, Integer.signum(new Fruit("Grapefruit").compareTo(new Fruit("pineapple")))); // case insensitive sorteren?
-//        assertEquals(-1, Integer.signum(new Fruit("grapefruit").compareTo(new Fruit("Pineapple"))));
-//        assertEquals(-1, Integer.signum(new Fruit("Grapefruit").compareTo(new Fruit("grapefruit")))); // gelijk; dan wel case sensitive?
-//        assertEquals(1, Integer.signum(new Fruit("Grapefruit").compareTo(Fruit.APPLE)));
-//        assertEquals(1, Integer.signum(new Fruit("Grapefruit").compareTo(Fruit.ORANGE)));
-//
-//        // Verschillende types zijn hopelijk niet gelijk? (iets met apples en oranges)
-//        assertEquals(BigCo.APPLE.ordinal(), Fruit.ORANGE.ordinal());
-//        assertTrue(0 != BigCo.APPLE.compareTo(Fruit.ORANGE));
-//    }
-//
-//    @Test
-//    public void testSetOf_null() {
-//        assertSame(Collections.EMPTY_SET, Waardenlijst.setOf((Waardenlijst[]) null));
-//    }
-//
-//    @Test
-//    public void testSetOf_empty() {
-//        assertSame(Collections.EMPTY_SET, Waardenlijst.setOf());
-//    }
-//
-//    @Test
-//    public void testSetOf_singleValue() {
-//        Set<Fruit> set = Waardenlijst.setOf(Fruit.APPLE);
-//        assertEquals(Collections.singleton(Fruit.APPLE), set);
-//        try {
-//            set.add(Fruit.ORANGE);
-//            fail("setOf(APPLE) zou unmodifiable moeten zijn.");
-//        } catch (UnsupportedOperationException expected) {
-//        }
-//    }
-//
-//    @Test
-//    public void testSetOf_multipleValues() {
-//        Set<Fruit> set = Waardenlijst.setOf(Fruit.ORANGE, Fruit.APPLE);
-//        assertEquals(new HashSet<Fruit>(asList(Fruit.VALUES)), set);
-//        try {
-//            set.add(Waardenlijst.parse(Fruit.class, "Grapefruit"));
-//            fail("setOf(ORANGE, APPLE) zou unmodifiable moeten zijn.");
-//        } catch (UnsupportedOperationException expected) {
-//        }
-//    }
-//
-//    @Test
-//    public void testValueOf_typeNull() {
-//        try {
-//            Waardenlijst.valueOf(null, "someName");
-//            fail("Foutmelding verwacht.");
-//        } catch (NullPointerException expected) {
-//            assertFoutmelding(expected);
-//        }
-//    }
-//
-//    @Test(expected = IllegalArgumentException.class)
-//    public void testValueOf_nameNull() {
-//        Waardenlijst.valueOf(Fruit.class, null);
-//    }
-//
-//    @Test
-//    public void testValueOf_alleValues() {
-//        for (BigCo bigCo : Waardenlijst.values(BigCo.class)) {
-//            assertSame(bigCo, Waardenlijst.valueOf(BigCo.class, bigCo.name()));
-//        }
-//        for (Fruit fruit : Waardenlijst.values(Fruit.class)) {
-//            assertSame(fruit, Waardenlijst.valueOf(Fruit.class, fruit.name()));
-//        }
-//    }
-//
-//    @Test
-//    public void testValueOf_nietConstanteWaarde() {
-//        Fruit grapefruit = Waardenlijst.parse(Fruit.class, "Grapefruit"); // ..Zodat deze al eens is 'langsgekomen' voor de test
-//        assertEquals("Grapefruit", grapefruit.getWaarde());
-//        assertNull(grapefruit.name()); // Niet-constante waarde.
-//        try {
-//            Waardenlijst.valueOf(Fruit.class, "Grapefruit");
-//            fail("Exceptie verwacht wegens niet-constante waarde.");
-//        } catch (IllegalArgumentException expected) {
-//            assertEquals("Geen waardenlijst constante 'Fruit.Grapefruit'.", expected.getMessage());
-//        }
-//    }
-//
-//    @Test
-//    public void testOmschrijving_viaProvider() {
-//        try {
-//            OmschrijvingProviderRegistry.getInstance().registreerOmschrijvingProvider(BigCo.class, new OmschrijvingProvider() {
-//                @Override
-//                public String omschrijvingVoor(Waardenlijst waarde) {
-//                    return waarde.getClass().getSimpleName() + "." + waarde.name();
-//                }
-//            });
-//            assertThat(BigCo.APPLE.getOmschrijving(), equalTo("BigCo.APPLE"));
-//        } finally {
-//            OmschrijvingProviderRegistry.getInstance().registreerOmschrijvingProvider(BigCo.class, null);
-//        }
-//    }
-//
-//    @Test
-//    public void testOmschrijving_foutBijOphalenProvider() {
-//        String omschrijving = new Waardenlijst("tst") {
-//            @Override
-//            protected OmschrijvingProvider omschrijvingProvider() {
-//                throw new IllegalStateException("Error getting provider!");
-//            }
-//        }.getOmschrijving();
-//    }
-//
-//    @Test
-//    public void testOmschrijving_providerFout() {
-//        try {
-//            OmschrijvingProviderRegistry.getInstance().registreerOmschrijvingProvider(BigCo.class, new OmschrijvingProvider() {
-//                @Override
-//                public String omschrijvingVoor(Waardenlijst waarde) {
-//                    throw new UnsupportedOperationException("Not allowed!");
-//                }
-//            });
-//            assertThat(BigCo.APPLE.getOmschrijving(), equalTo("Apple"));
-//        } finally {
-//            OmschrijvingProviderRegistry.getInstance().registreerOmschrijvingProvider(BigCo.class, null);
-//        }
-//    }
-//
-//    @Test
-//    public void testOmschrijving_zelfconfigurerendeProvider() {
-//        assertThat(LijstMetReverseOmschrijvingProvider.EERSTE_ELEMENT.getOmschrijving(), equalTo("tnemele etsreE"));
-//    }
-//
-//    @Test
-//    public void testOmschrijving_omschrijvingProviderRecursieFix() {
-//        assertThat(Woordparen.DOOR.getOmschrijving(), equalTo("rood"));
-//        assertThat(Woordparen.DROOM.getOmschrijving(), equalTo("moord"));
-//        assertThat(Woordparen.LEVEN.getOmschrijving(), equalTo("nevel"));
-//        assertThat(Woordparen.ROOK.getOmschrijving(), equalTo("koor"));
-//    }
+    @Test
+    public void testEquals() {
+        assertThat(Fruit.APPLE.equals(Fruit.APPLE), is(true));
+        assertThat(Fruit.APPLE.equals(BigCo.APPLE), is(false)); // although both are abstract Enumerable types..
+        assertThat(Fruit.APPLE.equals(Fruit.ORANGE), is(false));
+        assertThat(Fruit.APPLE.equals(Fruit.APPLE.getValue()), is(false));
+    }
+
+    @Test
+    public void testHashcode() {
+        assertThat(Fruit.APPLE.hashCode(), is(equalTo(Fruit.APPLE.hashCode())));
+        assertThat(Fruit.APPLE.hashCode(), is(equalTo(new Fruit(Fruit.APPLE.getValue()).hashCode())));
+    }
+
+    @Test
+    public void testToString() {
+        assertThat(Fruit.APPLE, hasToString("Fruit{name=\"APPLE\", value=\"Apple\"}"));
+        assertThat(new Fruit(Fruit.APPLE.getValue()), hasToString("Fruit{name=\"APPLE\", value=\"Apple\"}"));
+        assertThat(new Fruit("Pineapple"), hasToString("Fruit{value=\"Pineapple\"}"));
+    }
+
+    @Test
+    public void testGetDescription() {
+        assertThat(Fruit.APPLE.getDescription(), is(equalTo("Apple")));
+        assertThat(Fruit.ORANGE.getDescription(), is(equalTo("Orange")));
+        assertThat(new Fruit(Fruit.APPLE.getValue()).getDescription(), is(equalTo("Apple")));
+        assertThat(new BigCo("JBoss").getDescription(), is(equalTo("Jboss")));
+        assertThat(new BigCo("SOME_COMPANY").getDescription(), is(equalTo("Some company")));
+    }
+
+    @Test
+    public void testOrdinal() {
+        assertThat(Fruit.APPLE.ordinal(), is(0));
+        assertThat(Fruit.ORANGE.ordinal(), is(1));
+        assertThat(new Fruit(Fruit.APPLE.getValue()).ordinal(), is(0));
+        assertThat(new Fruit("Pineapple").ordinal(), is(Integer.MAX_VALUE));
+
+        BigCo[] bigCo = Enumerable.values(BigCo.class);
+        for (int i = 0; i < bigCo.length; i++) {
+            assertThat(bigCo[i].ordinal(), is(equalTo(i)));
+        }
+
+        Fruit[] fruit = Enumerable.values(Fruit.class);
+        for (int i = 0; i < fruit.length; i++) {
+            assertThat(fruit[i].ordinal(), is(equalTo(i)));
+        }
+    }
+
+    @Test
+    public void testName() {
+        assertThat(Fruit.APPLE.name(), is(equalTo("APPLE")));
+        assertThat(Fruit.ORANGE.name(), is(equalTo("ORANGE")));
+        assertThat(new Fruit(Fruit.APPLE.getValue()).name(), is(equalTo("APPLE")));
+        assertThat(new Fruit("Pineapple").name(), is(nullValue()));
+    }
+
+    @Test
+    public void testCompareTo() {
+        // Clearly an orange is bigger than an apple? ;-)
+        assertThat(signum(Fruit.APPLE.compareTo(Fruit.ORANGE)), is(-1));
+        assertThat(signum(Fruit.APPLE.compareTo(Fruit.APPLE)), is(0));
+        assertThat(signum(Fruit.ORANGE.compareTo(Fruit.ORANGE)), is(0));
+        assertThat(signum(Fruit.ORANGE.compareTo(Fruit.APPLE)), is(1));
+
+        // And how about non-constants?
+        assertThat(signum(Fruit.APPLE.compareTo(new Fruit("Grapefruit"))), is(-1));
+        assertThat(signum(Fruit.ORANGE.compareTo(new Fruit("Grapefruit"))), is(-1));
+        assertThat(signum(new Fruit("Grapefruit").compareTo(new Fruit("Grapefruit"))), is(0));
+        assertThat(signum(new Fruit("Grapefruit").compareTo(new Fruit("Pineapple"))), is(-1));
+        assertThat(signum(new Fruit("Grapefruit").compareTo(new Fruit("pineapple"))), is(-1)); // case insensitive sorteren?
+        assertThat(signum(new Fruit("grapefruit").compareTo(new Fruit("Pineapple"))), is(-1));
+        assertThat(signum(new Fruit("Grapefruit").compareTo(new Fruit("grapefruit"))), is(-1)); // gelijk; dan wel case sensitive?
+        assertThat(signum(new Fruit("Grapefruit").compareTo(Fruit.APPLE)), is(1));
+        assertThat(signum(new Fruit("Grapefruit").compareTo(Fruit.ORANGE)), is(1));
+
+        // Different types should not be equal! (..muble something about apples and oranges)
+        assertThat(BigCo.APPLE.compareTo(Fruit.ORANGE), is(not(0)));
+    }
+
+    @Test
+    public void testSetOf_null() {
+        assertThat(Enumerable.setOf((Enumerable[]) null), is(notNullValue()));
+        assertThat(Enumerable.setOf((Enumerable[]) null), hasSize(0));
+    }
+
+    @Test
+    public void testSetOf_empty() {
+        assertThat(Enumerable.setOf(), is(notNullValue()));
+        assertThat(Enumerable.setOf(), hasSize(0));
+    }
+
+    @Test
+    public void testSetOf_singleValue() {
+        assertThat(Enumerable.setOf(Fruit.APPLE), hasSize(1));
+        assertThat(Enumerable.setOf(Fruit.APPLE), contains(Fruit.APPLE));
+        try {
+            Enumerable.setOf(Fruit.APPLE).add(Fruit.ORANGE);
+            fail("setOf(APPLE) should be unmodifiable.");
+        } catch (UnsupportedOperationException expected) {
+            // expected
+        }
+    }
+
+    @Test
+    public void testSetOf_multipleValues() {
+        assertThat(Enumerable.setOf(Fruit.ORANGE, Fruit.APPLE), hasSize(2));
+        assertThat(Enumerable.setOf(Fruit.ORANGE, Fruit.APPLE), contains(Fruit.ORANGE, Fruit.APPLE));
+        try {
+            Enumerable.setOf(Fruit.ORANGE, Fruit.APPLE).add(Enumerable.parse(Fruit.class, "Grapefruit"));
+            fail("setOf(ORANGE, APPLE) should be unmodifiable.");
+        } catch (UnsupportedOperationException expected) {
+            // expected
+        }
+    }
+
+    @Test
+    public void testValueOf_typeNull() {
+        try {
+            Enumerable.valueOf(null, "someName");
+            fail("Exception expected.");
+        } catch (RuntimeException expected) {
+            assertThat(expected.getMessage(), is(equalTo("Enumerable type is null.")));
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testValueOf_nameNull() {
+        Enumerable.valueOf(Fruit.class, null);
+    }
+
+    @Test
+    public void testValueOf_allValues() {
+        for (BigCo bigCo : Enumerable.values(BigCo.class)) {
+            assertThat(bigCo, is(sameInstance(Enumerable.valueOf(BigCo.class, bigCo.name()))));
+        }
+        for (Fruit fruit : Enumerable.values(Fruit.class)) {
+            assertThat(fruit, is(sameInstance(Enumerable.valueOf(Fruit.class, fruit.name()))));
+        }
+    }
+
+    @Test
+    public void testValueOf_nonConstantValue() {
+        // First parse a grapefruit so it has been encountered before for this test...
+        Fruit grapefruit = Enumerable.parse(Fruit.class, "Grapefruit");
+        assertThat(grapefruit.getValue(), is(equalTo("Grapefruit")));
+        assertThat(grapefruit.name(), is(nullValue())); // Non-constant value.
+        try {
+            Enumerable.valueOf(Fruit.class, "Grapefruit");
+            fail("Exception expected due to non-constant value.");
+        } catch (EnumerableConstantNotFoundException expected) {
+            assertThat(expected.getMessage(), is(equalTo("No Enumerable constant \"Fruit.Grapefruit\" found.")));
+        }
+    }
+
+    @Test
+    public void testDescription_byProvider() {
+        final DescriptionProviderRegistry registry = DescriptionProviderRegistry.getInstance();
+        final DescriptionProvider previousProvider = registry.getDescriptionProviderFor(BigCo.class);
+        try {
+
+            registry.registerDescriptionProviderFor(BigCo.class, new DescriptionProvider() {
+                public String describe(Enumerable enumerable) {
+                    return enumerable.getClass().getSimpleName() + "." + enumerable.name();
+                }
+            });
+            assertThat(BigCo.APPLE.getDescription(), is(equalTo("BigCo.APPLE")));
+
+        } finally {
+            registry.registerDescriptionProviderFor(BigCo.class, previousProvider);
+        }
+    }
+
+    @Test
+    public void testDescription_exceptionObtainingProvider() {
+        assertThat(new Enumerable("tst") {
+            @Override
+            protected DescriptionProvider descriptionProvider() {
+                throw new IllegalStateException("Error getting provider!");
+            }
+        }.getDescription(), is(equalTo("Tst")));
+    }
+
+    @Test
+    public void testDescription_providerException() {
+        assertThat(new Enumerable("apple") {
+            @Override
+            protected DescriptionProvider descriptionProvider() {
+                return new DescriptionProvider() {
+                    public String describe(Enumerable enumerable) {
+                        throw new UnsupportedOperationException("Not allowed!");
+                    }
+                };
+            }
+        }.getDescription(), is(equalTo("Apple")));
+    }
+
+    @Test
+    public void testDescription_selfConfiguringProvider() {
+        assertThat(ListWithReverseOmschrijvingProvider.FIRST_ELEMENT.getDescription(),
+                is(equalTo("Tnemele tsrif")));
+    }
+
+    @Test
+    public void testDescription_descriptionProviderRecursionFix() {
+        assertThat(Wordpairs.DESSERTS.getDescription(), is(equalTo("Stressed")));
+        assertThat(Wordpairs.LIVED.getDescription(), is(equalTo("Devil")));
+        assertThat(Wordpairs.EDIT.getDescription(), is(equalTo("Tide")));
+        assertThat(Wordpairs.MAPS.getDescription(), is(equalTo("Spam")));
+        assertThat(Wordpairs.STRAW.getDescription(), is(equalTo("Warts")));
+    }
 
 }

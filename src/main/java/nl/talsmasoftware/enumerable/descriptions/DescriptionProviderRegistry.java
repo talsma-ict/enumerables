@@ -113,7 +113,7 @@ public final class DescriptionProviderRegistry {
      * @return A <code>DescriptionProvider</code> that was registered and is now de-registered as a result of this
      * operation, or <code>null</code> if there was no previously registered provider.
      */
-    public DescriptionProvider registreerOmschrijvingProvider(
+    public DescriptionProvider registerDescriptionProviderFor(
             final Class<? extends Enumerable> enumerableType, final DescriptionProvider provider) {
         if (enumerableType == null)
             throw new IllegalStateException("The enumerable type is required to register a description provider.");
