@@ -30,7 +30,6 @@ import nl.talsmasoftware.enumerable.Enumerable;
  * defining a constant is generally preferable given the added simplicity.
  * <p>
  * An example of an automatically registered provider in an enumerable type:
- * <p>
  * <pre>
  * <code>
  *

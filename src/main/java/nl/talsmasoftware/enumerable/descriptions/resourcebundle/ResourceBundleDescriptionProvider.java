@@ -129,28 +129,41 @@ public class ResourceBundleDescriptionProvider implements DescriptionProvider {
     }
 
     /**
-     * Operation to generate a {@link ResourceBundle} <code>key</code> with, based on an
-     * {@link Enumerable} object instance.
-     * <p>
-     * This <code>key</code> will be used to lookup the description message in the resource bundle for an appropriate
-     * translation.
+     * This operation provides the description from the {@link ResourceBundle resource bundle} for the specified
+     * <code>enumerable</code> object value.
      *
-     * @param enumerable The enumerable object value to create a message <code>key</code> for.
-     * @return The key in the <code>ResourceBundle</code> for the specified <code>enumerable</code> value.
+     * @param enumerable The enumerable object value to provide a description for.
+     * @return The found description or <code>null</code> if no description can be obtained from the
+     * <code>ResourceBundle</code>.
+     * @see Descriptions#defaultProvider()
      */
-    protected String determineKeyFor(Enumerable enumerable) {
-        String key = new StringBuilder(40).append(prefix)
-                .append(_nameOrValue(enumerable).replaceAll(" ", "_"))
-                .append(suffix).toString();
-        LOGGER.log(Level.FINEST, "Resource bundle key determined for enumerable \"{0}\": \"{1}\".",
-                new Object[]{enumerable, key});
-        return key;
+    public String describe(final Enumerable enumerable) {
+        String description = null;
+        if (enumerable != null) {
+            final String key = determineKeyFor(enumerable);
+            try {
+                description = getResourceBundle(enumerable.getClass()).getString(key);
+                LOGGER.log(Level.FINEST, "Description for enumerable value \"{0}\" from resource bundle: \"{1}\".",
+                        new Object[]{enumerable, description});
+            } catch (RuntimeException rte) {
+                LOGGER.log(Level.FINE, "Cannot find value \"{0}\" in resource bundle for {1} due to: {2}",
+                        new Object[]{key, enumerable.getClass().getSimpleName(), rte.getMessage(), rte});
+            }
+        }
+        return description;
     }
 
-    private static String _nameOrValue(Enumerable enumerable) {
-        if (enumerable == null) throw new IllegalArgumentException("Enumerable was null.");
-        final String name = enumerable.name();
-        return name == null ? enumerable.getValue() : name;
+    /**
+     * Obtains the appropriate {@link ResourceBundle} for the specified {@link Enumerable} type.
+     *
+     * @param type The enumerable type to lookup descriptions for.
+     * @return The approprate <code>ResourceBundle</code> to use.
+     * @throws MissingResourceException In case the configured <code>ResourceBundle</code> could not be located.
+     * @see #determineResourceBundleName(Class)
+     * @see #determineLocale()
+     */
+    protected ResourceBundle getResourceBundle(Class<? extends Enumerable> type) throws MissingResourceException {
+        return getBundle(determineResourceBundleName(type), determineLocale());
     }
 
     /**
@@ -182,33 +195,29 @@ public class ResourceBundleDescriptionProvider implements DescriptionProvider {
         return locale;
     }
 
-    protected ResourceBundle getResourceBundle(Class<? extends Enumerable> type) throws MissingResourceException {
-        return getBundle(determineResourceBundleName(type), determineLocale());
+    /**
+     * Operation to generate a {@link ResourceBundle} <code>key</code> with, based on an
+     * {@link Enumerable} object instance.
+     * <p>
+     * This <code>key</code> will be used to lookup the description message in the resource bundle for an appropriate
+     * translation.
+     *
+     * @param enumerable The enumerable object value to create a message <code>key</code> for.
+     * @return The key in the <code>ResourceBundle</code> for the specified <code>enumerable</code> value.
+     */
+    protected String determineKeyFor(Enumerable enumerable) {
+        String key = new StringBuilder(40).append(prefix)
+                .append(_nameOrValue(enumerable).replaceAll(" ", "_"))
+                .append(suffix).toString();
+        LOGGER.log(Level.FINEST, "Resource bundle key determined for enumerable \"{0}\": \"{1}\".",
+                new Object[]{enumerable, key});
+        return key;
     }
 
-    /**
-     * This operation provides the description from the {@link ResourceBundle resource bundle} for the specified
-     * <code>enumerable</code> object value.
-     *
-     * @param enumerable The enumerable object value to provide a description for.
-     * @return The found description or <code>null</code> if no description can be obtained from the
-     * <code>ResourceBundle</code>.
-     * @see Descriptions#defaultProvider()
-     */
-    public String describe(final Enumerable enumerable) {
-        String description = null;
-        if (enumerable != null) {
-            final String key = determineKeyFor(enumerable);
-            try {
-                description = getResourceBundle(enumerable.getClass()).getString(key);
-                LOGGER.log(Level.FINEST, "Description for enumerable value \"{0}\" from resource bundle: \"{1}\".",
-                        new Object[]{enumerable, description});
-            } catch (RuntimeException rte) {
-                LOGGER.log(Level.FINE, "Cannot find value \"{0}\" in resource bundle for {1} due to: {2}",
-                        new Object[]{key, enumerable.getClass().getSimpleName(), rte.getMessage(), rte});
-            }
-        }
-        return description;
+    private static String _nameOrValue(Enumerable enumerable) {
+        if (enumerable == null) throw new IllegalArgumentException("Enumerable was null.");
+        final String name = enumerable.name();
+        return name == null ? enumerable.getValue() : name;
     }
 
     /**
