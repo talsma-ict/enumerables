@@ -54,7 +54,6 @@ import static java.util.ResourceBundle.getBundle;
  * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
  */
 public class ResourceBundleDescriptionProvider implements DescriptionProvider {
-    // TODO: Also use a ResourceBundle for the logged messages from this library!
     private static final Logger LOGGER = Logger.getLogger(ResourceBundleDescriptionProvider.class.getName());
 
     /**
