@@ -15,6 +15,7 @@
  */
 package nl.talsmasoftware.enumerable.descriptions.resourcebundle;
 
+import nl.talsmasoftware.enumerable.CarBrand;
 import nl.talsmasoftware.enumerable.Enumerable;
 import nl.talsmasoftware.enumerable.descriptions.DescriptionProvider;
 import nl.talsmasoftware.enumerable.descriptions.DescriptionProviderRegistry;
@@ -23,8 +24,7 @@ import org.junit.*;
 import java.util.Locale;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 /**
  * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
@@ -106,5 +106,37 @@ public class ResourceBundleDescriptionProviderTest {
         assertThat(RbBigCo.IBM.getDescription(), is(equalTo("Internationale Bedrijfs Machines")));
     }
 
+    @Test
+    public void testMissingDescription() {
+        assertThat(ResourceBundleDescriptionProvider.builder().build().describe(CarBrand.AUDI),
+                is(nullValue()));
+        assertThat(ResourceBundleDescriptionProvider.builder().locale(Locale.GERMAN).build().describe(CarBrand.AUDI),
+                is(nullValue()));
+    }
 
+    @Test
+    public void testMissingDescription_inSpecificLocale() {
+        assertThat(ResourceBundleDescriptionProvider.builder().build().describe(CarBrand.TESLA),
+                is(equalTo("Tesla Motors")));
+        assertThat(ResourceBundleDescriptionProvider.builder().locale(Locale.GERMAN).build().describe(CarBrand.TESLA),
+                is(equalTo("Tesla Motors")));
+        Locale.setDefault(Locale.FRENCH);
+        assertThat(ResourceBundleDescriptionProvider.builder().locale(Locale.GERMAN).build().describe(CarBrand.TESLA),
+                is(equalTo("Tesla Motors")));
+    }
+
+    @Test
+    public void testDescription_inDifferentLocales() {
+        assertThat(ResourceBundleDescriptionProvider.builder().build().describe(CarBrand.BMW),
+                is(equalTo("Bavarian Motor Works")));
+        assertThat(ResourceBundleDescriptionProvider.builder().locale(Locale.GERMAN).build().describe(CarBrand.BMW),
+                is(equalTo("Bayerische Motoren Werke")));
+        // No NL definition for BMW and default locale is English:
+        assertThat(ResourceBundleDescriptionProvider.builder().locale(NL).build().describe(CarBrand.BMW),
+                is(equalTo("Bavarian Motor Works")));
+        // No NL definition for BMW and default locale is French:
+        Locale.setDefault(Locale.FRENCH);
+        assertThat(ResourceBundleDescriptionProvider.builder().locale(NL).build().describe(CarBrand.BMW),
+                is(equalTo("BMW")));
+    }
 }
