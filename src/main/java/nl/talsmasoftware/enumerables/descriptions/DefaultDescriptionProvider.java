@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.talsmasoftware.enumerable.descriptions;
+package nl.talsmasoftware.enumerables.descriptions;
 
-import nl.talsmasoftware.enumerable.Enumerable;
+import nl.talsmasoftware.enumerables.Enumerable;
 
 import java.util.Locale;
 
-import static nl.talsmasoftware.enumerable.descriptions.Descriptions.capitalize;
+import static nl.talsmasoftware.enumerables.descriptions.Descriptions.capitalize;
 
 /**
  * Default implementation for providing descriptions of {@link Enumerable} objects in a human-readable way.

@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.talsmasoftware.enumerable.descriptions.resourcebundle;
+package nl.talsmasoftware.enumerables.descriptions.resourcebundle;
 
-import nl.talsmasoftware.enumerable.CarBrand;
-import nl.talsmasoftware.enumerable.Enumerable;
-import nl.talsmasoftware.enumerable.descriptions.DescriptionProvider;
-import nl.talsmasoftware.enumerable.descriptions.DescriptionProviderRegistry;
+import nl.talsmasoftware.enumerables.CarBrand;
+import nl.talsmasoftware.enumerables.Enumerable;
+import nl.talsmasoftware.enumerables.descriptions.DescriptionProvider;
+import nl.talsmasoftware.enumerables.descriptions.DescriptionProviderRegistry;
 import org.junit.*;
 
 import java.util.Locale;

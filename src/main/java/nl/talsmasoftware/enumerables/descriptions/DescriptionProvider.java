@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.talsmasoftware.enumerable.descriptions;
+package nl.talsmasoftware.enumerables.descriptions;
 
-import nl.talsmasoftware.enumerable.Enumerable;
+import nl.talsmasoftware.enumerables.Enumerable;
 
 /**
  * Provider interface for descriptions of {@link Enumerable} object instances.

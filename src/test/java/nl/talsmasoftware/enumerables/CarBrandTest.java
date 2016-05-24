@@ -15,7 +15,7 @@
  *
  */
 
-package nl.talsmasoftware.enumerable;
+package nl.talsmasoftware.enumerables;
 
 import org.junit.Test;
 

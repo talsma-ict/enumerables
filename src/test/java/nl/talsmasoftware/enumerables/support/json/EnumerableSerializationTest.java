@@ -15,15 +15,15 @@
  *
  */
 
-package nl.talsmasoftware.enumerable.support.json;
+package nl.talsmasoftware.enumerables.support.json;
 
-import nl.talsmasoftware.enumerable.CarBrand;
+import nl.talsmasoftware.enumerables.CarBrand;
 import org.junit.Test;
 
-import static nl.talsmasoftware.enumerable.support.json.EnumerableSerialization.JSON_OBJECT;
-import static nl.talsmasoftware.enumerable.support.json.EnumerableSerialization.PLAIN_STRING;
-import static nl.talsmasoftware.enumerable.support.json.EnumerableSerialization.SerializationMethod.OBJECT;
-import static nl.talsmasoftware.enumerable.support.json.EnumerableSerialization.SerializationMethod.STRING;
+import static nl.talsmasoftware.enumerables.support.json.EnumerableSerialization.JSON_OBJECT;
+import static nl.talsmasoftware.enumerables.support.json.EnumerableSerialization.PLAIN_STRING;
+import static nl.talsmasoftware.enumerables.support.json.EnumerableSerialization.SerializationMethod.OBJECT;
+import static nl.talsmasoftware.enumerables.support.json.EnumerableSerialization.SerializationMethod.STRING;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.talsmasoftware.enumerable.descriptions;
+package nl.talsmasoftware.enumerables.descriptions;
 
-import nl.talsmasoftware.enumerable.Enumerable;
+import nl.talsmasoftware.enumerables.Enumerable;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;

@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.talsmasoftware.enumerable;
+package nl.talsmasoftware.enumerables;
 
-import nl.talsmasoftware.enumerable.descriptions.DescriptionProvider;
-import nl.talsmasoftware.enumerable.descriptions.DescriptionProviderRegistry;
-import nl.talsmasoftware.enumerable.descriptions.Descriptions;
+import nl.talsmasoftware.enumerables.descriptions.DescriptionProvider;
+import nl.talsmasoftware.enumerables.descriptions.DescriptionProviderRegistry;
+import nl.talsmasoftware.enumerables.descriptions.Descriptions;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -57,28 +57,11 @@ import static java.util.Collections.*;
  * <p>
  * TODO: Talk about values(), ordinal(), and other enum concepts.
  * TODO: Document an example of how using it.
- * TODO: DescriptionProvider api.
  * TODO: Generify? (instead of String, maybe also support other immutable value object types?) Not sure about this one.
  *
  * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
  */
 public abstract class Enumerable implements Comparable<Enumerable>, Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    private static final Logger LOGGER = Logger.getLogger(Enumerable.class.getName());
-
-    /**
-     * Map from concrete subclass type to array of reflected constants.
-     */
-    private static final ConcurrentMap<Class<?>, Object> CONSTANTS_CACHE =
-            new ConcurrentHashMap<Class<?>, Object>();
-
-    /**
-     * Recursion detection for descriptions.
-     */
-    private static final ConcurrentMap<Class<?>, ThreadLocal<Boolean>> DESCRIPTION_RECURSION =
-            new ConcurrentHashMap<Class<?>, ThreadLocal<Boolean>>();
 
     /**
      * The value of this abstract Enumerable type.
@@ -86,41 +69,15 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
     private final String value;
 
     /**
-     * Constructor that may only be used by a private (!) constructor of the subclass.
+     * Constructor that should only be used by a private (!) constructor of the subclass.
      *
-     * @param value The value of this Enumerable object.
+     * @param value The value of this Enumerable object instance.
      */
     protected Enumerable(String value) {
         if (value == null) {
             throw new IllegalArgumentException(String.format("Value of type %s was null.", getClass().getSimpleName()));
         }
         this.value = value;
-    }
-
-    /**
-     * <ul>
-     * <li>If and only if a constant was detected for this value, the constants name and ordinal.</li>
-     * <li>Otherwise {@code NONE}.</li>
-     * <li>Or {@code null} in case the type has not yet been reflected.</li>
-     * </ul>
-     */
-    private transient volatile NameAndOrdinal _nameAndOrdinal = null;
-
-    /**
-     * @return Once-only calculated <code>NameAndOrdinal</code> combination, non-<code>null</code>.
-     */
-    private NameAndOrdinal _nameAndOrdinal() {
-        if (_nameAndOrdinal == null) {
-            Enumerable[] values = _rawValues(getClass());
-            for (int i = 0; i < values.length; i++) {
-                if (value.equals(values[i].value)) {
-                    _nameAndOrdinal = new NameAndOrdinal(i, values[i].name());
-                    return _nameAndOrdinal;
-                }
-            }
-            _nameAndOrdinal = NameAndOrdinal.NONE;
-        }
-        return _nameAndOrdinal;
     }
 
     /**
@@ -164,7 +121,7 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
      */
     public String getDescription() {
         String description = null;
-        final ThreadLocal<Boolean> recursionDetection = _descriptionRecursieDetection();
+        final ThreadLocal<Boolean> recursionDetection = _descriptionRecursionDetection();
         if (!recursionDetection.get()) {
             try {
                 recursionDetection.set(true);
@@ -179,7 +136,6 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
             }
         }
         return description == null ? Descriptions.defaultProvider().describe(this) : description;
-
     }
 
     /**
@@ -192,14 +148,12 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
 
     public int compareTo(Enumerable other) {
         if (other == null) throw new NullPointerException("The enumerable object to compare with was null.");
-        final Class<? extends Enumerable> myType = getClass();
-        // TODO: Probably a bug: Comparison should be commutative, which it is not due to the isInstance() check:
-        int comparison = myType.isInstance(other) ? 0 : myType.getName().compareTo(other.getClass().getName());
+        int comparison = getClass().getName().compareTo(other.getClass().getName());
         if (comparison == 0) {
             final int ordinal = ordinal();
             comparison = ordinal - other.ordinal();
             if (comparison == 0 && ordinal == NameAndOrdinal.NONE.ordinal) { // Both are non-constant: compare values!
-                // Preferably sort case-insensitive, however, do not declare case-only differences as equal:
+                // 2-step compare: Preferably sort case-insensitive. However, do not declare case differences as equal:
                 comparison = value.compareToIgnoreCase(other.value);
                 if (comparison == 0) comparison = value.compareTo(other.value);
             }
@@ -208,10 +162,11 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
     }
 
     /**
-     * Vergelijkt volgens de regels van {@link #compareTo(Enumerable)}.
+     * Equality is implemented as either instance equality (which happens a lot with constants)
+     * or otherwise a zero {@link #compareTo(Enumerable)} outcome.
      *
-     * @param other Het object om mee te vergelijken.
-     * @return equals op basis van type en waarde.
+     * @param other The other object to compare equality with.
+     * @return Whether this enumerable instance is equal to the specified object based on type and value.
      */
     @Override
     public final boolean equals(Object other) {
@@ -244,11 +199,11 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
     }
 
     /**
-     * @return Re-parse an enumerable object after deserialisatie to ensure that constants can be compared by ==
-     * (which is not recommended by the way).
+     * @return Re-parse an enumerable object after deserialization to ensure that constants remain constant.
      */
     protected Object readResolve() {
-        return parse(getClass(), value);
+        Enumerable reParsed = parse(getClass(), value);
+        return reParsed.name() != null ? reParsed : this; // name found? Then return the parsed constant reference.
     }
 
     /**
@@ -259,10 +214,180 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
      * or <code>null</code> in case this type did not have a custom description provider registered.
      */
     protected DescriptionProvider descriptionProvider() {
-        _initConstants(); // This may also trigger an automatic description provider.
+        _initConstants(); // This may also trigger an automatic description provider registration.
         return DescriptionProviderRegistry.getInstance().getDescriptionProviderFor(getClass());
     }
 
+    /**
+     * Finds all public constants of the requested enumerable subtype that have been declared in the class of the
+     * enumerable itself.
+     * <p>
+     * These constants must be <strong>public final static</strong> fields.
+     *
+     * @param <E>            The actual non-abstract enumerable subtype to obtain constants for.
+     * @param enumerableType The actual non-abstract enumerable subtype to obtain constants for.
+     * @return All declarered public constants of the enumerable subtype.
+     */
+    public static <E extends Enumerable> E[] values(Class<E> enumerableType) {
+        return _rawValues(enumerableType).clone();
+    }
+
+    /**
+     * This method is comparable with the {@link Enum#valueOf(Class, String)} method.
+     * <p>
+     * This method returns the constant with the specified <code>name</code>.
+     * If there is no enumerable constant of the requested <code>type</code> found by that <code>name</code>,
+     * the method will throw an {@link ConstantNotFoundException exception}.
+     * <p>
+     * Please note that this method looks at the {@link #name() constant name} and <strong>not</strong>
+     * the {@link #getValue() value} of this enumerable object. To obtain an enumerable object from a
+     * specific <code>value</code>, please use the {@link #parse(Class, CharSequence) parse} method instead.
+     * That method will not throw any exceptions for yet-unknown values, but attempt to instantiate a
+     * new enumerable instance in that case.
+     *
+     * @param <E>  The actual subtype of <code>Enumerable</code> to return the named constant value for.
+     * @param type The actual subtype of <code>Enumerable</code> to return the named constant value for.
+     * @param name The name of the enumerable constant to return (as declared in the code).
+     * @return The enumerable constant with the requested name.
+     * @throws ConstantNotFoundException in case there is no such constant defined.
+     * @see #parse(Class, CharSequence)
+     */
+    public static <E extends Enumerable> E valueOf(Class<E> type, CharSequence name)
+            throws ConstantNotFoundException {
+        if (name != null) {
+            final String nameString = name.toString();
+            for (E enumerable : _rawValues(type)) {
+                if (nameString.equals(enumerable.name())) {
+                    return enumerable;
+                }
+            }
+        }
+        throw new ConstantNotFoundException(type, name);
+    }
+
+    /**
+     * This method parses the specified value and tries to match it to the found enumerable constants
+     * of the specified type. In case a corresponding constant is found, its object reference is returned.
+     * In case no constant with a matching value is found, the method attempts to instantiate a new instance of the
+     * given enumerable <code>type</code> by searching for a single-{@link String} constructor.
+     *
+     * @param <E>   The actual subtype of <code>Enumerable</code> to return the specified value of.
+     * @param type  The actual subtype of <code>Enumerable</code> to return the specified value of.
+     * @param value The enumerable value to be parsed.
+     * @return An enumerable object of the requested type containing the specified <code>value</code>,
+     * or <code>null</code> if the given <code>value</code> was <code>null</code> itself.
+     */
+    public static <E extends Enumerable> E parse(Class<E> type, CharSequence value) {
+        return parse(type, value, null);
+    }
+
+    /**
+     * <code>null</code>-safe helper method that prints the value of any enumerable.
+     *
+     * @param enumerable The enumerable object to return the value of.
+     * @return The value of the enumerable or <code>null</code> in case the enumerable itself was <code>null</code>.
+     * @see #parse(Class, CharSequence)
+     */
+    public static String print(Enumerable enumerable) {
+        return enumerable == null ? null : enumerable.value;
+    }
+
+    /**
+     * A factory method for sets of Enumerable values.
+     * <p>
+     * It is recommended to use this method for constant sets of enumerable values to allow the library to optimize
+     * the type of set to be returned.
+     * <p>
+     * The resulting set will be unmodifiable.
+     *
+     * @param <E>    The actual non-abstract Enumerable type.
+     * @param values The enumerable values to be represented as a Set.
+     * @return The unmodifiable set of the specified Enumerable values.
+     */
+    public static <E extends Enumerable> Set<E> setOf(E... values) {
+        if (values == null || values.length == 0) {
+            return emptySet();
+        } else if (values.length == 1) {
+            return singleton(values[0]);
+        }
+        // For now this 'just works', maybe we can implement a set that is based on the EnumSet idea.
+        return unmodifiableSet(new LinkedHashSet<E>(asList(values)));
+    }
+
+    /**
+     * Helper that can return fixed instances from known constants (comparable to enum parsing).
+     *
+     * @param <E>     The actual non-abstract Enumerable type.
+     * @param type    The enumerable subtype of the value to be parsed (to obtain constants).
+     * @param value   The value to be parsed.
+     * @param factory A 'factory' implementation to create the new enumerable value instance with if no constant is
+     *                found.
+     * @return The parsed enumerable value or <code>null</code> if the parameter <code>value</code> was <code>null</code>.
+     */
+    protected static <E extends Enumerable> E parse(Class<E> type, CharSequence value, Callable<E> factory) {
+        E parsed = null;
+        if (value != null) {
+            String valueStr = value.toString();
+            for (E constante : _rawValues(type)) {
+                if (((Enumerable) constante).value.equals(valueStr)) {
+                    parsed = constante;
+                    break;
+                }
+            }
+            if (parsed == null) {
+                try {
+                    parsed = factory != null ? factory.call() : _callStringConstructor(type, valueStr);
+                } catch (Exception e) {
+                    throw new IllegalStateException(String.format("Could not create new \"%s\" object with value \"%s\".",
+                            type.getName(), valueStr), e);
+                }
+            }
+        }
+        return parsed;
+    }
+
+    // Class constants, all private:
+    private static final long serialVersionUID = 1L;
+    private static final Logger LOGGER = Logger.getLogger(Enumerable.class.getName());
+    // Map from concrete subclass type to array of reflected constants.
+    private static final ConcurrentMap<Class<?>, Object> CONSTANTS_CACHE = new ConcurrentHashMap<Class<?>, Object>();
+    // Recursion detection for descriptions.
+    private static final ConcurrentMap<Class<?>, ThreadLocal<Boolean>> DESCRIPTION_RECURSION = new ConcurrentHashMap<Class<?>, ThreadLocal<Boolean>>();
+
+    /**
+     * Initializes the constants for this class if that has not yet been done.
+     */
+    private void _initConstants() {
+        if (!CONSTANTS_CACHE.containsKey(getClass())) {
+            _rawValues(getClass());
+        }
+    }
+
+    /**
+     * <ul>
+     * <li>If and only if a constant was detected for this value, the constants name and ordinal.</li>
+     * <li>Otherwise {@code NONE}.</li>
+     * <li>Or {@code null} in case the type has not yet been reflected.</li>
+     * </ul>
+     */
+    private transient volatile NameAndOrdinal _nameAndOrdinal = null;
+
+    /**
+     * @return Once-only calculated <code>NameAndOrdinal</code> combination, non-<code>null</code>.
+     */
+    private NameAndOrdinal _nameAndOrdinal() {
+        if (_nameAndOrdinal == null) {
+            Enumerable[] values = _rawValues(getClass());
+            for (int i = 0; i < values.length; i++) {
+                if (value.equals(values[i].value)) {
+                    _nameAndOrdinal = new NameAndOrdinal(i, values[i].name());
+                    return _nameAndOrdinal;
+                }
+            }
+            _nameAndOrdinal = NameAndOrdinal.NONE;
+        }
+        return _nameAndOrdinal;
+    }
 
     /**
      * Returns the actual raw (un-cloned) array with constants for the requested type.
@@ -305,143 +430,6 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
     }
 
     /**
-     * Finds all public constants of the requested enumerable subtype that have been declared in the class of the
-     * enumerable itself.
-     * <p>
-     * These constants must be <strong>public final static</strong> fields.
-     *
-     * @param <E>            The actual non-abstract enumerable subtype to obtain constants for.
-     * @param enumerableType The actual non-abstract enumerable subtype to obtain constants for.
-     * @return All declarered public constants of the enumerable subtype.
-     */
-    public static <E extends Enumerable> E[] values(Class<E> enumerableType) {
-        return _rawValues(enumerableType).clone();
-    }
-
-    /**
-     * This method is comparable with the {@link Enum#valueOf(Class, String)} method.
-     * <p>
-     * This method returns the constant with the specified <code>name</code>.
-     * If there is no enumerable constant of the requested <code>type</code> found by that <code>name</code>,
-     * the method will throw an {@link EnumerableConstantNotFoundException exception}.
-     * <p>
-     * Please note that this method looks at the {@link #name() constant name} and <strong>not</strong>
-     * the {@link #getValue() value} of this enumerable object. To obtain an enumerable object from a
-     * specific <code>value</code>, please use the {@link #parse(Class, CharSequence) parse} method instead.
-     * That method will not throw any exceptions for yet-unknown values, but attempt to instantiate a
-     * new enumerable instance in that case.
-     *
-     * @param <E>  The actual subtype of <code>Enumerable</code> to return the named constant value for.
-     * @param type The actual subtype of <code>Enumerable</code> to return the named constant value for.
-     * @param name The name of the enumerable constant to return (as declared in the code).
-     * @return The enumerable constant with the requested name.
-     * @throws EnumerableConstantNotFoundException in case there is no such constant defined.
-     * @see #parse(Class, CharSequence)
-     */
-    public static <E extends Enumerable> E valueOf(Class<E> type, CharSequence name)
-            throws EnumerableConstantNotFoundException {
-        if (name != null) {
-            final String nameString = name.toString();
-            for (E enumerable : _rawValues(type)) {
-                if (nameString.equals(enumerable.name())) {
-                    return enumerable;
-                }
-            }
-        }
-        throw new EnumerableConstantNotFoundException(type, name);
-    }
-
-    /**
-     * This method parses the specified value and tries to match it to the found enumerable constants
-     * of the specified type. In case a corresponding constant is found, its object reference is returned.
-     * In case no constant with a matching value is found, the method attempts to instantiate a new instance of the
-     * given enumerable <code>type</code> by searching for a single-{@link String} constructor.
-     *
-     * @param <E>   The actual subtype of <code>Enumerable</code> to return the specified value of.
-     * @param type  The actual subtype of <code>Enumerable</code> to return the specified value of.
-     * @param value The enumerable value to be parsed.
-     * @return An enumerable object of the requested type containing the specified <code>value</code>,
-     * or <code>null</code> if the given <code>value</code> was <code>null</code> itself.
-     */
-    public static <E extends Enumerable> E parse(Class<E> type, CharSequence value) {
-        return parse(type, value, null);
-    }
-
-    /**
-     * <code>null</code>-safe helper method that prints the value of any enumerable.
-     *
-     * @param enumerable The enumerable object to return the value of.
-     * @return The value of the enumerable or <code>null</code> in case the enumerable itself was <code>null</code>.
-     * @see #parse(Class, CharSequence)
-     */
-    public static String print(Enumerable enumerable) {
-        return enumerable == null ? null : enumerable.value;
-    }
-
-    /**
-     * Een eenvoudige manier om een set van Enumerable waardes als constante te kunnen opnemen.
-     * <p>
-     * Deze operatie dient als factory methode voor een unmodifiable set en kan wellicht later uitgebreid worden voor
-     * sets die alleen uit constanten bestaan (vergelijkbaar met EnumSet).
-     *
-     * @param <E>    Het concrete niet-abstracte Enumerable type.
-     * @param values De waardes om als set te representeren.
-     * @return De set van Enumerable
-     */
-    public static <E extends Enumerable> Set<E> setOf(E... values) {
-        Set<E> result = null;
-        if (values == null || values.length == 0) {
-            result = emptySet();
-        } else if (values.length == 1) {
-            result = singleton(values[0]);
-        } else { // For now this 'just works', maybe we can implement a set that is based on the EnumSet idea.
-            result = unmodifiableSet(new LinkedHashSet<E>(asList(values)));
-        }
-        return result;
-    }
-
-    /**
-     * Helper that can return fixed instances from known constants (comparable to enum parsing).
-     *
-     * @param <E>     The actual non-abstract Enumerable type.
-     * @param type    The enumerable subtype of the value to be parsed (to obtain constants).
-     * @param value   The value to be parsed.
-     * @param factory A 'factory' implementation to create the new enumerable value instance with if no constant is
-     *                found.
-     * @return The parsed enumerable value or <code>null</code> if the parameter <code>value</code> was <code>null</code>.
-     */
-    protected static <E extends Enumerable> E parse(Class<E> type, CharSequence value, Callable<E> factory) {
-        E parsed = null;
-        if (value != null) {
-            String valueStr = value.toString();
-            for (E constante : _rawValues(type)) {
-                if (((Enumerable) constante).value.equals(valueStr)) {
-                    parsed = constante;
-                    break;
-                }
-            }
-            if (parsed == null) {
-                try {
-                    parsed = factory != null ? factory.call() : _callStringConstructor(type, valueStr);
-                } catch (Exception e) {
-                    throw new IllegalStateException(String.format("Could not create new \"%s\" object with value \"%s\".",
-                            type.getName(), valueStr), e);
-                }
-            }
-        }
-        return parsed;
-    }
-
-    /**
-     * Initializes the constants for this class if that has not yet been done.
-     */
-    private void _initConstants() {
-        if (!CONSTANTS_CACHE.containsKey(getClass())) {
-            _rawValues(getClass());
-        }
-    }
-
-    /**
      * Instantiates a 'new' enumerable object instance with the given constructor argument.
      * <p>
      * Since we guarantee constant instances to be singletons (within the same ClassLoader), this should obviously only
@@ -469,28 +457,7 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
     }
 
     /**
-     * For each <code>Enumerable</code> type, a single 'recursion detection' instance will be created to prevent
-     * any stack overflows in recursive {@link #getDescription()} calls.
-     * This is necessary because we have relinquished control over descriptions through the {@link DescriptionProvider}
-     * mechanism and therefore have no longer full control over the {@link #getDescription} implementation.
-     */
-    private ThreadLocal<Boolean> _descriptionRecursieDetection() {
-        final Class<? extends Enumerable> myType = getClass();
-        ThreadLocal<Boolean> recursionDetection = DESCRIPTION_RECURSION.get(myType);
-        if (recursionDetection == null) {
-            DESCRIPTION_RECURSION.putIfAbsent(myType, new ThreadLocal<Boolean>() {
-                @Override
-                public Boolean initialValue() {
-                    return false;
-                }
-            });
-            recursionDetection = DESCRIPTION_RECURSION.get(myType);
-        }
-        return recursionDetection;
-    }
-
-    /**
-     * Registers a static final DescriptionProvider constant as description provider for this type.
+     * Registers a static final constant of type DescriptionProvider as description provider for this type.
      */
     private static <E extends Enumerable> void _registerDescriptionProvider(final Class<E> type, final Field field) {
         if (DescriptionProvider.class.isAssignableFrom(field.getType())) {
@@ -518,6 +485,29 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
     }
 
     /**
+     * For each <code>Enumerable</code> type, a single 'recursion detection' instance will be created to prevent
+     * any stack overflows in recursive {@link #getDescription()} calls.
+     * This is necessary because we have relinquished control over descriptions through the {@link DescriptionProvider}
+     * mechanism and therefore have no longer full control over the {@link #getDescription} implementation.
+     *
+     * @return A boolean state that indicates per-thread whether or not we're in the "getDescription()" method.
+     */
+    private ThreadLocal<Boolean> _descriptionRecursionDetection() {
+        final Class<? extends Enumerable> myType = getClass();
+        ThreadLocal<Boolean> recursionDetection = DESCRIPTION_RECURSION.get(myType);
+        if (recursionDetection == null) {
+            DESCRIPTION_RECURSION.putIfAbsent(myType, new ThreadLocal<Boolean>() {
+                @Override
+                public Boolean initialValue() {
+                    return false;
+                }
+            });
+            recursionDetection = DESCRIPTION_RECURSION.get(myType);
+        }
+        return recursionDetection;
+    }
+
+    /**
      * @return The description from the provider, or <code>null</code> if none was found.
      */
     private String _descriptionFromProvider() {
@@ -525,9 +515,8 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
         return provider == null ? null : provider.describe(this);
     }
 
-
     /**
-     * Internal class to represent name and ordinal to be able to simulate standard Enum behaviour..
+     * Internal class to represent name and ordinal to be able to simulate standard Enum behaviour.
      */
     private static final class NameAndOrdinal {
         private static final NameAndOrdinal NONE = new NameAndOrdinal(Integer.MAX_VALUE, null);
@@ -537,6 +526,38 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
         private NameAndOrdinal(int ordinal, String name) {
             this.ordinal = ordinal;
             this.name = name;
+        }
+    }
+
+    /**
+     * Exception that is thrown by the {@link Enumerable#valueOf(Class, CharSequence)} method when an enumerable
+     * constant is requested that could not be found.
+     *
+     * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+     */
+    public static class ConstantNotFoundException extends IllegalArgumentException {
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Constructor. Creates a new exception telling the caller that a bad constant name was requested.
+         *
+         * @param enumerableType The type of Enumerable that was requested.
+         * @param constantName   The name of the Enumerable constant that was requested.
+         */
+        public ConstantNotFoundException(Class<? extends Enumerable> enumerableType, CharSequence constantName) {
+            this(String.format("No Enumerable constant \"%s.%s\" found.",
+                    enumerableType == null ? null : enumerableType.getSimpleName(), constantName), null);
+        }
+
+        /**
+         * General exception constructor left in place in case anybody wishes to subclass us.
+         *
+         * @param message The message for this exception.
+         * @param cause   The cause of this exception.
+         */
+        protected ConstantNotFoundException(String message, Throwable cause) {
+            super(message);
+            if (cause != null) super.initCause(cause); // Allows for initCause() later on if cause == null.
         }
     }
 

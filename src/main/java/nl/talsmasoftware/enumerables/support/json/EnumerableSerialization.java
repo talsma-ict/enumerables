@@ -13,22 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.talsmasoftware.enumerable.support.json;
+package nl.talsmasoftware.enumerables.support.json;
 
-import nl.talsmasoftware.enumerable.Enumerable;
+import nl.talsmasoftware.enumerables.Enumerable;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static nl.talsmasoftware.enumerable.support.json.EnumerableSerialization.SerializationMethod.OBJECT;
-import static nl.talsmasoftware.enumerable.support.json.EnumerableSerialization.SerializationMethod.STRING;
+import static nl.talsmasoftware.enumerables.support.json.EnumerableSerialization.SerializationMethod.OBJECT;
+import static nl.talsmasoftware.enumerables.support.json.EnumerableSerialization.SerializationMethod.STRING;
 
 /**
  * Object that abstracts the JSON serialization method: as plain string or json object
  * (containing <code>value</code> and <code>description</code> properties).
  * <p>
  * The provided deserializers know how to handle both known {@link SerializationMethod serialization methods}.
+ * <p>
+ * TODO: I think this method is currently too abstract and generic! Maybe just stick with 'Object' and 'String' for now!
  *
  * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
  */
@@ -195,4 +197,5 @@ public class EnumerableSerialization {
          */
         public abstract EnumerableSerialization except(Class<? extends Enumerable>... enumerableTypes);
     }
+
 }

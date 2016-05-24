@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.talsmasoftware.enumerable;
+package nl.talsmasoftware.enumerables;
 
-import nl.talsmasoftware.enumerable.descriptions.DescriptionProvider;
-import nl.talsmasoftware.enumerable.descriptions.DescriptionProviderRegistry;
-import nl.talsmasoftware.enumerable.descriptions.Descriptions;
+import nl.talsmasoftware.enumerables.descriptions.DescriptionProvider;
+import nl.talsmasoftware.enumerables.descriptions.DescriptionProviderRegistry;
+import nl.talsmasoftware.enumerables.descriptions.Descriptions;
 import org.junit.Test;
 
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Integer.signum;
 import static java.util.Locale.ENGLISH;
-import static nl.talsmasoftware.enumerable.descriptions.Descriptions.capitalize;
+import static nl.talsmasoftware.enumerables.descriptions.Descriptions.capitalize;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
@@ -164,7 +165,7 @@ public class EnumerableTest {
             fail("exception expected");
         } catch (IllegalStateException expected) {
             assertThat(expected, hasToString(containsString(
-                    "Could not create new \"nl.talsmasoftware.enumerable.Enumerable\" object with value \"value\".")));
+                    String.format("Could not create new \"%s\" object with value \"value\".", Enumerable.class.getName()))));
             assertThat(expected.getCause().getMessage(), is(equalTo("CHECKED EXCEPTION!")));
         }
     }
@@ -313,7 +314,7 @@ public class EnumerableTest {
         assertThat(signum(new Fruit("Grapefruit").compareTo(Fruit.APPLE)), is(1));
         assertThat(signum(new Fruit("Grapefruit").compareTo(Fruit.ORANGE)), is(1));
 
-        // Different types should not be equal! (..muble something about apples and oranges)
+        // Different types should not be equal! (..mumble something about apples and oranges)
         assertThat(BigCo.APPLE.compareTo(Fruit.ORANGE), is(not(0)));
     }
 
@@ -329,28 +330,22 @@ public class EnumerableTest {
         assertThat(Enumerable.setOf(), hasSize(0));
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void testSetOf_singleValue() {
-        assertThat(Enumerable.setOf(Fruit.APPLE), hasSize(1));
-        assertThat(Enumerable.setOf(Fruit.APPLE), contains(Fruit.APPLE));
-        try {
-            Enumerable.setOf(Fruit.APPLE).add(Fruit.ORANGE);
-            fail("setOf(APPLE) should be unmodifiable.");
-        } catch (UnsupportedOperationException expected) {
-            // expected
-        }
+        final Set<Fruit> singleValue = Enumerable.setOf(Fruit.APPLE);
+        assertThat(singleValue, hasSize(1));
+        assertThat(singleValue, contains(Fruit.APPLE));
+        singleValue.add(Fruit.ORANGE);
+        fail("setOf(APPLE) should be unmodifiable.");
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void testSetOf_multipleValues() {
-        assertThat(Enumerable.setOf(Fruit.ORANGE, Fruit.APPLE), hasSize(2));
-        assertThat(Enumerable.setOf(Fruit.ORANGE, Fruit.APPLE), contains(Fruit.ORANGE, Fruit.APPLE));
-        try {
-            Enumerable.setOf(Fruit.ORANGE, Fruit.APPLE).add(Enumerable.parse(Fruit.class, "Grapefruit"));
-            fail("setOf(ORANGE, APPLE) should be unmodifiable.");
-        } catch (UnsupportedOperationException expected) {
-            // expected
-        }
+        final Set<Fruit> multipleValues = Enumerable.setOf(Fruit.ORANGE, Fruit.APPLE);
+        assertThat(multipleValues, hasSize(2));
+        assertThat(multipleValues, contains(Fruit.ORANGE, Fruit.APPLE));
+        multipleValues.add(Enumerable.parse(Fruit.class, "Grapefruit"));
+        fail("setOf(ORANGE, APPLE) should be unmodifiable.");
     }
 
     @Test
@@ -387,7 +382,7 @@ public class EnumerableTest {
         try {
             Enumerable.valueOf(Fruit.class, "Grapefruit");
             fail("Exception expected due to non-constant value.");
-        } catch (EnumerableConstantNotFoundException expected) {
+        } catch (Enumerable.ConstantNotFoundException expected) {
             assertThat(expected.getMessage(), is(equalTo("No Enumerable constant \"Fruit.Grapefruit\" found.")));
         }
     }
