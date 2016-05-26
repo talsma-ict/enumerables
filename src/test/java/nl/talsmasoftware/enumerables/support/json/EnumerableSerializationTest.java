@@ -22,10 +22,7 @@ import org.junit.Test;
 
 import static nl.talsmasoftware.enumerables.support.json.EnumerableSerialization.JSON_OBJECT;
 import static nl.talsmasoftware.enumerables.support.json.EnumerableSerialization.PLAIN_STRING;
-import static nl.talsmasoftware.enumerables.support.json.EnumerableSerialization.SerializationMethod.OBJECT;
-import static nl.talsmasoftware.enumerables.support.json.EnumerableSerialization.SerializationMethod.STRING;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 /**
@@ -35,14 +32,14 @@ public class EnumerableSerializationTest {
 
     @Test
     public void testDefaultSerializationMethod() {
-        assertThat(PLAIN_STRING.serializationMethodFor(CarBrand.class), is(equalTo(STRING)));
-        assertThat(JSON_OBJECT.serializationMethodFor(CarBrand.class), is(equalTo(OBJECT)));
+        assertThat(PLAIN_STRING.serializeAsJsonObject(CarBrand.class), is(false));
+        assertThat(JSON_OBJECT.serializeAsJsonObject(CarBrand.class), is(true));
     }
 
     @Test
     public void testExceptMethods() {
-        assertThat(PLAIN_STRING.except(CarBrand.class).serializationMethodFor(CarBrand.class), is(equalTo(OBJECT)));
-        assertThat(JSON_OBJECT.except(CarBrand.class).serializationMethodFor(CarBrand.class), is(equalTo(STRING)));
+        assertThat(PLAIN_STRING.except(CarBrand.class).serializeAsJsonObject(CarBrand.class), is(true));
+        assertThat(JSON_OBJECT.except(CarBrand.class).serializeAsJsonObject(CarBrand.class), is(false));
     }
 
 }

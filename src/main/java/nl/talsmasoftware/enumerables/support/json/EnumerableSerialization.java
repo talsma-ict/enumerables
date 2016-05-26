@@ -17,185 +17,111 @@ package nl.talsmasoftware.enumerables.support.json;
 
 import nl.talsmasoftware.enumerables.Enumerable;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
-import static nl.talsmasoftware.enumerables.support.json.EnumerableSerialization.SerializationMethod.OBJECT;
-import static nl.talsmasoftware.enumerables.support.json.EnumerableSerialization.SerializationMethod.STRING;
+import static java.util.Arrays.asList;
+import static java.util.Arrays.binarySearch;
 
 /**
- * Object that abstracts the JSON serialization method: as plain string or json object
- * (containing <code>value</code> and <code>description</code> properties).
+ * Object to represent the Enumerable serialization method: A plain String or a JSON object with various properties,
+ * including <code>value</code> and <code>description</code>.
  * <p>
- * The provided deserializers know how to handle both known {@link SerializationMethod serialization methods}.
- * <p>
- * TODO: I think this method is currently too abstract and generic! Maybe just stick with 'Object' and 'String' for now!
+ * Enumerable deserializers should be capable of handling both serialization methods.
  *
  * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
  */
-public class EnumerableSerialization {
+public final class EnumerableSerialization {
+    /**
+     * Constant for standard String serialization of all enumerable objects, without exceptions.
+     */
+    public static final EnumerableSerialization PLAIN_STRING = new EnumerableSerialization(false);
+    /**
+     * Constant for standard JSON Object serialization of all enumerable objects, withtout exceptions.
+     */
+    public static final EnumerableSerialization JSON_OBJECT = new EnumerableSerialization(true);
+
+    private final boolean jsonObjectSerialization;
+    private final String[] sortedExceptionTypeNames;
+
+    private EnumerableSerialization(boolean standardObjectSerialization, String... sortedTypeNames) {
+        this.jsonObjectSerialization = standardObjectSerialization;
+        this.sortedExceptionTypeNames = sortedTypeNames;
+    }
 
     /**
-     * The serialization method to use.
+     * This method returns another object representing the enumerable serialization method with specified types
+     * as exceptions to the 'rule'. So <code>PLAIN_STRING.except(MyType.class)</code> will serialize
+     * <code>OtherType</code> as plain String and <code>MyType</code> as JSON objects.
+     * Similarly, <code>JSON_OBJECT.except(MyType.class)</code> will serialize <code>MyType</code> as plain String and
+     * <code>OtherType</code> as JSON object.
      * <p>
-     * The library provides just <code>"string"</code> and <code>"object"</code>, but theoretically you <em>could</em>
-     * parse your own and provide a different serialization algorithm for it yourself.
-     */
-    public static final class SerializationMethod extends Enumerable {
-        /**
-         * Constant that indicates Plain String serialization for {@link Enumerable} object instances.
-         */
-        public static final SerializationMethod STRING = new SerializationMethod("String");
-        /**
-         * Constant that indicates JSON Object serialization for {@link Enumerable} object instances.
-         */
-        public static final SerializationMethod OBJECT = new SerializationMethod("Object");
-
-        private SerializationMethod(String value) {
-            super(value);
-        }
-    }
-
-    /**
-     * Constant for plain string serialization of all enumerable objects.
-     */
-    public static final EnumerableSerializationWithExceptions PLAIN_STRING = new EnumerableSerializationWithExceptions(STRING) {
-        public EnumerableSerialization except(Class<? extends Enumerable>... enumerableTypes) {
-            return withSpecificMethod(OBJECT, enumerableTypes);
-        }
-    };
-
-    /**
-     * Constant for JSON Object serialization of all enumerable objects.
-     */
-    public static final EnumerableSerializationWithExceptions JSON_OBJECT = new EnumerableSerializationWithExceptions(OBJECT) {
-        public EnumerableSerialization except(Class<? extends Enumerable>... enumerableTypes) {
-            return withSpecificMethod(STRING, enumerableTypes);
-        }
-    };
-
-    private final SerializationMethod defaultSerializationMethod;
-    private final Map<String, SerializationMethod> explicitSerializationMethods;
-
-    /**
-     * Private constructor to prevent outside-instances or unwanted subclasses..
+     * This method will not modify the current object, but return a new value instead.
      *
-     * @param defaultSerializationMethod The default serialization method to be used (required, non-<code>null</code>).
+     * @param exceptionTypes The enumerable exception types that will be serialized as exception to the default 'rule'.
+     * @return An enumerable serialization method that will serialize the specified types different from the general rule.
      */
-    private EnumerableSerialization(SerializationMethod defaultSerializationMethod) {
-        this(defaultSerializationMethod, Collections.<String, SerializationMethod>emptyMap());
-    }
-
-    /**
-     * Private constructor to prevent outside-instances or unwanted subclasses..
-     *
-     * @param defaultSerializationMethod   The default serialization method to be used (required, non-<code>null</code>).
-     * @param explicitSerializationMethods The enumerable type names that deviate from the default serialization method.
-     */
-    private EnumerableSerialization(SerializationMethod defaultSerializationMethod,
-                                    Map<String, SerializationMethod> explicitSerializationMethods) {
-        if (defaultSerializationMethod == null) {
-            throw new IllegalArgumentException("No default serialization method specified!");
-        } else if (explicitSerializationMethods == null) {
-            throw new IllegalArgumentException("Explicit serialization methods were null!");
-        }
-        this.defaultSerializationMethod = defaultSerializationMethod;
-        this.explicitSerializationMethods = explicitSerializationMethods;
-    }
-
-    /**
-     * Returns an {@link EnumerableSerialization} instance with one or more exceptions to the default object
-     * {@link SerializationMethod serialization method} for particular {@link Enumerable enumerable types}.
-     * <p>
-     * This method should <strong>not</strong> change the current object but return new object instances instead.
-     *
-     * @param explicitSerializationMethod The explicitly chosen serialization method.
-     * @param explicitEnumerableTypes     De Enumerable types that should be serialized using the non-default
-     *                                    explicit serialization method.
-     * @return A new instance of this serialization method with certain enumerable types that should be serialized
-     * using the non-default method.
-     */
-    public EnumerableSerialization withSpecificMethod(
-            SerializationMethod explicitSerializationMethod, Class<? extends Enumerable>... explicitEnumerableTypes) {
-        if (explicitSerializationMethod == null) {
-            throw new IllegalArgumentException("Deviating serialization method is null.");
-        } else if (explicitEnumerableTypes == null || explicitEnumerableTypes.length == 0) {
-            return this;
-        }
-
-        Map<String, SerializationMethod> copyMap = new LinkedHashMap<String, SerializationMethod>(explicitSerializationMethods);
-        for (Class<?> enumerableType : explicitEnumerableTypes) {
-            if (enumerableType != null) {
-                if (defaultSerializationMethod.equals(explicitSerializationMethod)) {
-                    copyMap.remove(enumerableType.getName());
-                } else {
-                    copyMap.put(enumerableType.getName(), explicitSerializationMethod);
+    public EnumerableSerialization except(Class<? extends Enumerable>... exceptionTypes) {
+        SortedSet<String> types = new TreeSet<String>(asList(this.sortedExceptionTypeNames));
+        boolean changed = false;
+        if (exceptionTypes != null) {
+            for (Class<?> exceptionType : exceptionTypes) {
+                if (exceptionType != null && types.add(exceptionType.getName())) {
+                    changed = true;
                 }
             }
         }
-        if (copyMap.isEmpty()) {
-            return STRING.equals(explicitSerializationMethod) ? PLAIN_STRING
-                    : OBJECT.equals(explicitSerializationMethod) ? JSON_OBJECT
-                    : new EnumerableSerialization(explicitSerializationMethod);
-        }
-        return copyMap.equals(explicitSerializationMethods) ? this :
-                new EnumerableSerialization(explicitSerializationMethod, copyMap);
+        return changed
+                ? new EnumerableSerialization(jsonObjectSerialization, types.toArray(new String[types.size()]))
+                : this;
+    }
+
+    private boolean isException(String typeName) {
+        return sortedExceptionTypeNames.length > 0 && binarySearch(sortedExceptionTypeNames, typeName) >= 0;
     }
 
     /**
-     * Determines the serialization method for the requested {@link Enumerable enumerable type}.
+     * Evaluates whether the requested {@link Enumerable} type should be serialized as a JSON object (<code>true</code>)
+     * or as a plain String (<code>false</code>).
      *
-     * @param enumerableType The enumerable type te determine the serialization method for (required, non-<code>null</code>).
-     * @return The applicable serialization method (non-<code>null</code>).
+     * @param enumerableType The type of enumerable object to determine the serialization method for.
+     * @return <code>true</code> if enumerable objects of the requested type should be serialized as JSON objects
+     * (with <code>value</code> and <code>description</code> fields), or <code>false</code> if they should be serialized
+     * as plain String values.
      */
-    public SerializationMethod serializationMethodFor(Class<? extends Enumerable> enumerableType) {
-        if (enumerableType == null) {
-            throw new IllegalArgumentException("Enumerable type was null.");
-        }
-        final SerializationMethod explicit = explicitSerializationMethods.get(enumerableType.getName());
-        return explicit == null ? defaultSerializationMethod : explicit;
+    public boolean serializeAsJsonObject(Class<? extends Enumerable> enumerableType) {
+        if (enumerableType == null) throw new IllegalArgumentException("Enumerable type is required.");
+        return jsonObjectSerialization != isException(enumerableType.getName());
     }
 
     @Override
     public int hashCode() {
-        return 31 * defaultSerializationMethod.hashCode() + explicitSerializationMethods.hashCode();
+        return 31 * Boolean.valueOf(jsonObjectSerialization).hashCode() + Arrays.hashCode(sortedExceptionTypeNames);
     }
 
     @Override
     public boolean equals(Object other) {
         return this == other || (other instanceof EnumerableSerialization
-                && this.defaultSerializationMethod.equals(((EnumerableSerialization) other).defaultSerializationMethod)
-                && this.explicitSerializationMethods.equals(((EnumerableSerialization) other).explicitSerializationMethods));
+                && this.jsonObjectSerialization == ((EnumerableSerialization) other).jsonObjectSerialization
+                && Arrays.equals(this.sortedExceptionTypeNames, ((EnumerableSerialization) other).sortedExceptionTypeNames));
     }
 
     /**
-     * @return String representation of the enumerable serialization.
+     * @return String representation {@code "JSON Object"} or {@code "Plain String"} plus any exception types if specified.
      */
     public String toString() {
-        String result = "EnumerableSerialization as " + defaultSerializationMethod.getDescription();
-        if (!explicitSerializationMethods.isEmpty()) {
-            result += ", except " + explicitSerializationMethods;
+        String result = jsonObjectSerialization ? "JSON Object" : "Plain String";
+        if (sortedExceptionTypeNames.length > 0) {
+            StringBuilder builder = new StringBuilder(result).append(", except {");
+            String sep = "";
+            for (String uitzondering : sortedExceptionTypeNames) {
+                builder.append(sep).append(uitzondering.substring(uitzondering.lastIndexOf('.') + 1));
+                sep = ", ";
+            }
+            result = builder.append('}').toString();
         }
         return result;
-    }
-
-    /**
-     * Class that allows callers to specify exceptions that need to be serialized 'the other way', where 'the other way'
-     * has some known meaning.
-     */
-    public static abstract class EnumerableSerializationWithExceptions extends EnumerableSerialization {
-        private EnumerableSerializationWithExceptions(SerializationMethod defaultSerializationMethod) {
-            super(defaultSerializationMethod);
-        }
-
-        /**
-         * Returns the serialization instance with the specified enumerable types not serialized in the default way.
-         *
-         * @param enumerableTypes The enumerable types that will be serialized as JSON Objects instead of plain Strings.
-         * @return The serialization with the specified exceptions.
-         */
-        public abstract EnumerableSerialization except(Class<? extends Enumerable>... enumerableTypes);
     }
 
 }
