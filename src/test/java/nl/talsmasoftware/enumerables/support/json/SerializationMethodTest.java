@@ -20,15 +20,15 @@ package nl.talsmasoftware.enumerables.support.json;
 import nl.talsmasoftware.enumerables.CarBrand;
 import org.junit.Test;
 
-import static nl.talsmasoftware.enumerables.support.json.EnumerableSerialization.JSON_OBJECT;
-import static nl.talsmasoftware.enumerables.support.json.EnumerableSerialization.PLAIN_STRING;
+import static nl.talsmasoftware.enumerables.support.json.SerializationMethod.JSON_OBJECT;
+import static nl.talsmasoftware.enumerables.support.json.SerializationMethod.PLAIN_STRING;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 /**
  * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
  */
-public class EnumerableSerializationTest {
+public class SerializationMethodTest {
 
     @Test
     public void testDefaultSerializationMethod() {

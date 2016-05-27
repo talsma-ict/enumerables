@@ -32,20 +32,20 @@ import static java.util.Arrays.binarySearch;
  *
  * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
  */
-public final class EnumerableSerialization {
+public final class SerializationMethod {
     /**
      * Constant for standard String serialization of all enumerable objects, without exceptions.
      */
-    public static final EnumerableSerialization PLAIN_STRING = new EnumerableSerialization(false);
+    public static final SerializationMethod PLAIN_STRING = new SerializationMethod(false);
     /**
      * Constant for standard JSON Object serialization of all enumerable objects, withtout exceptions.
      */
-    public static final EnumerableSerialization JSON_OBJECT = new EnumerableSerialization(true);
+    public static final SerializationMethod JSON_OBJECT = new SerializationMethod(true);
 
     private final boolean jsonObjectSerialization;
     private final String[] sortedExceptionTypeNames;
 
-    private EnumerableSerialization(boolean standardObjectSerialization, String... sortedTypeNames) {
+    private SerializationMethod(boolean standardObjectSerialization, String... sortedTypeNames) {
         this.jsonObjectSerialization = standardObjectSerialization;
         this.sortedExceptionTypeNames = sortedTypeNames;
     }
@@ -62,7 +62,7 @@ public final class EnumerableSerialization {
      * @param exceptionTypes The enumerable exception types that will be serialized as exception to the default 'rule'.
      * @return An enumerable serialization method that will serialize the specified types different from the general rule.
      */
-    public EnumerableSerialization except(Class<? extends Enumerable>... exceptionTypes) {
+    public SerializationMethod except(Class<? extends Enumerable>... exceptionTypes) {
         SortedSet<String> types = new TreeSet<String>(asList(this.sortedExceptionTypeNames));
         boolean changed = false;
         if (exceptionTypes != null) {
@@ -73,7 +73,7 @@ public final class EnumerableSerialization {
             }
         }
         return changed
-                ? new EnumerableSerialization(jsonObjectSerialization, types.toArray(new String[types.size()]))
+                ? new SerializationMethod(jsonObjectSerialization, types.toArray(new String[types.size()]))
                 : this;
     }
 
@@ -102,9 +102,9 @@ public final class EnumerableSerialization {
 
     @Override
     public boolean equals(Object other) {
-        return this == other || (other instanceof EnumerableSerialization
-                && this.jsonObjectSerialization == ((EnumerableSerialization) other).jsonObjectSerialization
-                && Arrays.equals(this.sortedExceptionTypeNames, ((EnumerableSerialization) other).sortedExceptionTypeNames));
+        return this == other || (other instanceof SerializationMethod
+                && this.jsonObjectSerialization == ((SerializationMethod) other).jsonObjectSerialization
+                && Arrays.equals(this.sortedExceptionTypeNames, ((SerializationMethod) other).sortedExceptionTypeNames));
     }
 
     /**
