@@ -15,9 +15,15 @@
  */
 package nl.talsmasoftware.enumerables.support.json.jackson2;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JavaType;
+
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -51,22 +57,51 @@ final class Compatibility {
         return (Method) resolved;
     }
 
-//    static JavaType getContextualType(DeserializationContext ctxt) {
-//        try {
-//            return (JavaType) method(ctxt.getClass(), "getContextualType").invoke(ctxt);
-//        } catch (ReflectiveOperationException reflectieFout) {
-//            LOGGER.log(Level.FINEST, "Geen contextual type; wordt Jackson versie < 2.5 gebruikt?", reflectieFout);
-//            return null;
-//        }
-//    }
+    @SuppressWarnings("unchecked")
+    private static <T> T call(Object target, String method) throws NoSuchMethodException {
+        try {
 
-//    static Object getTypeId(JsonParser jsonParser) {
-//        try {
-//            return method(jsonParser.getClass(), "getTypeId").invoke(jsonParser);
-//        } catch (ReflectiveOperationException reflectieFout) {
-//            LOGGER.log(Level.FINEST, "Geen typeId; wordt Jackson versie < 2.3 gebruikt?", reflectieFout);
-//            return null;
-//        }
-//    }
+            return (T) method(target.getClass(), method).invoke(target);
+
+        } catch (IllegalAccessException iae) {
+            NoSuchMethodException nsme = new NoSuchMethodException(
+                    String.format("Not allowed to call method \"%s\": %s", method, iae.getMessage()));
+            nsme.initCause(iae);
+            throw nsme;
+        } catch (InvocationTargetException ite) {
+            Throwable cause = ite.getCause();
+            if (cause == null) cause = ite; // shouldn't happen!
+            throw cause instanceof RuntimeException ? (RuntimeException) cause
+                    : new RuntimeException(cause.getMessage(), cause);
+        }
+    }
+
+    /**
+     * Attempts to call <code>JsonParser.getTypeId()</code>.
+     * However, this method was only added in Jackson version 2.3,
+     * so it may not be possible to call it before then.
+     * Therefore we anticipate this method not being available.
+     *
+     * @param jsonParser The json parser to call <code>getTypeId()</code> on.
+     * @return The result of the call, or <code>null</code> if the method was not yet defined.
+     */
+    static Object getTypeId(JsonParser jsonParser) {
+        if (jsonParser != null) try {
+            return call(jsonParser, "getTypeId");
+        } catch (NoSuchMethodException nsme) {
+            LOGGER.log(Level.FINEST, "No getTypeId() method; is Jackson version less than 2.3 ?", nsme);
+        }
+        return null;
+    }
+
+    static JavaType getContextualType(DeserializationContext ctxt) {
+        if (ctxt != null) try {
+            return call(ctxt, "getContextualType");
+        } catch (NoSuchMethodException nsme) {
+            LOGGER.log(Level.FINEST, "No getContextualType() method; is Jackson version less than 2.5 ?", nsme);
+        }
+        return null;
+    }
+
 
 }

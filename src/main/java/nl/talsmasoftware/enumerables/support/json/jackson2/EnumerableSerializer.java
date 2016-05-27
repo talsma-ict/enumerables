@@ -41,7 +41,7 @@ import static nl.talsmasoftware.enumerables.support.json.SerializationMethod.PLA
  *
  * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
  */
-class EnumerableSerializer extends StdSerializer<Enumerable> {
+public class EnumerableSerializer extends StdSerializer<Enumerable> {
 
     /**
      * Static cache for reflected objects based on their class names.
@@ -60,11 +60,11 @@ class EnumerableSerializer extends StdSerializer<Enumerable> {
      */
     private final SerializationMethod serializationMethod;
 
-    public EnumerableSerializer() {
+    protected EnumerableSerializer() {
         this(null);
     }
 
-    EnumerableSerializer(SerializationMethod serializationMethod) {
+    protected EnumerableSerializer(SerializationMethod serializationMethod) {
         super(Enumerable.class);
         this.serializationMethod = serializationMethod != null ? serializationMethod : PLAIN_STRING;
     }

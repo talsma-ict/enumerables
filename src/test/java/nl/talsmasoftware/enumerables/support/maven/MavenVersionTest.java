@@ -19,7 +19,6 @@
 
 package nl.talsmasoftware.enumerables.support.maven;
 
-import nl.talsmasoftware.enumerables.maven.MavenVersion;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;

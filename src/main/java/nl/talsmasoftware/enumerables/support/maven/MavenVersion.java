@@ -17,7 +17,7 @@
  *
  */
 
-package nl.talsmasoftware.enumerables.maven;
+package nl.talsmasoftware.enumerables.support.maven;
 
 import java.io.IOException;
 import java.io.InputStream;

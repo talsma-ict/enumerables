@@ -20,10 +20,13 @@ package nl.talsmasoftware.enumerables.support.json.jackson2;
 
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import nl.talsmasoftware.enumerables.Enumerable;
-import nl.talsmasoftware.enumerables.maven.MavenVersion;
 import nl.talsmasoftware.enumerables.support.json.SerializationMethod;
+import nl.talsmasoftware.enumerables.support.maven.MavenVersion;
 
 import static nl.talsmasoftware.enumerables.support.json.SerializationMethod.PLAIN_STRING;
 
@@ -41,7 +44,7 @@ import static nl.talsmasoftware.enumerables.support.json.SerializationMethod.PLA
 public class EnumerableModule extends SimpleModule {
 
     private final SerializationMethod serializationMethod;
-//    private final EnumerableDeserializer enumerableDeserializer = new EnumerableDeserializer();
+    private final EnumerableDeserializer enumerableDeserializer = new EnumerableDeserializer();
 
     /**
      * Constructor for a Jackson (v2) module to serialize and deserialize {@link Enumerable} objects to and from
@@ -65,38 +68,36 @@ public class EnumerableModule extends SimpleModule {
         super("Enumerable mapping module", determineVersion("nl.talsmasoftware", "enumerables"));
         this.serializationMethod = serializationMethod != null ? serializationMethod : PLAIN_STRING;
         super.addSerializer(Enumerable.class, new EnumerableSerializer(this.serializationMethod));
-//        super.addDeserializer(Enumerable.class, dnumerableDeserializer); // TODO
+        super.addDeserializer(Enumerable.class, enumerableDeserializer);
     }
 
     private static boolean isEnumerableSubtype(BeanDescription beanDesc) {
-        final Class<?> type = beanDesc == null ? null : beanDesc.getType().getRawClass();
-        return type != null && Enumerable.class.isAssignableFrom(type) && !Enumerable.class.equals(type);
+        Class<? extends Enumerable> beanType = EnumerableDeserializer.asEnumerableSubclass(beanDesc);
+        return beanType != null && !Enumerable.class.equals(beanType);
     }
 
-//    /**
-//     * Configures the Jackson module.
-//     * <p>
-//     * This configures a {@link BeanDeserializerModifier} that will return the configured deserializer from this
-//     * module for <em>any</em> subtype of {@link Enumerable}.
-//     *
-//     * @param setupContext De setup context om mee te initialiseren.
-//     *                     Hieraan wordt eerst nog een type modifier toegevoegd om Enumerableen mee te verwerken.
-//     */
-//    @Override
-//    public void setupModule(final SetupContext setupContext) {
-//        if (setupContext != null) {
-//            setupContext.addBeanDeserializerModifier(new BeanDeserializerModifier() {
-//                @Override
-//                public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config, BeanDescription beanDesc, JsonDeserializer<?> deserializer) {
-//                    // Jackson wil voor subklassen van Enumerable de default bean deserializer gebruiken.
-//                    // Dat moeten we zien te voorkomen; zoek de deserializer voor Enumerable JavaType.
-//                    return isEnumerableSubtype(beanDesc) ? enumerableDeserializer
-//                            : super.modifyDeserializer(config, beanDesc, deserializer);
-//                }
-//            });
-//        }
-//        super.setupModule(setupContext);
-//    }
+    /**
+     * Configures the Jackson module.
+     * <p>
+     * This configures a {@link BeanDeserializerModifier} that will return the configured deserializer from this
+     * module for <em>any</em> subtype of {@link Enumerable}.
+     *
+     * @param setupContext De setup context to initialize with.
+     *                     The Enumerable deserializer will be selected for any subtype of Enumerable.
+     */
+    @Override
+    public void setupModule(final SetupContext setupContext) {
+        if (setupContext != null) {
+            setupContext.addBeanDeserializerModifier(new BeanDeserializerModifier() {
+                @Override
+                public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config, BeanDescription beanDesc, JsonDeserializer<?> deserializer) {
+                    return EnumerableDeserializer.asEnumerableSubclass(beanDesc) != null ? enumerableDeserializer
+                            : super.modifyDeserializer(config, beanDesc, deserializer);
+                }
+            });
+        }
+        super.setupModule(setupContext);
+    }
 
     /**
      * Determines the version or return {@link Version#unknownVersion() unknownVersion} if this could not be determined.
