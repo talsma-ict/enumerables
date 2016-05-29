@@ -38,4 +38,20 @@ public class Car {
         this.brand = brand;
     }
 
+
+    @Override
+    public int hashCode() {
+        return brand.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return this == other || (other instanceof Car
+                && brand == null ? ((Car) other).brand == null : brand.equals(((Car) other).brand));
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "{brand=" + brand + '}';
+    }
 }

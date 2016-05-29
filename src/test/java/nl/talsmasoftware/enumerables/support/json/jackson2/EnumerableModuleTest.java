@@ -32,6 +32,9 @@ import java.io.IOException;
 import static nl.talsmasoftware.enumerables.CarBrand.ASTON_MARTIN;
 import static nl.talsmasoftware.enumerables.support.json.SerializationMethod.JSON_OBJECT;
 import static nl.talsmasoftware.testing.Fixtures.fixture;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 /**
  * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
@@ -67,6 +70,18 @@ public class EnumerableModuleTest {
         String json = mapperWith(new EnumerableModule(JSON_OBJECT.except(CarBrand.class)))
                 .writeValueAsString(astonMartin);
         JSONAssert.assertEquals(expectedJson, json, true);
+    }
+
+    @Test
+    public void testDeserialization() throws IOException {
+        Car parsed = mapperWith(new EnumerableModule()).readValue(fixture("aston_martin_string.json"), Car.class);
+        assertThat(parsed, is(equalTo(astonMartin)));
+    }
+
+    @Test
+    public void testDeserialization_jsonObject() throws IOException {
+        Car parsed = mapperWith(new EnumerableModule()).readValue(fixture("aston_martin_object.json"), Car.class);
+        assertThat(parsed, is(equalTo(astonMartin)));
     }
 
 }

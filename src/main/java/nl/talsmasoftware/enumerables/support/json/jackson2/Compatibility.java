@@ -94,6 +94,15 @@ final class Compatibility {
         return null;
     }
 
+    /**
+     * Attempts to call <code>DeserializationContext.getContextualType()</code>.
+     * However, this method was only added in Jackson version 2.5,
+     * so it may not be possible to call it before then.
+     * Therefore we anticipate this method not being available.
+     *
+     * @param ctxt The deserialization context to call <code>getContextualType()</code> on.
+     * @return The result of the call, or <code>null</code> if the method was not yet defined.
+     */
     static JavaType getContextualType(DeserializationContext ctxt) {
         if (ctxt != null) try {
             return call(ctxt, "getContextualType");

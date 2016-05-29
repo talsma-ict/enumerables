@@ -71,11 +71,6 @@ public class EnumerableModule extends SimpleModule {
         super.addDeserializer(Enumerable.class, enumerableDeserializer);
     }
 
-    private static boolean isEnumerableSubtype(BeanDescription beanDesc) {
-        Class<? extends Enumerable> beanType = EnumerableDeserializer.asEnumerableSubclass(beanDesc);
-        return beanType != null && !Enumerable.class.equals(beanType);
-    }
-
     /**
      * Configures the Jackson module.
      * <p>

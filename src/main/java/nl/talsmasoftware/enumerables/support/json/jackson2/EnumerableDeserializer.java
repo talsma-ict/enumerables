@@ -85,34 +85,25 @@ public class EnumerableDeserializer extends StdDeserializer<Enumerable> implemen
         return this;
     }
 
-    /**
-     * Bepaalt specifieke Enumerable subtype indien bekend. Indien er geen subtype bepaald kan worden, dan wordt het
-     * {@link UnknownEnumerable} type teruggegeven. Hiermee kan in ieder geval de ontvangen String-waarde worden
-     * gerepresenteerd.
-     *
-     * @param jp De actuele parser instantie.
-     * @return Het concrete waardelijst type dat wordt gemapped.
-     * @throws IOException indien het lezen uit de parser I/O fouten gaf.
-     */
-    protected Class<? extends Enumerable> getType(JsonParser jp) throws IOException {
+    protected Class<? extends Enumerable> determineType(JsonParser jp, DeserializationContext context) {
         Class<? extends Enumerable> type = asEnumerableSubclass(javaType);
-        if (type == null) {
-            type = asEnumerableSubclass(Compatibility.getTypeId(jp));
-        }
+        if (type == null || Enumerable.class.equals(type)) type = asEnumerableSubclass(Compatibility.getTypeId(jp));
+        if (type == null || Enumerable.class.equals(type))
+            type = asEnumerableSubclass(Compatibility.getContextualType(context));
         return type == null || Enumerable.class.equals(type) ? UnknownEnumerable.class : type;
     }
 
     /**
-     * Deze operatie deserialiseert het JSON object als concreet Enumerable object.
+     * This operation deserializes the JSON Object as a concrete Enumerable object instance.
      *
-     * @param jp   De jackson parser om de waarde uit te halen.
-     * @param ctxt De context.
-     * @return Het Enumerable object zoals door de parser als text aangelevert.
-     * @throws IOException indien de text niet uit de parser kan worden gehaald.
+     * @param jp   The Jackson parser to obtain the value from.
+     * @param ctxt The deserialization context.
+     * @return The parsed enumerable object.
+     * @throws IOException in case the parser encountered any I/O errors while reading the object.
      */
     @Override
     public Enumerable deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-        final Class<? extends Enumerable> type = getType(jp);
+        final Class<? extends Enumerable> type = determineType(jp, ctxt);
         final JsonToken currentToken = jp.getCurrentToken();
         switch (currentToken) {
             case VALUE_NULL:

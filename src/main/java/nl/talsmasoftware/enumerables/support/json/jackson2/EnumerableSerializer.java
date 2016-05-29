@@ -94,6 +94,7 @@ public class EnumerableSerializer extends StdSerializer<Enumerable> {
     }
 
     // TODO Use non-deprecated methods first and switch to deprecated variants using reflection.
+    // Maybe move this method to the Compatibility class?
     private boolean mustIncludeNull(SerializationConfig config) {
         final JsonInclude.Include inclusion = config.getSerializationInclusion();
         return inclusion == null || !SKIP_NULL_INCLUSIONS.contains(inclusion.name());
