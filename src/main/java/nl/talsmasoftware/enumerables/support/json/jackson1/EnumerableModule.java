@@ -16,22 +16,18 @@
  *
  *
  */
-package nl.talsmasoftware.enumerables.support.json.jackson2;
+package nl.talsmasoftware.enumerables.support.json.jackson1;
 
-import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.databind.BeanDescription;
-import com.fasterxml.jackson.databind.DeserializationConfig;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import nl.talsmasoftware.enumerables.Enumerable;
 import nl.talsmasoftware.enumerables.support.json.SerializationMethod;
 import nl.talsmasoftware.enumerables.support.maven.MavenVersion;
+import org.codehaus.jackson.Version;
+import org.codehaus.jackson.map.module.SimpleModule;
 
 import static nl.talsmasoftware.enumerables.support.json.SerializationMethod.PLAIN_STRING;
 
 /**
- * Mapping module for converting one or more {@link Enumerable} types from and to JSON (or YAML) using the Jackson (v2)
+ * Mapping module for converting one or more {@link Enumerable} types from and to JSON using the Jackson (v1)
  * library.
  * <p>
  * If a non-<code>null</code> {@link SerializationMethod} is specified in the module, that will be used for serializing
@@ -40,14 +36,12 @@ import static nl.talsmasoftware.enumerables.support.json.SerializationMethod.PLA
  *
  * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
  */
-
 public class EnumerableModule extends SimpleModule {
 
     private final SerializationMethod serializationMethod;
-    private final EnumerableDeserializer enumerableDeserializer = new EnumerableDeserializer();
 
     /**
-     * Constructor for a Jackson (v2) module to serialize and deserialize {@link Enumerable} objects to and from
+     * Constructor for a Jackson (v1) module to serialize and deserialize {@link Enumerable} objects to and from
      * plain JSON string values.
      */
     public EnumerableModule() {
@@ -55,7 +49,7 @@ public class EnumerableModule extends SimpleModule {
     }
 
     /**
-     * Constructor for a Jackson (v2) module to serialize and deserialize {@link Enumerable} objects to and from
+     * Constructor for a Jackson (v1) module to serialize and deserialize {@link Enumerable} objects to and from
      * JSON objects. This constructor allows the caller to specify an explicit {@link SerializationMethod} to be used.
      * If the <code>serializationMethod</code> is <code>null</code>, the module will use
      * {@link SerializationMethod#PLAIN_STRING plain String} serialization for {@link Enumerable} object
@@ -68,30 +62,6 @@ public class EnumerableModule extends SimpleModule {
         super("Enumerable mapping module", determineVersion("nl.talsmasoftware", "enumerables"));
         this.serializationMethod = serializationMethod != null ? serializationMethod : PLAIN_STRING;
         super.addSerializer(Enumerable.class, new EnumerableSerializer(this.serializationMethod));
-        super.addDeserializer(Enumerable.class, enumerableDeserializer);
-    }
-
-    /**
-     * Configures the Jackson module.
-     * <p>
-     * This configures a {@link BeanDeserializerModifier} that will return the configured deserializer from this
-     * module for <em>any</em> subtype of {@link Enumerable}.
-     *
-     * @param setupContext De setup context to initialize with.
-     *                     The Enumerable deserializer will be selected for any subtype of Enumerable.
-     */
-    @Override
-    public void setupModule(final SetupContext setupContext) {
-        if (setupContext != null) {
-            setupContext.addBeanDeserializerModifier(new BeanDeserializerModifier() {
-                @Override
-                public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config, BeanDescription beanDesc, JsonDeserializer<?> deserializer) {
-                    return EnumerableDeserializer.asEnumerableSubclass(beanDesc) != null ? enumerableDeserializer
-                            : super.modifyDeserializer(config, beanDesc, deserializer);
-                }
-            });
-        }
-        super.setupModule(setupContext);
     }
 
     /**
@@ -106,7 +76,7 @@ public class EnumerableModule extends SimpleModule {
         MavenVersion mavenVersion = MavenVersion.forDependency(groupId, artifactId);
         if (mavenVersion != null) {
             version = new Version(mavenVersion.getMajor(), mavenVersion.getMinor(), mavenVersion.getIncrement(),
-                    mavenVersion.getSuffix(), groupId, artifactId);
+                    mavenVersion.getSuffix());
         }
         return version;
     }
