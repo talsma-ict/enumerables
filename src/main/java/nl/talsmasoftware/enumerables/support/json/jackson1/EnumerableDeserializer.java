@@ -5,32 +5,30 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
- *  
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *  
+ *          http://www.apache.org/licenses/LICENSE-2.0
  *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
-package nl.talsmasoftware.enumerables.support.json.jackson2;
+package nl.talsmasoftware.enumerables.support.json.jackson1;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import nl.talsmasoftware.enumerables.Enumerable;
 import nl.talsmasoftware.enumerables.support.json.UnknownEnumerable;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonToken;
+import org.codehaus.jackson.map.*;
+import org.codehaus.jackson.map.deser.std.StdDeserializer;
+import org.codehaus.jackson.type.JavaType;
 
 import java.io.IOException;
 
 /**
- * Deserializer for Jackson-2 to deserialize Enumerable Objects from JSON with.
+ * Deserializer for Jackson-1 to deserialize Enumerable Objects from JSON with.
  * This deserializer can read {@link Enumerable#getValue() values} from both plain-String representations and
  * JSON Object representations.
  * Therefore, the {@link nl.talsmasoftware.enumerables.support.json.SerializationMethod serialization method} is not
@@ -40,11 +38,14 @@ import java.io.IOException;
  */
 public class EnumerableDeserializer extends StdDeserializer<Enumerable> implements ContextualDeserializer {
 
-    private final JavaType javaType;
+    /**
+     * Either a concrete subtype of {@link Enumerable} or the class {@link UnknownEnumerable}.
+     */
+    private final Class<? extends Enumerable> enumerableType;
 
     /**
      * Constructor for the general 'untyped' deserializer that delegates to a more specific instance when there is more
-     * type information available (i.e. after {@link #createContextual(DeserializationContext, BeanProperty)} has been
+     * type information available (i.e. after {@link #createContextual(DeserializationConfig, BeanProperty)} has been
      * called.
      */
     protected EnumerableDeserializer() {
@@ -55,12 +56,13 @@ public class EnumerableDeserializer extends StdDeserializer<Enumerable> implemen
      * Constructor for a more specific 'subtype' Enumerable object that remembers this subtype so it knows into which
      * concrete type the JSON object should be parsed.
      *
-     * @param javaType The actual type of the enumerable to be deserialized into (or <code>null</code> for the 'untyped'
-     *                 deserializer).
+     * @param enumerableType The actual type of the enumerable to be deserialized into
+     *                       (or <code>null</code> for the 'untyped' deserializer).
      */
-    protected EnumerableDeserializer(JavaType javaType) {
-        super(javaType);
-        this.javaType = javaType;
+    protected EnumerableDeserializer(Class<? extends Enumerable> enumerableType) {
+        super(enumerableType);
+        this.enumerableType = enumerableType == null || Enumerable.class.equals(enumerableType)
+                ? UnknownEnumerable.class : enumerableType;
     }
 
     /**
@@ -70,27 +72,14 @@ public class EnumerableDeserializer extends StdDeserializer<Enumerable> implemen
      * If this deserializer is already specific, or no additional type information can be obtained, the method simply
      * returns a reference to <code>this</code> instance.
      *
-     * @param ctxt     The deserialization context to obtain type information from, if possible.
+     * @param config   The deserialization configuration to obtain type information from, if possible.
      * @param property The bean property to obtain type information from, if possible.
      * @return A more specific deserializer or a reference to <code>this</code> instance in case no more specific
      * deserializer could be found.
      */
-    public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) {
-        JavaType type = property != null ? property.getType() : null;
-        if (asEnumerableSubclass(type) != null && !type.equals(javaType)) return new EnumerableDeserializer(type);
-
-        type = Compatibility.getContextualType(ctxt);
-        if (asEnumerableSubclass(type) != null && !type.equals(javaType)) return new EnumerableDeserializer(type);
-
-        return this;
-    }
-
-    protected Class<? extends Enumerable> determineType(JsonParser jp, DeserializationContext context) {
-        Class<? extends Enumerable> type = asEnumerableSubclass(javaType);
-        if (type == null || Enumerable.class.equals(type)) type = asEnumerableSubclass(Compatibility.getTypeId(jp));
-        if (type == null || Enumerable.class.equals(type))
-            type = asEnumerableSubclass(Compatibility.getContextualType(context));
-        return type == null || Enumerable.class.equals(type) ? UnknownEnumerable.class : type;
+    public JsonDeserializer<?> createContextual(DeserializationConfig config, BeanProperty property) {
+        EnumerableDeserializer other = new EnumerableDeserializer(asEnumerableSubclass(property));
+        return enumerableType.equals(other.enumerableType) ? this : other;
     }
 
     /**
@@ -103,21 +92,20 @@ public class EnumerableDeserializer extends StdDeserializer<Enumerable> implemen
      */
     @Override
     public Enumerable deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-        final Class<? extends Enumerable> type = determineType(jp, ctxt);
         final JsonToken currentToken = jp.getCurrentToken();
         switch (currentToken) {
             case VALUE_NULL:
             case VALUE_STRING:
-                return Enumerable.parse(type, jp.getText());
+                return Enumerable.parse(enumerableType, jp.getText());
             case START_OBJECT:
-                return parseObject(jp, type);
+                return parseObject(jp);
             default:
                 throw new IllegalStateException("Could not parse a valid Enumerable object!",
-                        new IllegalStateException(String.format("Unexpected parser token: \"%s\".", currentToken)));
+                        new IllegalStateException(String.format("Onverwacht parser token: \"%s\".", currentToken)));
         }
     }
 
-    private Enumerable parseObject(JsonParser jp, Class<? extends Enumerable> type) throws IOException {
+    private Enumerable parseObject(JsonParser jp) throws IOException {
         Enumerable value = null;
         while (true) {
             final JsonToken nextToken = jp.nextToken();
@@ -128,7 +116,7 @@ public class EnumerableDeserializer extends StdDeserializer<Enumerable> implemen
                 case VALUE_NULL:
                 case VALUE_STRING:
                     if (value == null && "value".equals(jp.getCurrentName())) {
-                        value = Enumerable.parse(type, jp.getText());
+                        value = Enumerable.parse(enumerableType, jp.getText());
                     }
                     break;
                 case END_OBJECT:
@@ -148,6 +136,7 @@ public class EnumerableDeserializer extends StdDeserializer<Enumerable> implemen
     @SuppressWarnings("unchecked")
     static <E extends Enumerable> Class<E> asEnumerableSubclass(Object type) {
         if (type instanceof BeanDescription) type = ((BeanDescription) type).getType();
+        if (type instanceof BeanProperty) type = ((BeanProperty) type).getType();
         if (type instanceof JavaType) type = ((JavaType) type).getRawClass();
         return type instanceof Class<?> && Enumerable.class.isAssignableFrom((Class<?>) type) ? (Class<E>) type : null;
     }

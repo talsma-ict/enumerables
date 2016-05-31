@@ -29,6 +29,7 @@ import nl.talsmasoftware.enumerables.support.json.SerializationMethod;
 import nl.talsmasoftware.enumerables.support.maven.MavenVersion;
 
 import static nl.talsmasoftware.enumerables.support.json.SerializationMethod.PLAIN_STRING;
+import static nl.talsmasoftware.enumerables.support.json.jackson2.EnumerableDeserializer.asEnumerableSubclass;
 
 /**
  * Mapping module for converting one or more {@link Enumerable} types from and to JSON (or YAML) using the Jackson (v2)
@@ -82,15 +83,13 @@ public class EnumerableModule extends SimpleModule {
      */
     @Override
     public void setupModule(final SetupContext setupContext) {
-        if (setupContext != null) {
-            setupContext.addBeanDeserializerModifier(new BeanDeserializerModifier() {
-                @Override
-                public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config, BeanDescription beanDesc, JsonDeserializer<?> deserializer) {
-                    return EnumerableDeserializer.asEnumerableSubclass(beanDesc) != null ? enumerableDeserializer
-                            : super.modifyDeserializer(config, beanDesc, deserializer);
-                }
-            });
-        }
+        if (setupContext != null) setupContext.addBeanDeserializerModifier(new BeanDeserializerModifier() {
+            @Override
+            public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config, BeanDescription beanDesc, JsonDeserializer<?> deserializer) {
+                return asEnumerableSubclass(beanDesc) != null ? enumerableDeserializer
+                        : super.modifyDeserializer(config, beanDesc, deserializer);
+            }
+        });
         super.setupModule(setupContext);
     }
 

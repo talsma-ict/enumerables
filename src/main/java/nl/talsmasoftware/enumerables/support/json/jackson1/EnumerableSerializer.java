@@ -72,7 +72,7 @@ public class EnumerableSerializer extends SerializerBase<Enumerable> {
         this(null);
     }
 
-    protected EnumerableSerializer(SerializationMethod serializationMethod) {
+    public EnumerableSerializer(SerializationMethod serializationMethod) {
         super(Enumerable.class);
         this.serializationMethod = serializationMethod != null ? serializationMethod : PLAIN_STRING;
     }
@@ -118,8 +118,6 @@ public class EnumerableSerializer extends SerializerBase<Enumerable> {
         return null;
     }
 
-    // TODO Use non-deprecated methods first and switch to deprecated variants using reflection.
-    // Maybe move this method to the Compatibility class?
     private boolean mustIncludeNull(SerializationConfig config) {
         JsonSerialize.Inclusion inclusion = config.getSerializationInclusion();
         return inclusion == null || !SKIP_NULL_INCLUSIONS.contains(inclusion.name());

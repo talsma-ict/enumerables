@@ -22,9 +22,14 @@ import nl.talsmasoftware.enumerables.Enumerable;
 import nl.talsmasoftware.enumerables.support.json.SerializationMethod;
 import nl.talsmasoftware.enumerables.support.maven.MavenVersion;
 import org.codehaus.jackson.Version;
+import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.JsonDeserializer;
+import org.codehaus.jackson.map.deser.BeanDeserializerModifier;
+import org.codehaus.jackson.map.introspect.BasicBeanDescription;
 import org.codehaus.jackson.map.module.SimpleModule;
 
 import static nl.talsmasoftware.enumerables.support.json.SerializationMethod.PLAIN_STRING;
+import static nl.talsmasoftware.enumerables.support.json.jackson1.EnumerableDeserializer.asEnumerableSubclass;
 
 /**
  * Mapping module for converting one or more {@link Enumerable} types from and to JSON using the Jackson (v1)
@@ -39,6 +44,7 @@ import static nl.talsmasoftware.enumerables.support.json.SerializationMethod.PLA
 public class EnumerableModule extends SimpleModule {
 
     private final SerializationMethod serializationMethod;
+    private final EnumerableDeserializer enumerableDeserializer;
 
     /**
      * Constructor for a Jackson (v1) module to serialize and deserialize {@link Enumerable} objects to and from
@@ -61,7 +67,22 @@ public class EnumerableModule extends SimpleModule {
     public EnumerableModule(SerializationMethod serializationMethod) {
         super("Enumerable mapping module", determineVersion("nl.talsmasoftware", "enumerables"));
         this.serializationMethod = serializationMethod != null ? serializationMethod : PLAIN_STRING;
+        this.enumerableDeserializer = new EnumerableDeserializer();
         super.addSerializer(Enumerable.class, new EnumerableSerializer(this.serializationMethod));
+        super.addDeserializer(Enumerable.class, enumerableDeserializer);
+    }
+
+    @Override
+    public void setupModule(SetupContext context) {
+        if (context != null) context.addBeanDeserializerModifier(new BeanDeserializerModifier() {
+            @Override
+            public JsonDeserializer<?> modifyDeserializer(
+                    DeserializationConfig config, BasicBeanDescription beanDesc, JsonDeserializer<?> deserializer) {
+                return asEnumerableSubclass(beanDesc) != null ? enumerableDeserializer
+                        : super.modifyDeserializer(config, beanDesc, deserializer);
+            }
+        });
+        super.setupModule(context);
     }
 
     /**
