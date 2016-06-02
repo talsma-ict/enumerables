@@ -37,8 +37,10 @@ public class EnumerableGsonBuilderFactory {
     public static GsonBuilder configureGsonBuilder(GsonBuilder gsonBuilder, SerializationMethod serializationMethod) {
         if (gsonBuilder != null) {
             gsonBuilder = gsonBuilder
+//                    .registerTypeAdapterFactory(new EnumerableAdapterFactory(serializationMethod))
                     .registerTypeHierarchyAdapter(Enumerable.class, new EnumerableSerializer(serializationMethod))
-                    .registerTypeHierarchyAdapter(Enumerable.class, new EnumerableDeserializer());
+                    .registerTypeHierarchyAdapter(Enumerable.class, new EnumerableDeserializer())
+            ;
         }
         return gsonBuilder;
     }

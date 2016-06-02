@@ -18,6 +18,7 @@
 package nl.talsmasoftware.enumerables.support.json.gson;
 
 import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 import nl.talsmasoftware.enumerables.Enumerable;
 import nl.talsmasoftware.enumerables.support.json.UnknownEnumerable;
 
@@ -46,9 +47,12 @@ public class EnumerableDeserializer implements JsonDeserializer<Enumerable> {
     }
 
     @SuppressWarnings("unchecked")
-    private static Class<? extends Enumerable> enumerableSubTypeOf(Type type) {
-        return type instanceof Class && Enumerable.class.isAssignableFrom((Class<?>) type) && !Enumerable.class.equals(type)
-                ? (Class<? extends Enumerable>) type : UnknownEnumerable.class;
+    static Class<? extends Enumerable> enumerableSubTypeOf(Object type) {
+        if (type instanceof TypeToken) type = ((TypeToken<?>) type).getRawType();
+        if (type instanceof Class && Enumerable.class.isAssignableFrom((Class<?>) type)) {
+            return Enumerable.class.equals(type) ? UnknownEnumerable.class : (Class<? extends Enumerable>) type;
+        }
+        return null;
     }
 
 }

@@ -21,14 +21,67 @@ import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import nl.talsmasoftware.enumerables.Enumerable;
+import nl.talsmasoftware.enumerables.support.json.SerializationMethod;
+
+import java.io.IOException;
+
+import static nl.talsmasoftware.enumerables.support.json.SerializationMethod.PLAIN_STRING;
+import static nl.talsmasoftware.enumerables.support.json.gson.EnumerableDeserializer.enumerableSubTypeOf;
 
 /**
  * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
  */
 public class EnumerableAdapterFactory implements TypeAdapterFactory {
 
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-        //TODO
+    private final SerializationMethod serializationMethod;
+
+    public EnumerableAdapterFactory() {
+        this(null);
+    }
+
+    public EnumerableAdapterFactory(SerializationMethod serializationMethod) {
+        this.serializationMethod = serializationMethod != null ? serializationMethod : PLAIN_STRING;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> TypeAdapter<T> create(final Gson gson, final TypeToken<T> type) {
+        final Class<? extends Enumerable> enumerableType = enumerableSubTypeOf(type);
+        if (enumerableType == null) return null; // ...or null if this factory doesn't support type
+        return (TypeAdapter<T>) new TypeAdapter<Enumerable>() {
+            @Override
+            public void write(JsonWriter out, Enumerable value) throws IOException {
+                if (value == null) {
+                    out.nullValue();
+                } else if (gson != null && serializationMethod.serializeAsJsonObject(value.getClass())) {
+                    gson.getDelegateAdapter(EnumerableAdapterFactory.this, type).write(out, (T) value);
+                } else {
+                    out.value(Enumerable.print(value));
+                }
+            }
+
+            @Override
+            public Enumerable read(JsonReader in) throws IOException {
+                return Enumerable.parse(enumerableType, readValue(in));
+            }
+        };
+    }
+
+    // TODO: Parse the value from the json reader.
+    private static String readValue(JsonReader in) throws IOException {
+        switch (in.peek()) {
+            case NULL:
+                return null;
+            case STRING:
+                return in.nextString();
+            case NAME:
+                in.nextName();
+                break;
+            default:
+                throw new IllegalStateException();
+        }
         return null;
     }
 

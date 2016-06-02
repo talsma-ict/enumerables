@@ -52,15 +52,13 @@ public class EnumerableSerializer implements JsonSerializer<Enumerable> {
     }
 
     protected JsonElement serializeAsObject(Enumerable value) {
-        return new Gson().toJsonTree(value);
-//        if (delegateAdapter == null) delegateAdapter = (TypeAdapter<? extends Enumerable>) new Gson().getAdapter((Class<?>)Object.class);
-//        return ((TypeAdapter<Enumerable>) delegateAdapter).toJsonTree(value);
-//        return context.serialize(value, Object.class); // Unfortunately, overflows the stack!
-//        JsonObject jsonObject = new JsonObject();
-//        // TODO: Smart bean reflection
-//        jsonObject.add("value", jsonString(value.getValue()));
-//        jsonObject.add("description", jsonString(value.getDescription()));
-//        return jsonObject;
+        // For some reason the 'standard' Gson serializer doesn't generate the 'description'.
+        // return new Gson().toJsonTree(value);
+        JsonObject jsonObject = new JsonObject();
+        // TODO: Smart bean reflection
+        jsonObject.add("value", jsonString(value.getValue()));
+        jsonObject.add("description", jsonString(value.getDescription()));
+        return jsonObject;
     }
 
 }
