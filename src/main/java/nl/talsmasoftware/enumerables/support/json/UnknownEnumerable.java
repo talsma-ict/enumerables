@@ -30,8 +30,8 @@ import nl.talsmasoftware.enumerables.Enumerable;
  */
 public final class UnknownEnumerable extends Enumerable {
 
-    private UnknownEnumerable(String waarde) {
-        super(waarde);
+    private UnknownEnumerable(String value) {
+        super(value);
     }
 
 }

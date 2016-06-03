@@ -22,8 +22,10 @@ import nl.talsmasoftware.enumerables.Enumerable;
 import nl.talsmasoftware.enumerables.support.json.SerializationMethod;
 
 import java.lang.reflect.Type;
+import java.util.Map;
 
 import static nl.talsmasoftware.enumerables.support.json.SerializationMethod.PLAIN_STRING;
+import static nl.talsmasoftware.reflection.beans.BeanReflectionSupport.getPropertyValues;
 
 /**
  * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
@@ -42,23 +44,26 @@ public class EnumerableSerializer implements JsonSerializer<Enumerable> {
     }
 
     public JsonElement serialize(Enumerable value, Type type, JsonSerializationContext context) {
-        return value == null ? JsonNull.INSTANCE
-                : serializationMethod.serializeAsJsonObject(value.getClass()) ? serializeAsObject(value)
-                : jsonString(Enumerable.print(value));
+        return serialize(value == null || serializationMethod.serializeAsJsonObject(value.getClass())
+                ? value : Enumerable.print(value));
     }
 
     private static JsonElement jsonString(String object) {
         return object != null ? new JsonPrimitive(object) : JsonNull.INSTANCE;
     }
 
-    protected JsonElement serializeAsObject(Enumerable value) {
-        // For some reason the 'standard' Gson serializer doesn't generate the 'description'.
-        // return new Gson().toJsonTree(value);
-        JsonObject jsonObject = new JsonObject();
-        // TODO: Smart bean reflection
-        jsonObject.add("value", jsonString(value.getValue()));
-        jsonObject.add("description", jsonString(value.getDescription()));
-        return jsonObject;
+    protected JsonElement serialize(Object value) {
+        if (value == null) return JsonNull.INSTANCE;
+        else if (value instanceof CharSequence) return new JsonPrimitive(value.toString());
+        else if (value instanceof Number) return new JsonPrimitive((Number) value);
+        else if (value instanceof Character) return new JsonPrimitive((Character) value);
+        else if (value instanceof Boolean) return new JsonPrimitive((Boolean) value);
+        // Otherwise, reflect the value
+        JsonObject result = new JsonObject();
+        for (Map.Entry<String, Object> property : getPropertyValues(value).entrySet()) {
+            if (!"class".equals(property.getKey())) result.add(property.getKey(), serialize(property.getValue()));
+        }
+        return result;
     }
 
 }

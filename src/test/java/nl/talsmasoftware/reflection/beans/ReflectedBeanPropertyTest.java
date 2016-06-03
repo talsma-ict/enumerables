@@ -24,13 +24,13 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasToString;
 import static org.junit.Assert.fail;
 
-public class ReflectedPropertyTest {
+public class ReflectedBeanPropertyTest {
 
     @Test
     public void testConstructor_nulls() {
         try {
-            new ReflectedProperty(null, null);
-            fail("Fout verwacht.");
+            new ReflectedBeanProperty(null, null);
+            fail("Exception expected.");
         } catch (RuntimeException expected) {
             assertThat(expected, hasToString(containsString("Either property descriptor or field must be provided")));
         }

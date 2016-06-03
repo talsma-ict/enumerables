@@ -22,25 +22,49 @@ import nl.talsmasoftware.enumerables.Enumerable;
 import nl.talsmasoftware.enumerables.support.json.SerializationMethod;
 
 /**
+ * Factory class that helps create a GSON builder that is capable of serializing and deserializing {@link Enumerable}
+ * object instances.
+ *
  * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
  */
-public class EnumerableGsonBuilderFactory {
+public final class EnumerableGsonBuilderFactory {
 
+    private EnumerableGsonBuilderFactory() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @return A new GSON builder that will serialize any <code>Enumerable</code> value as a plain JSON String value.
+     */
     public static GsonBuilder defaultGsonBuilder() {
         return createGsonBuilder(null);
     }
 
+    /**
+     * @param serializationMethod Serialization method that determines which <code>Enumerable</code> types will be
+     *                            serialized as plain JSON String values and which types will be serialized as reflected
+     *                            JSON objects.
+     * @return A new GSON builder that will serialize according to the specified serialization method.
+     */
     public static GsonBuilder createGsonBuilder(SerializationMethod serializationMethod) {
         return configureGsonBuilder(new GsonBuilder(), serializationMethod);
     }
 
+    /**
+     * This method allows an existing GSON builder to be configured to also provide serialization and deserialization
+     * for {@link Enumerable} objects.
+     *
+     * @param gsonBuilder         The GSON builder to be configured.
+     * @param serializationMethod Serialization method that determines which <code>Enumerable</code> types will be
+     *                            serialized as plain JSON String values and which types will be serialized as reflected
+     *                            JSON objects.
+     * @return The reference to the configured GSON builder.
+     */
     public static GsonBuilder configureGsonBuilder(GsonBuilder gsonBuilder, SerializationMethod serializationMethod) {
         if (gsonBuilder != null) {
             gsonBuilder = gsonBuilder
-//                    .registerTypeAdapterFactory(new EnumerableAdapterFactory(serializationMethod))
                     .registerTypeHierarchyAdapter(Enumerable.class, new EnumerableSerializer(serializationMethod))
-                    .registerTypeHierarchyAdapter(Enumerable.class, new EnumerableDeserializer())
-            ;
+                    .registerTypeHierarchyAdapter(Enumerable.class, new EnumerableDeserializer());
         }
         return gsonBuilder;
     }
