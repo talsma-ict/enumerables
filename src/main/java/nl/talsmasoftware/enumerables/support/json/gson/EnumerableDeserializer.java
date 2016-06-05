@@ -20,7 +20,7 @@ package nl.talsmasoftware.enumerables.support.json.gson;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import nl.talsmasoftware.enumerables.Enumerable;
-import nl.talsmasoftware.enumerables.support.json.UnknownEnumerable;
+import nl.talsmasoftware.enumerables.support.UnknownEnumerable;
 
 import java.lang.reflect.Type;
 

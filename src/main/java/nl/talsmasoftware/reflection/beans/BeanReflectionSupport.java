@@ -36,7 +36,7 @@ import static java.util.Collections.*;
 /**
  * Support-class for bean reflection based on getter / setter methods and / or public field access for Java objects.
  * <p>
- * TODO: Maybe isolate this package in a separate project / JAR dependency and bundle it with this library.
+ * TODO: Isolate this package into a separate project / JAR dependency and bundle it with this library.
  * That allows for separate lifecycles for the reflection code.
  *
  * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
@@ -91,7 +91,7 @@ public final class BeanReflectionSupport {
                     } catch (RuntimeException beanException) {
                         LOGGER.log(Level.FINEST, "Exception reflecting bean information of {0}: {1}", new Object[]{source, beanException});
                     }
-                    properties = finalize(properties);
+                    properties = unmodifiable(properties);
                     reflectedPropertiesCache.put(sourceType, new WeakReference<Map<String, ReflectedBeanProperty>>(properties));
                 }
             }
@@ -172,7 +172,7 @@ public final class BeanReflectionSupport {
         if (bean != null) for (BeanProperty property : getBeanProperties(bean)) {
             if (property.isReadable()) propertyValues.put(property.getName(), property.read(bean));
         }
-        return finalize(propertyValues);
+        return unmodifiable(propertyValues);
     }
 
     /**
@@ -211,12 +211,12 @@ public final class BeanReflectionSupport {
     /**
      * Returns an unmodifiable view of the given map.
      *
-     * @param map The map to be finalized (made unmodifiable).
+     * @param map The map to be made unmodifiable.
      * @param <K> The type of the map keys.
      * @param <V> The type of the map values.
      * @return An unmodifiable view of the given map.
      */
-    private static <K, V> Map<K, V> finalize(Map<K, V> map) {
+    private static <K, V> Map<K, V> unmodifiable(Map<K, V> map) {
         switch (map.size()) {
             case 0:
                 return emptyMap();

@@ -20,7 +20,6 @@ package nl.talsmasoftware.enumerables;
 import java.util.Locale;
 
 /**
- *
  * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
  */
 public final class CarBrand extends Enumerable {
@@ -71,6 +70,8 @@ public final class CarBrand extends Enumerable {
 
     /**
      * Lenient parser because I am too lazy to remember exactly how I declared the constants ;-) ..
+     * <p>
+     * Also could be used as an example of how lenient parsing might be achieved.
      *
      * @param carbrand The car brand to parse.
      * @return The parsed carbrand.

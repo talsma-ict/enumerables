@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<cars:car xmlns:cars="http://talsmasoftware.nl/enumerables/testing">
+    <brand>Lamborghini</brand>
+</cars:car>

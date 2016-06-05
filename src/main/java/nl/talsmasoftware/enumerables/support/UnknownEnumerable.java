@@ -13,18 +13,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
+ *
+ *
  */
 
-package nl.talsmasoftware.enumerables.support.json;
+package nl.talsmasoftware.enumerables.support;
 
 import nl.talsmasoftware.enumerables.Enumerable;
 
 /**
  * Special case for a deserialized Enumerable value for which the type is not known and therefore no 'known' constants
- * are known either. This may happen if a deserialized object contains an attribute of type {@link Enumerable} without
- * any additional information. In that case, when deserializing such attribute, an {@link UnknownEnumerable} instance
- * will be returned. Usually this is a sign of bad design with too little type information available, but technically
- * it should of course be possible to deserialize 'any' Enumerable object.
+ * are specified either. This may happen if a deserialized object contains an attribute of type {@link Enumerable}
+ * without any additional information.
+ * In that case, when deserializing such attribute, an {@link UnknownEnumerable} instance will be returned.
+ * Usually this is a sign of bad design with too little type information available,
+ * but technically it should of course be possible to deserialize 'any' Enumerable object.
  *
  * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
  */

@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import nl.talsmasoftware.enumerables.Enumerable;
-import nl.talsmasoftware.enumerables.support.json.UnknownEnumerable;
+import nl.talsmasoftware.enumerables.support.UnknownEnumerable;
 
 import java.io.IOException;
 

@@ -18,7 +18,7 @@
 package nl.talsmasoftware.enumerables.support.json.jackson1;
 
 import nl.talsmasoftware.enumerables.Enumerable;
-import nl.talsmasoftware.enumerables.support.json.UnknownEnumerable;
+import nl.talsmasoftware.enumerables.support.UnknownEnumerable;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 import org.codehaus.jackson.map.*;
