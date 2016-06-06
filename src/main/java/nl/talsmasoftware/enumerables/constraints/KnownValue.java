@@ -38,7 +38,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(validatedBy = KnownValueValidator.class)
 public @interface KnownValue {
 
-    // String message() default "Value \"${validatedValue.waarde}\" is not a known value for ${validatedValue.class.simpleName}.";
     String message() default "{nl.talsmasoftware.enumerables.constraints.KnownValue.message}";
 
     Class<?>[] groups() default {};
