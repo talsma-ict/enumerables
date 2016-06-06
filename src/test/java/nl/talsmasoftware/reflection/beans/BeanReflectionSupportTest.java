@@ -86,7 +86,7 @@ public class BeanReflectionSupportTest {
     public void testGetPropertyValues() {
         Map<String, Object> expected = new HashMap<String, Object>();
         expected.put("class", Object.class);
-        assertThat("Properties of new Object()", BeanReflectionSupport.getPropertyValues(new Object()), is(equalTo(expected)));
+        assertThat("Properties of new Object", BeanReflectionSupport.getPropertyValues(new Object()), is(equalTo(expected)));
 
         assertThat(BeanReflectionSupport.getPropertyValues("String value").entrySet(), hasSize(3));
         assertThat(BeanReflectionSupport.getPropertyValues("String value").get("class"), is(equalTo((Object) String.class)));
@@ -117,10 +117,21 @@ public class BeanReflectionSupportTest {
 
     @Test
     public void testSetProperty_finalField() {
-        BeanWithAccessorsAndFields bean = new BeanWithAccessorsAndFields("oude value", false);
-        boolean result = BeanReflectionSupport.setPropertyValue(bean, "value", "nieuweWaarde");
-        assertThat(result, is(equalTo(false)));
-        assertThat(bean.value, is(equalTo("oude value")));
+        BeanWithAccessorsAndFields bean = new BeanWithAccessorsAndFields("old value", false);
+        assertThat(BeanReflectionSupport.setPropertyValue(bean, "value", "new value"), is(equalTo(false)));
+        assertThat(bean.value, is(equalTo("old value")));
+    }
+
+    @Test
+    public void testSubclassReflection() {
+        Map<String, Object> properties = BeanReflectionSupport.getPropertyValues(new SubClass("some value", true));
+        assertThat(properties.keySet(), containsInAnyOrder("class", "value", "value2", "value3", "indication", "indication2"));
+        assertThat(properties.get("class"), equalTo((Object) SubClass.class));
+        assertThat(properties.get("value"), equalTo((Object) "some value"));
+        assertThat(properties.get("value2"), equalTo((Object) "some value"));
+        assertThat(properties.get("value3"), equalTo((Object) "some value"));
+        assertThat(properties.get("indication"), equalTo((Object) true));
+        assertThat(properties.get("indication2"), equalTo((Object) true));
     }
 
     public static class BeanWithGetter {
@@ -164,4 +175,16 @@ public class BeanReflectionSupportTest {
             return indication;
         }
     }
+
+    public static class SubClass extends BeanWithAccessorsAndFields {
+
+        public final String value3;
+
+        public SubClass(String value, boolean indication) {
+            super(value, indication);
+            this.value3 = value;
+        }
+
+    }
+
 }

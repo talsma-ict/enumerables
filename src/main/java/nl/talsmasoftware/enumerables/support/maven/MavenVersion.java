@@ -65,9 +65,12 @@ public final class MavenVersion implements Comparable<MavenVersion>, Serializabl
         final String resource = "/META-INF/maven/" + groupId + "/" + artifactId + "/pom.properties";
         InputStream stream = null;
         try {
-            Properties properties = new Properties();
-            properties.load(stream = MavenVersion.class.getResourceAsStream(resource));
-            return parse(properties.getProperty("version"));
+            stream = MavenVersion.class.getResourceAsStream(resource);
+            if (stream != null) {
+                Properties properties = new Properties();
+                properties.load(stream);
+                return parse(properties.getProperty("version"));
+            }
         } catch (IOException ioe) {
             LOGGER.log(Level.FINEST, "Could not open stream to \"{0}\".", new Object[]{resource, ioe});
         } catch (RuntimeException rte) {
@@ -96,15 +99,6 @@ public final class MavenVersion implements Comparable<MavenVersion>, Serializabl
         if (version != null && version.length() > 0) {
             final Matcher matcher = PATTERN.matcher(version);
             if (matcher.matches()) {
-                int groupCount = matcher.groupCount();
-                String g0 = matcher.group(0);
-                String g1 = matcher.group(1);
-                String g2 = matcher.group(2);
-                String g3 = matcher.group(3);
-                String g4 = matcher.group(4);
-                String g5 = matcher.group(5);
-                String g6 = matcher.group(6);
-                String g7 = matcher.group(7);
                 return new MavenVersion(parseInt(matcher.group(1), 0),
                         parseInt(matcher.group(3), null),
                         parseInt(matcher.group(5), null),
@@ -156,8 +150,8 @@ public final class MavenVersion implements Comparable<MavenVersion>, Serializabl
             if (delta == 0) {
                 delta = getIncrement() - other.getIncrement();
                 if (delta == 0) {
-                    delta = suffix == null ? (other.suffix == null ? 0 : 1)
-                            : other.suffix == null ? -1 : suffix.compareTo(other.suffix);
+                    delta = suffix == null ? (other.suffix == null ? 0 : -1)
+                            : other.suffix == null ? 1 : suffix.compareTo(other.suffix);
                 }
             }
         }
@@ -166,7 +160,7 @@ public final class MavenVersion implements Comparable<MavenVersion>, Serializabl
 
     @Override
     public int hashCode() {
-        return 31 * (31 * (31 * major) + getMinor() + getIncrement()) + (suffix != null ? suffix.hashCode() : 0);
+        return 31 * (31 * (31 * major + getMinor()) + getIncrement()) + (suffix != null ? suffix.hashCode() : 0);
     }
 
     @Override

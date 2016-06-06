@@ -139,9 +139,9 @@ public class MavenVersionTest {
     @Test
     public void compareTo_sameVersionSnapshot() {
         MavenVersion version = MavenVersion.parse("1.2.3");
-        assertThat(version.compareTo(MavenVersion.parse("1.2.3-SNAPSHOT")), is(greaterThan(0)));
+        assertThat(version.compareTo(MavenVersion.parse("1.2.3-SNAPSHOT")), is(lessThan(0)));
         version = MavenVersion.parse("1.0.0");
-        assertThat(version.compareTo(MavenVersion.parse("1.0-SNAPSHOT")), is(greaterThan(0)));
+        assertThat(version.compareTo(MavenVersion.parse("1.0-SNAPSHOT")), is(lessThan(0)));
 
     }
 

@@ -51,11 +51,11 @@ final class ReflectedBeanProperty implements BeanProperty {
     }
 
     public String getName() {
-        return descriptor == null ? field.getName() : descriptor.getName();
+        return descriptor != null ? descriptor.getName() : field.getName();
     }
 
     public Class<?> getType() {
-        return descriptor == null ? field.getType() : descriptor.getPropertyType();
+        return descriptor != null ? descriptor.getPropertyType() : field.getType();
     }
 
     public boolean isReadable() {
@@ -72,7 +72,7 @@ final class ReflectedBeanProperty implements BeanProperty {
         Object value = null;
         if (isReadable()) {
             try {
-                final Method readMethod = descriptor == null ? null : descriptor.getReadMethod();
+                final Method readMethod = descriptor != null ? descriptor.getReadMethod() : null;
                 value = readMethod != null ? readMethod.invoke(bean) : field.get(bean);
             } catch (InvocationTargetException ite) {
                 throw ite.getCause() instanceof RuntimeException ? (RuntimeException) ite.getCause()
@@ -93,12 +93,12 @@ final class ReflectedBeanProperty implements BeanProperty {
         boolean written = false;
         if (isWriteable()) {
             try {
-                final Method writeMethod = descriptor == null ? null : descriptor.getWriteMethod();
-                if (writeMethod == null) {
-                    field.set(bean, propertyValue);
+                final Method writeMethod = descriptor != null ? descriptor.getWriteMethod() : null;
+                if (writeMethod != null) {
+                    writeMethod.invoke(bean, propertyValue);
                     written = true;
                 } else {
-                    writeMethod.invoke(bean, propertyValue);
+                    field.set(bean, propertyValue);
                     written = true;
                 }
             } catch (InvocationTargetException ite) {
@@ -120,8 +120,7 @@ final class ReflectedBeanProperty implements BeanProperty {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName()
-                + '{' + getName() + ", readable=" + isReadable() + ", writeable=" + isWriteable() + '}';
+        return getName() + "{readable=" + isReadable() + ", writeable=" + isWriteable() + '}';
     }
 
 }

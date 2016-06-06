@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package nl.talsmasoftware.reflection.beans;
@@ -20,7 +19,7 @@ package nl.talsmasoftware.reflection.beans;
 import java.lang.reflect.Type;
 
 /**
- * Interface that defines how a particular bean property can be accessed.
+ * Interface that declares how a particular bean property can be accessed.
  *
  * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
  */
@@ -50,7 +49,8 @@ public interface BeanProperty {
      * Reads the property from a bean instance.
      *
      * @param bean The bean instance to read this property from.
-     * @return The value of this property from the specified bean.
+     * @return The value of this property from the specified bean
+     * or <code>null</code> if this property could not be read from the specified bean instance.
      */
     Object read(Object bean);
 
@@ -59,7 +59,8 @@ public interface BeanProperty {
      *
      * @param bean          The bean instance to write this property to.
      * @param propertyValue The value to be written into this property for the specified bean.
-     * @return Whether or not the property was actually written into the bean.
+     * @return <code>true</code>if the property was successfully written into the bean
+     * or <code>false</code> it that was not possible for some reason.
      */
     boolean write(Object bean, Object propertyValue);
 

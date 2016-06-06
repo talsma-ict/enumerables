@@ -415,7 +415,7 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
                             constants.add(foundConstant);
                         } catch (IllegalAccessException iae) {
                             throw new IllegalStateException(String.format(
-                                    "Was not allowed to read constant \"%s.%s\"!",
+                                    "Reading constant \"%s.%s\" was not allowed!",
                                     enumerableType.getName(), field.getName()), iae);
                         }
                     } else {

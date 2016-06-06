@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 package nl.talsmasoftware.reflection.beans;
 
@@ -30,11 +29,14 @@ import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static java.lang.reflect.Modifier.isPublic;
 import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Collections.*;
 
 /**
  * Support-class for bean reflection based on getter / setter methods and / or public field access for Java objects.
+ * Unfortunately this is necessary because the standard {@link Introspector bean introspector} does not return any
+ * public fields.
  * <p>
  * TODO: Isolate this package into a separate project / JAR dependency and bundle it with this library.
  * That allows for separate lifecycles for the reflection code.
@@ -67,40 +69,79 @@ public final class BeanReflectionSupport {
      */
     private static Map<String, ReflectedBeanProperty> reflectedPropertiesOf(Object source) {
         if (source == null) return emptyMap();
+        final Class<?> sourceType = source instanceof Class ? (Class) source : source.getClass();
+        Map<String, ReflectedBeanProperty> properties = null;
         synchronized (reflectedPropertiesCache) {
-            final Class<?> sourceType = source instanceof Class ? (Class) source : source.getClass();
             Reference<Map<String, ReflectedBeanProperty>> reference = reflectedPropertiesCache.get(sourceType);
-            Map<String, ReflectedBeanProperty> properties = reference == null ? null : reference.get();
-            if (properties == null) {
-                properties = new LinkedHashMap<String, ReflectedBeanProperty>();
-                if (sourceType != null) {
-                    // Reflected public fields:
-                    for (Field field : sourceType.getFields()) {
-                        if (!isStatic(field.getModifiers())) {
-                            properties.put(field.getName(), new ReflectedBeanProperty(null, field));
-                        }
-                    }
-                    try { // java.beans.Introspector properties:
-                        for (PropertyDescriptor descriptor : Introspector.getBeanInfo(sourceType).getPropertyDescriptors()) {
-                            String name = descriptor.getName();
-                            ReflectedBeanProperty property = properties.get(name);
-                            properties.put(name, property == null ? new ReflectedBeanProperty(descriptor, null) : property.withDescriptor(descriptor));
-                        }
-                    } catch (IntrospectionException is) {
-                        LOGGER.log(Level.FINEST, "Could not reflect bean information of {0} because: {1}", new Object[]{source, is});
-                    } catch (RuntimeException beanException) {
-                        LOGGER.log(Level.FINEST, "Exception reflecting bean information of {0}: {1}", new Object[]{source, beanException});
-                    }
-                    properties = unmodifiable(properties);
-                    reflectedPropertiesCache.put(sourceType, new WeakReference<Map<String, ReflectedBeanProperty>>(properties));
-                }
+            if (reference != null) properties = reference.get();
+        }
+        if (properties == null) {
+            properties = reflectProperties(sourceType);
+            synchronized (reflectedPropertiesCache) {
+                reflectedPropertiesCache.put(sourceType,
+                        new WeakReference<Map<String, ReflectedBeanProperty>>(properties));
             }
-            return properties;
+        }
+        return properties;
+    }
+
+    /**
+     * The bean reflection logic, not to be called directly but always through {@link #reflectedPropertiesOf(Object)}.
+     * That method provides important caching.
+     *
+     * @param sourceType The type to be reflected.
+     * @return The map with reflected properties for the specified type.
+     */
+    private static Map<String, ReflectedBeanProperty> reflectProperties(Class<?> sourceType) {
+        Map<String, ReflectedBeanProperty> properties = new LinkedHashMap<String, ReflectedBeanProperty>();
+        if (sourceType != null) {
+            addPublicFields(sourceType, properties);
+            addPropertyDescriptors(sourceType, properties);
+        }
+        return unmodifiable(properties);
+    }
+
+    /**
+     * Add all public fields for the <code>sourceType</code> to the map of reflected properties.
+     *
+     * @param sourceType The source type to be reflected.
+     * @param properties The map of reflected properties to add public fields to.
+     */
+    private static void addPublicFields(Class<?> sourceType, Map<String, ReflectedBeanProperty> properties) {
+        for (Field field : sourceType.getFields()) {
+            if (isPublic(field.getModifiers()) && !isStatic(field.getModifiers())) {
+                properties.put(field.getName(), new ReflectedBeanProperty(null, field));
+            }
         }
     }
 
     /**
-     * This method flushes the caches of internally reflected information.
+     * Add all {@link PropertyDescriptor property descriptors} from the {@link Introspector} to the map of reflected
+     * properties.
+     *
+     * @param sourceType The source type to be reflected.
+     * @param properties The map of reflected properties to add public fields to.
+     */
+    private static void addPropertyDescriptors(Class<?> sourceType, Map<String, ReflectedBeanProperty> properties) {
+        try { // java.beans.Introspector properties:
+            for (PropertyDescriptor descriptor : Introspector.getBeanInfo(sourceType).getPropertyDescriptors()) {
+                String name = descriptor.getName();
+                ReflectedBeanProperty property = properties.get(name);
+                if (property == null) properties.put(name, new ReflectedBeanProperty(descriptor, null));
+                else properties.put(name, property.withDescriptor(descriptor));
+            }
+        } catch (IntrospectionException is) {
+            LOGGER.log(Level.FINEST, "Could not reflect bean information of {0} because: {1}",
+                    new Object[]{sourceType.getName(), is});
+        } catch (RuntimeException beanException) {
+            LOGGER.log(Level.FINEST, "Exception reflecting bean information of {0}: {1}",
+                    new Object[]{sourceType.getName(), beanException});
+        }
+    }
+
+    /**
+     * This method flushes the caches of internally reflected information and asks the Bean {@link Introspector} to do
+     * the same.
      */
     public static void flushCaches() {
         synchronized (reflectedPropertiesCache) {

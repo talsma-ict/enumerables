@@ -12,11 +12,7 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- *
- *
- *
  */
-
 package nl.talsmasoftware.enumerables.support.xml;
 
 import nl.talsmasoftware.enumerables.Enumerable;
@@ -29,6 +25,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * XML adapter that marshals and unmarshals {@link Enumerable} objects to and from plain XML strings.
+ *
  * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
  */
 public class EnumerableXmlAdapter<E extends Enumerable> extends XmlAdapter<String, E> {
@@ -87,8 +85,8 @@ public class EnumerableXmlAdapter<E extends Enumerable> extends XmlAdapter<Strin
      * Translates the {@link Enumerable} object instance into its plain String value.
      *
      * @param value The enumerable object instance to be marshalled.
-     * @return The plain String representation of the specified value or <code>null</code> if the enumerable value itself
-     * was also <code>null</code>.
+     * @return The plain String representation of the specified value
+     * or <code>null</code> if the enumerable value itself was also <code>null</code>.
      * @see Enumerable#print(Enumerable)
      */
     public String marshal(Enumerable value) {
