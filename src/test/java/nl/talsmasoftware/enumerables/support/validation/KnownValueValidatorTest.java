@@ -21,18 +21,21 @@ package nl.talsmasoftware.enumerables.support.validation;
 
 import nl.talsmasoftware.enumerables.CarBrand;
 import nl.talsmasoftware.enumerables.constraints.KnownValue;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.validation.Configuration;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.constraints.NotNull;
-import java.util.Locale;
 import java.util.Set;
 
+import static java.util.Locale.ENGLISH;
+import static java.util.Locale.FRENCH;
 import static nl.talsmasoftware.enumerables.CarBrand.FERRARI;
+import static nl.talsmasoftware.enumerables.support.validation.ClientLocaleHolder.DUTCH;
+import static nl.talsmasoftware.enumerables.support.validation.ClientLocaleHolder.FRISIAN;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -41,7 +44,6 @@ import static org.hamcrest.Matchers.*;
  * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
  */
 public class KnownValueValidatorTest {
-    private static final Locale DUTCH = new Locale("nl", "NL");
 
     static class ValidatedObject {
         @KnownValue
@@ -57,19 +59,15 @@ public class KnownValueValidatorTest {
         String testedProperty;
     }
 
-    Locale oldDefault;
     Validator validator;
     Set<ConstraintViolation<ValidatedObject>> violations;
 
     @Before
     public void setUp() {
-        oldDefault = Locale.getDefault();
-        validator = Validation.buildDefaultValidatorFactory().getValidator();
-    }
-
-    @After
-    public void tearDown() {
-        Locale.setDefault(oldDefault);
+        ClientLocaleHolder.set(ENGLISH);
+        Configuration config = Validation.byDefaultProvider().configure();
+        config = config.messageInterpolator(new ClientLocaleMessageInterpolator(config.getDefaultMessageInterpolator()));
+        validator = config.buildValidatorFactory().getValidator();
     }
 
     @Test
@@ -86,25 +84,38 @@ public class KnownValueValidatorTest {
 
     @Test
     public void testKnownValue_otherEnumerable() {
-//        Locale.setDefault(ENGLISH);
+        ClientLocaleHolder.set(ENGLISH);
         violations = validator.validate(new ValidatedObject(CarBrand.parseLeniently("Unknown brand")));
         assertThat(violations, hasSize(1));
-        ConstraintViolation<ValidatedObject> violation = violations.iterator().next();
-        // TODO: Work out the I18N issues.
-//        assertThat(violation.getMessage(), equalTo("Value \"Unknown brand\" is not a known value for CarBrand."));
-
-//        Locale.setDefault(DUTCH);
-//        violation = validator.validate(new ValidatedObject(CarBrand.parseLeniently("Onbekend merk"))).iterator().next();
-//        assertThat(violation.getMessage(), equalTo("Waarde \"Unknown brand\" is geen bekende waarde voor CarBrand."));
+        assertThat(violations.iterator().next().getPropertyPath(), hasToString("brand"));
     }
 
     @Test
-    public void testStandardMessages() {
-        Set<ConstraintViolation<StandardMessagesObject>> violations = validator.validate(new StandardMessagesObject());
-        assertThat(violations, hasSize(1));
-        ConstraintViolation<StandardMessagesObject> violation = violations.iterator().next();
-        assertThat(violation.getPropertyPath(), hasToString("testedProperty"));
+    public void testKnownValue_ValidationMessage_i18n() {
+        ClientLocaleHolder.set(ENGLISH);
+        ConstraintViolation<ValidatedObject> violation = validator
+                .validate(new ValidatedObject(CarBrand.parseLeniently("Unknown brand"))).iterator().next();
+        assertThat(violation.getMessage(), equalTo("not a known constant for CarBrand"));
+
+        ClientLocaleHolder.set(DUTCH);
+        violation = validator.validate(new ValidatedObject(CarBrand.parseLeniently("Onbekend merk"))).iterator().next();
+        assertThat(violation.getMessage(), equalTo("geen bekende constante voor CarBrand"));
+
+        // Does fallback to default work as expected?
+        ClientLocaleHolder.set(FRISIAN);
+        violation = validator.validate(new ValidatedObject(CarBrand.parseLeniently("Unknown brand"))).iterator().next();
+        assertThat(violation.getMessage(), equalTo("not a known constant for CarBrand"));
+    }
+
+    @Test
+    public void testStandardMessages_i18n() {
+        ClientLocaleHolder.set(ENGLISH);
+        ConstraintViolation<StandardMessagesObject> violation = validator.validate(new StandardMessagesObject()).iterator().next();
         assertThat(violation.getMessage(), equalTo("may not be null"));
+
+        ClientLocaleHolder.set(FRENCH);
+        violation = validator.validate(new StandardMessagesObject()).iterator().next();
+        assertThat(violation.getMessage(), equalTo("ne peut pas \u00EAtre nul"));
     }
 
 }

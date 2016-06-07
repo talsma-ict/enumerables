@@ -21,15 +21,20 @@ package nl.talsmasoftware.enumerables.support.validation;
 
 import nl.talsmasoftware.enumerables.CarBrand;
 import nl.talsmasoftware.enumerables.constraints.IsOneOf;
+import org.junit.Before;
 import org.junit.Test;
 
+import javax.validation.Configuration;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import java.util.Set;
 
+import static java.util.Locale.ENGLISH;
 import static nl.talsmasoftware.enumerables.CarBrand.FERRARI;
 import static nl.talsmasoftware.enumerables.CarBrand.LAMBORGHINI;
+import static nl.talsmasoftware.enumerables.support.validation.ClientLocaleHolder.DUTCH;
+import static nl.talsmasoftware.enumerables.support.validation.ClientLocaleHolder.FRISIAN;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -48,8 +53,16 @@ public class IsOneOfEnumerablesValidatorTest {
         }
     }
 
-    private static Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+    Validator validator;
     Set<ConstraintViolation<ValidatedObject>> violations;
+
+    @Before
+    public void setUp() {
+        ClientLocaleHolder.set(ENGLISH);
+        Configuration config = Validation.byDefaultProvider().configure();
+        config = config.messageInterpolator(new ClientLocaleMessageInterpolator(config.getDefaultMessageInterpolator()));
+        validator = config.buildValidatorFactory().getValidator();
+    }
 
     @Test
     public void testIsOneOf_enumerable_null() {
@@ -67,7 +80,23 @@ public class IsOneOfEnumerablesValidatorTest {
     public void testIsOneOf_otherEnumerable() {
         violations = validator.validate(new ValidatedObject(LAMBORGHINI));
         assertThat(violations, hasSize(1));
-//        assertThat(violations.iterator().next().getMessage(), equalTo("bla")); // not yet
+        assertThat(violations.iterator().next().getPropertyPath(), hasToString("brand"));
+    }
+
+    @Test
+    public void testIsOneOfCharSeq_ValidationMessage_i18n() {
+        ClientLocaleHolder.set(ENGLISH);
+        ConstraintViolation<ValidatedObject> violation = validator.validate(new ValidatedObject(LAMBORGHINI)).iterator().next();
+        assertThat(violation.getMessage(), equalTo("is not one of [Ferrari, Aston martin]"));
+
+        ClientLocaleHolder.set(DUTCH);
+        violation = validator.validate(new ValidatedObject(LAMBORGHINI)).iterator().next();
+        assertThat(violation.getMessage(), equalTo("is niet een waarde uit [Ferrari, Aston martin]"));
+
+        // Does fallback to default work as expected?
+        ClientLocaleHolder.set(FRISIAN);
+        violation = validator.validate(new ValidatedObject(LAMBORGHINI)).iterator().next();
+        assertThat(violation.getMessage(), equalTo("is not one of [Ferrari, Aston martin]"));
     }
 
 }
