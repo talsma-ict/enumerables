@@ -21,7 +21,9 @@ package nl.talsmasoftware.enumerables.support.validation;
 
 import nl.talsmasoftware.enumerables.CarBrand;
 import nl.talsmasoftware.enumerables.constraints.KnownValue;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.validation.Configuration;
@@ -29,10 +31,10 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.constraints.NotNull;
+import java.util.Locale;
 import java.util.Set;
 
-import static java.util.Locale.ENGLISH;
-import static java.util.Locale.FRENCH;
+import static java.util.Locale.*;
 import static nl.talsmasoftware.enumerables.CarBrand.FERRARI;
 import static nl.talsmasoftware.enumerables.support.validation.ClientLocaleHolder.DUTCH;
 import static nl.talsmasoftware.enumerables.support.validation.ClientLocaleHolder.FRISIAN;
@@ -62,8 +64,19 @@ public class KnownValueValidatorTest {
     Validator validator;
     Set<ConstraintViolation<ValidatedObject>> violations;
 
+    @BeforeClass
+    public static void rememberOldDefaultLocale() {
+        IsOneOfCharSequenceValidatorTest.rememberOldDefaultLocale();
+    }
+
+    @AfterClass
+    public static void restoreOldDefaultLocale() {
+        IsOneOfCharSequenceValidatorTest.restoreOldDefaultLocale();
+    }
+
     @Before
     public void setUp() {
+        Locale.setDefault(GERMAN); // Default to non-dutch or english to test.
         ClientLocaleHolder.set(ENGLISH);
         Configuration config = Validation.byDefaultProvider().configure();
         config = config.messageInterpolator(new ClientLocaleMessageInterpolator(config.getDefaultMessageInterpolator()));

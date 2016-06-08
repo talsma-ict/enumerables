@@ -54,6 +54,7 @@
         <build.java.version>1.5</build.java.version>
 
         <!-- runtime -->
+        <talsmasoftware-reflection.version>0.1.0-SNAPSHOT</talsmasoftware-reflection.version>
 
         <!-- optional provided -->
         <validation-api.version>1.1.0.Final</validation-api.version>
@@ -219,7 +220,6 @@
                     </execution>
                 </executions>
             </plugin>
-<!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -231,6 +231,12 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>nl.talsmasoftware:*</include>
+                                </includes>
+                            </artifactSet>
+                            <createSourcesJar>true</createSourcesJar>
                             <relocations>
                                 <relocation>
                                     <pattern>nl.talsmasoftware.reflection</pattern>
@@ -241,7 +247,6 @@
                     </execution>
                 </executions>
             </plugin>
--->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
@@ -284,6 +289,11 @@
 
     <dependencies>
         <!-- Runtime dependencies: -->
+        <dependency>
+            <groupId>nl.talsmasoftware</groupId>
+            <artifactId>reflection</artifactId>
+            <version>${talsmasoftware-reflection.version}</version>
+        </dependency>
 
         <!-- Optionally provided dependencies: -->
         <dependency>

@@ -20,16 +20,20 @@
 package nl.talsmasoftware.enumerables.support.validation;
 
 import nl.talsmasoftware.enumerables.constraints.IsOneOf;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.validation.Configuration;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
+import java.util.Locale;
 import java.util.Set;
 
 import static java.util.Locale.ENGLISH;
+import static java.util.Locale.GERMAN;
 import static nl.talsmasoftware.enumerables.support.validation.ClientLocaleHolder.DUTCH;
 import static nl.talsmasoftware.enumerables.support.validation.ClientLocaleHolder.FRISIAN;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -50,11 +54,23 @@ public class IsOneOfCharSequenceValidatorTest {
         }
     }
 
+    static Locale oldDefaultLocale;
     Validator validator;
     Set<ConstraintViolation<ValidatedObject>> violations;
 
+    @BeforeClass
+    public static void rememberOldDefaultLocale() {
+        if (oldDefaultLocale == null) oldDefaultLocale = Locale.getDefault();
+    }
+
+    @AfterClass
+    public static void restoreOldDefaultLocale() {
+        Locale.setDefault(oldDefaultLocale);
+    }
+
     @Before
     public void setUp() {
+        Locale.setDefault(GERMAN); // Default to non-dutch or english to test.
         ClientLocaleHolder.set(ENGLISH);
         Configuration config = Validation.byDefaultProvider().configure();
         config = config.messageInterpolator(new ClientLocaleMessageInterpolator(config.getDefaultMessageInterpolator()));
