@@ -18,6 +18,7 @@ package nl.talsmasoftware.enumerables;
 import nl.talsmasoftware.enumerables.descriptions.DescriptionProvider;
 import nl.talsmasoftware.enumerables.descriptions.DescriptionProviderRegistry;
 import nl.talsmasoftware.enumerables.descriptions.Descriptions;
+import nl.talsmasoftware.reflection.strings.ToStringBuilder;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -190,12 +191,9 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
      */
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder(getClass().getSimpleName()).append('{');
-        final String name = name();
-        if (name != null && !name.equals(value)) {
-            result.append("name=\"").append(name).append("\", ");
-        }
-        return result.append("value=\"").append(value).append("\"}").toString();
+        String name = name();
+        if (value.equals(name)) name = null; // Don't print name if it is identical to value.
+        return new ToStringBuilder(this).append("name", name).append("value", value).toString();
     }
 
     /**

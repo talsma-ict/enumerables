@@ -256,7 +256,7 @@ public class EnumerableTest {
     @Test
     public void testToString() {
         assertThat(Fruit.APPLE, hasToString("Fruit{name=\"APPLE\", value=\"Apple\"}"));
-        assertThat(new Fruit(Fruit.APPLE.getValue()), hasToString("Fruit{name=\"APPLE\", value=\"Apple\"}"));
+        assertThat(new Fruit("Apple"), hasToString("Fruit{name=\"APPLE\", value=\"Apple\"}"));
         assertThat(new Fruit("Pineapple"), hasToString("Fruit{value=\"Pineapple\"}"));
     }
 

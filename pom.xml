@@ -231,16 +231,20 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <artifactSet>
-                                <includes>
-                                    <include>nl.talsmasoftware:*</include>
-                                </includes>
-                            </artifactSet>
+                            <minimizeJar>true</minimizeJar>
                             <createSourcesJar>true</createSourcesJar>
+                            <filters>
+                                <filter>
+                                    <artifact>nl.talsmasoftware:reflection</artifact>
+                                    <includes>
+                                        <include>nl/talsmasoftware/reflection/**</include>
+                                    </includes>
+                                </filter>
+                            </filters>
                             <relocations>
                                 <relocation>
                                     <pattern>nl.talsmasoftware.reflection</pattern>
-                                    <shadedPattern>nl.talsmasoftware.enumerables.shaded.reflection</shadedPattern>
+                                    <shadedPattern>nl.talsmasoftware.enumerables.support.reflection</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
