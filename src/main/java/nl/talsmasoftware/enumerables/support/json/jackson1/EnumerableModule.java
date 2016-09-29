@@ -39,7 +39,7 @@ import static nl.talsmasoftware.enumerables.support.json.jackson1.EnumerableDese
  * {@link Enumerable} objects. Otherwise, {@link SerializationMethod#PLAIN_STRING plain-String} serialization will be
  * used by default.
  *
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 public class EnumerableModule extends SimpleModule {
 

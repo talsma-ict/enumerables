@@ -20,7 +20,7 @@ import javax.validation.MessageInterpolator;
 import java.util.Locale;
 
 /**
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 public class ClientLocaleMessageInterpolator implements MessageInterpolator {
 

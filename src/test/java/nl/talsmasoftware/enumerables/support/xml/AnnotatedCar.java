@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 /**
  * Object to test serialization with.
  *
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 @XmlRootElement(name = "car", namespace = "http://talsmasoftware.nl/enumerables/testing")
 @XmlAccessorType(XmlAccessType.FIELD)

@@ -26,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 /**
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 public class SerializationMethodTest {
 

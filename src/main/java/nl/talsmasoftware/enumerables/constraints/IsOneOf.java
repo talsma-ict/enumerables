@@ -40,7 +40,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * <p>
  * The constraint allows specifying whether or not the matching should be done case sensitive.
  *
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER})
 @Retention(RUNTIME)

@@ -39,7 +39,7 @@ import static nl.talsmasoftware.enumerables.support.json.SerializationMethod.PLA
 /**
  * Serializer for Jackson-2 to serialize Enumerable Objects with.
  *
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 public class EnumerableSerializer extends StdSerializer<Enumerable> {
 

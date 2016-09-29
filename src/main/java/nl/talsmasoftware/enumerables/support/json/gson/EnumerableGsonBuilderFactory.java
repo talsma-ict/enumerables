@@ -25,7 +25,7 @@ import nl.talsmasoftware.enumerables.support.json.SerializationMethod;
  * Factory class that helps create a GSON builder that is capable of serializing and deserializing {@link Enumerable}
  * object instances.
  *
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 public final class EnumerableGsonBuilderFactory {
 

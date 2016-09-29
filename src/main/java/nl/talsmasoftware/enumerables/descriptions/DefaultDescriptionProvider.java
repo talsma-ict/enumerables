@@ -24,7 +24,7 @@ import static nl.talsmasoftware.enumerables.descriptions.Descriptions.capitalize
 /**
  * Default implementation for providing descriptions of {@link Enumerable} objects in a human-readable way.
  *
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 final class DefaultDescriptionProvider implements DescriptionProvider {
 

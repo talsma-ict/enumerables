@@ -52,8 +52,8 @@ public class EnumerableTest {
 
         private static final BigCo[] VALUES = values(BigCo.class);
 
-        private BigCo(String waarde) {
-            super(waarde);
+        private BigCo(String value) {
+            super(value);
         }
     }
 
@@ -66,8 +66,8 @@ public class EnumerableTest {
 
         private static final Fruit[] VALUES = values(Fruit.class);
 
-        private Fruit(String waarde) {
-            super(waarde);
+        private Fruit(String value) {
+            super(value);
         }
     }
 
@@ -80,8 +80,8 @@ public class EnumerableTest {
         public static final Wordpairs MAPS = new Wordpairs("maps");
         public static final Wordpairs STRAW = new Wordpairs("straw");
 
-        private Wordpairs(String waarde) {
-            super(waarde);
+        private Wordpairs(String value) {
+            super(value);
         }
     }
 
@@ -133,9 +133,14 @@ public class EnumerableTest {
         assertThat(bigCoEmpty, hasToString(equalTo("BigCo{value=\"\"}")));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testConstructorNull() {
-        new Fruit(null);
+        try {
+            new Fruit(null);
+            fail("Exception with reasonable message expected.");
+        } catch (RuntimeException expected) {
+            assertThat(expected, hasToString(containsString("Value of type Fruit was <null>")));
+        }
     }
 
     @Test
@@ -144,7 +149,7 @@ public class EnumerableTest {
             Enumerable.parse(null, "value");
             fail("Exception expected.");
         } catch (IllegalArgumentException expected) {
-            assertThat(expected.getMessage(), is(equalTo("Enumerable type is null.")));
+            assertThat(expected, hasToString(containsString("Enumerable type is <null>")));
         }
     }
 
@@ -214,7 +219,7 @@ public class EnumerableTest {
             Enumerable.values(null);
             fail("Exception expected.");
         } catch (IllegalArgumentException expected) {
-            assertThat(expected.getMessage(), is(equalTo("Enumerable type is null.")));
+            assertThat(expected, hasToString(containsString("Enumerable type is <null>")));
         }
     }
 
@@ -296,6 +301,16 @@ public class EnumerableTest {
     }
 
     @Test
+    public void testCompareTo_null() {
+        try {
+            Fruit.APPLE.compareTo(null);
+            fail("Exception with clear message expected.");
+        } catch (NullPointerException expected) {
+            assertThat(expected, hasToString(containsString("Cannot compare with enumerable <null>")));
+        }
+    }
+
+    @Test
     public void testCompareTo() {
         // Clearly an orange is bigger than an apple? ;-)
         assertThat(signum(Fruit.APPLE.compareTo(Fruit.ORANGE)), is(-1));
@@ -308,14 +323,23 @@ public class EnumerableTest {
         assertThat(signum(Fruit.ORANGE.compareTo(new Fruit("Grapefruit"))), is(-1));
         assertThat(signum(new Fruit("Grapefruit").compareTo(new Fruit("Grapefruit"))), is(0));
         assertThat(signum(new Fruit("Grapefruit").compareTo(new Fruit("Pineapple"))), is(-1));
-        assertThat(signum(new Fruit("Grapefruit").compareTo(new Fruit("pineapple"))), is(-1)); // case insensitive sorteren?
+        assertThat(signum(new Fruit("Grapefruit").compareTo(new Fruit("pineapple"))), is(-1)); // case-insensitive sorting?
         assertThat(signum(new Fruit("grapefruit").compareTo(new Fruit("Pineapple"))), is(-1));
-        assertThat(signum(new Fruit("Grapefruit").compareTo(new Fruit("grapefruit"))), is(-1)); // gelijk; dan wel case sensitive?
+        assertThat(signum(new Fruit("Grapefruit").compareTo(new Fruit("grapefruit"))), is(-1)); // equal; then case-sensitive?
         assertThat(signum(new Fruit("Grapefruit").compareTo(Fruit.APPLE)), is(1));
         assertThat(signum(new Fruit("Grapefruit").compareTo(Fruit.ORANGE)), is(1));
 
         // Different types should not be equal! (..mumble something about apples and oranges)
         assertThat(BigCo.APPLE.compareTo(Fruit.ORANGE), is(not(0)));
+    }
+
+    @Test
+    public void testCompareTo_constantsBeforeParsedValues() {
+        Fruit nonConstant = Enumerable.parse(Fruit.class, "Kiwano");
+        assertThat(nonConstant.ordinal(), is(Integer.MAX_VALUE));
+        for (Fruit fruit : Fruit.VALUES) {
+            assertThat(signum(fruit.compareTo(nonConstant)), is(-1));
+        }
     }
 
     @Test
@@ -354,7 +378,7 @@ public class EnumerableTest {
             Enumerable.valueOf(null, "someName");
             fail("Exception expected.");
         } catch (RuntimeException expected) {
-            assertThat(expected.getMessage(), is(equalTo("Enumerable type is null.")));
+            assertThat(expected, hasToString(containsString("Enumerable type is <null>")));
         }
     }
 

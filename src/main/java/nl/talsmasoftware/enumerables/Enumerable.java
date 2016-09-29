@@ -35,6 +35,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static java.lang.Integer.signum;
 import static java.lang.reflect.Modifier.*;
 import static java.util.Arrays.asList;
 import static java.util.Collections.*;
@@ -49,18 +50,25 @@ import static java.util.Collections.*;
  * <em>"sorry, the api is now broken"</em> or create a new version <strong>beside</strong> the existing API and declare
  * the old one deprecated. However, you'll still have to think about how to represent the additional value in the old
  * version or create a special exception for this case.<br>
- * Nasty in any case.
+ * Nasty in any conceivable scenario.
  * <p>
  * That is exactly the reason we've created the <code>Enumerable</code> type. It is similar to {@link Enum} in that it
  * represents a number of <em>known constants</em> but also offers a possibility to represent
- * <em>yet unknown additional values</em> by parsing them. In fact; parsing a known value results in the single constant
- * reference. Same goes for serialization and deserialization.
+ * <em>yet unknown additional values</em> by parsing them. In API terms, you basically make a slightly lighter promise
+ * to your customer: I currently know of these possible values which have meaning in the API, but please be prepared to
+ * receive any 'other' value as well. Those other values may actually even have meaning to the receiver when they are
+ * introduced but allow for a stable API definition. Introducing a new value in a new API release does not break the
+ * existing contract since the consumer should have anticipated the new value.
+ * <p>
+ * The parsing functionality first compares the given value with all known constants of the specified Enumerable type,
+ * so normally you will get a constant reference if possible, and a new object instance only for non-constant values.
+ * The same goes for serialization and deserialization.
  * <p>
  * TODO: Talk about values(), ordinal(), and other enum concepts.
  * TODO: Document an example of how using it.
- * TODO: Generify? (instead of String, maybe also support other immutable value object types?) Not sure about this one.
+ * TODO: Generify? (instead of String, maybe also support other immutable value object types?) Not sure about this one!
  *
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 public abstract class Enumerable implements Comparable<Enumerable>, Serializable {
 
@@ -76,7 +84,7 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
      */
     protected Enumerable(String value) {
         if (value == null) {
-            throw new IllegalArgumentException(String.format("Value of type %s was null.", getClass().getSimpleName()));
+            throw new IllegalArgumentException(String.format("Value of type %s was <null>.", getClass().getSimpleName()));
         }
         this.value = value;
     }
@@ -147,8 +155,26 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
         return value.hashCode();
     }
 
+    /**
+     * The compareTo implementation for any {@link Enumerable} instance uses the following strategy:
+     * <ol>
+     * <li>First, the concrete enumerable type is compared, based on class name.</li>
+     * <li>Then, the {@link #ordinal() ordinals} of the two enumerable objects are compared, making sure that
+     * constants are sorted in the order they were encountered in the class definition.<br>
+     * Also, this makes sure that any constant value is sorted before any non-constant value.</li>
+     * <li>Lastly, for two non-constant enumerables, their {@link #getValue() values} are compared in two steps:
+     * first case-insenstive, with a case-sensitive follow-up comparison for zero outcome.<br>
+     * This allows for case-insensitive sorting behaviour, while still defining zero-comparison to be exact equality.</li>
+     * </ol>
+     *
+     * @param other The other enumerable object to compare with (required, non-<code>null</code>).
+     * @return The result of the comparison: A negative integer if this enumerable is considered less than the other,
+     * zero (<code>0</code>) if it is considered equal to the other,
+     * and a positive integer if it is considered greater than the other enumerable.
+     * @throws NullPointerException when the <code>other</code> enumerable is <code>null</code>.
+     */
     public int compareTo(Enumerable other) {
-        if (other == null) throw new NullPointerException("The enumerable object to compare with was null.");
+        if (other == null) throw new NullPointerException("Cannot compare with enumerable <null>.");
         int comparison = getClass().getName().compareTo(other.getClass().getName());
         if (comparison == 0) {
             final int ordinal = ordinal();
@@ -159,7 +185,7 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
                 if (comparison == 0) comparison = value.compareTo(other.value);
             }
         }
-        return comparison;
+        return signum(comparison);
     }
 
     /**
@@ -398,7 +424,7 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
      */
     @SuppressWarnings("unchecked")
     private static <E extends Enumerable> E[] _rawValues(final Class<E> enumerableType) {
-        if (enumerableType == null) throw new IllegalArgumentException("Enumerable type is null.");
+        if (enumerableType == null) throw new IllegalArgumentException("Enumerable type is <null>.");
         E[] values = (E[]) CONSTANTS_CACHE.get(enumerableType);
         if (values == null) {
             final List<E> constants = new ArrayList<E>();
@@ -531,7 +557,7 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
      * Exception that is thrown by the {@link Enumerable#valueOf(Class, CharSequence)} method when an enumerable
      * constant is requested that could not be found.
      *
-     * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+     * @author Sjoerd Talsma
      */
     public static class ConstantNotFoundException extends IllegalArgumentException {
         private static final long serialVersionUID = 1L;

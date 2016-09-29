@@ -24,7 +24,7 @@ import java.util.Locale;
  * This allows for a per-user or per-thread setting that can dynamically be configured base on an externally-managed
  * <code>ThreadLocal</code> value.
  *
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 public interface LocaleProvider {
 

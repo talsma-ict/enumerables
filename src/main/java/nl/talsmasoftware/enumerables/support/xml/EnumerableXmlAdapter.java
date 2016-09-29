@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 /**
  * XML adapter that marshals and unmarshals {@link Enumerable} objects to and from plain XML strings.
  *
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 public class EnumerableXmlAdapter<E extends Enumerable> extends XmlAdapter<String, E> {
     /**

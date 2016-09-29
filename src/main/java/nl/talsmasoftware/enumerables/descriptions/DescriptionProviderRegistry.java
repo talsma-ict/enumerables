@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  * The default implementation of {@link Enumerable#getDescription()} uses this registry to find a suitable description
  * provider for itself.
  *
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 @SuppressWarnings("deprecation")
 public final class DescriptionProviderRegistry {

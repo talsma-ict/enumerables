@@ -19,7 +19,7 @@ import static java.lang.Character.isTitleCase;
 import static java.lang.Character.toTitleCase;
 
 /**
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 public final class Descriptions {
 

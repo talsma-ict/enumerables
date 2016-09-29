@@ -24,7 +24,7 @@ import nl.talsmasoftware.enumerables.CarBrand;
 /**
  * Object to test serialization with.
  *
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 public class Car {
 

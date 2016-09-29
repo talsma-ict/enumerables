@@ -20,7 +20,7 @@ package nl.talsmasoftware.enumerables.support.validation;
 import java.util.Locale;
 
 /**
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 public class ClientLocaleHolder {
     public static final Locale DUTCH = new Locale("nl", "NL"), FRISIAN = new Locale("fy", "NL");

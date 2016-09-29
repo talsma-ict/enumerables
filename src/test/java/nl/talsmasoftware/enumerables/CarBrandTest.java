@@ -25,7 +25,7 @@ import static org.hamcrest.Matchers.*;
 /**
  * Basic 'sanity-check' for the parseLeniently method that is being used in other tests.
  *
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 public class CarBrandTest {
 

@@ -51,7 +51,7 @@ import static java.util.ResourceBundle.getBundle;
  * returned as <code>null</code>. This will trigger the {@link Descriptions#defaultProvider() default provider} to
  * provide a description instead.
  *
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 public class ResourceBundleDescriptionProvider implements DescriptionProvider {
     private static final Logger LOGGER = Logger.getLogger(ResourceBundleDescriptionProvider.class.getName());

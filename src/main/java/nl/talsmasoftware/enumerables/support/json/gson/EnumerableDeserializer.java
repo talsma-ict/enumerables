@@ -25,7 +25,7 @@ import nl.talsmasoftware.enumerables.support.UnknownEnumerable;
 import java.lang.reflect.Type;
 
 /**
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 public class EnumerableDeserializer implements JsonDeserializer<Enumerable> {
 

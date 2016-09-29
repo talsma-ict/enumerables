@@ -19,7 +19,7 @@ package nl.talsmasoftware.enumerables.support.validation;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 public class IsOneOfCharSequencesValidator extends IsOneOfAbstractValidator<CharSequence> {
 

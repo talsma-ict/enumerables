@@ -21,7 +21,7 @@ import nl.talsmasoftware.enumerables.Enumerable;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 public class IsOneOfEnumerablesValidator extends IsOneOfAbstractValidator<Enumerable> {
 

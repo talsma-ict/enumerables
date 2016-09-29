@@ -25,7 +25,7 @@ import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.sort;
 
 /**
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 abstract class IsOneOfAbstractValidator<TYPE> implements ConstraintValidator<IsOneOf, TYPE> {
 

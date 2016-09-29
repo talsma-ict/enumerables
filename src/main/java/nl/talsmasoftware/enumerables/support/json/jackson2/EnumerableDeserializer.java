@@ -36,7 +36,7 @@ import java.io.IOException;
  * Therefore, the {@link nl.talsmasoftware.enumerables.support.json.SerializationMethod serialization method} is not
  * relevant for this deserializer.
  *
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 public class EnumerableDeserializer extends StdDeserializer<Enumerable> implements ContextualDeserializer {
 

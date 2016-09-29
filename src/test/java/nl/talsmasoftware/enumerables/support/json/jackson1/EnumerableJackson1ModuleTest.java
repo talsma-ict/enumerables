@@ -37,7 +37,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
 
 /**
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 public class EnumerableJackson1ModuleTest {
 

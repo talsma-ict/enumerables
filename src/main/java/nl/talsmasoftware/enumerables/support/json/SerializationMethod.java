@@ -30,7 +30,7 @@ import static java.util.Arrays.binarySearch;
  * <p>
  * Enumerable deserializers should be capable of handling both serialization methods.
  *
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 public final class SerializationMethod {
     /**

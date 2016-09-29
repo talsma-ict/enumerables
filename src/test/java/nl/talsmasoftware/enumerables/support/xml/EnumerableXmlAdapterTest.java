@@ -33,7 +33,7 @@ import static org.hamcrest.Matchers.*;
 import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
 
 /**
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 public class EnumerableXmlAdapterTest {
 

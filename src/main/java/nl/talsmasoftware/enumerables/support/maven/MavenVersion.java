@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 /**
  * Utility class to determine the version of this library (and other dependencies) with.
  *
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 public final class MavenVersion implements Comparable<MavenVersion>, Serializable {
     private static final Logger LOGGER = Logger.getLogger(MavenVersion.class.getName());

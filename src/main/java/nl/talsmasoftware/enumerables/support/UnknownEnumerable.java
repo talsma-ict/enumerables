@@ -25,7 +25,7 @@ import nl.talsmasoftware.enumerables.Enumerable;
  * Usually this is a sign of bad design with too little type information available,
  * but technically it should of course be possible to deserialize 'any' Enumerable object.
  *
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 public final class UnknownEnumerable extends Enumerable {
 

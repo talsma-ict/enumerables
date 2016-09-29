@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 /**
  * Compatibility class for using various Jackson 2.x versions and features that were added after 2.0.x.
  *
- * @author <a href="mailto:info@talsma-software.nl">Sjoerd Talsma</a>
+ * @author Sjoerd Talsma
  */
 final class Compatibility {
     private static final Logger LOGGER = Logger.getLogger(Compatibility.class.getName());
