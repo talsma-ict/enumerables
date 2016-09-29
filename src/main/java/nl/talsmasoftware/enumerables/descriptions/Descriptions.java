@@ -15,8 +15,7 @@
  */
 package nl.talsmasoftware.enumerables.descriptions;
 
-import static java.lang.Character.isTitleCase;
-import static java.lang.Character.toTitleCase;
+import static java.lang.Character.*;
 
 /**
  * @author Sjoerd Talsma
@@ -46,11 +45,44 @@ public final class Descriptions {
      * @param value The string to be capitalized.
      * @return The capitalized string with the first character as an uppercase character.
      */
-    public static String capitalize(String value) {
+    public static String capitalize(final String value) {
         if (value == null || value.length() == 0 || isTitleCase(value.charAt(0))) return value;
-        char[] chars = value.toCharArray();
+        final char[] chars = value.toCharArray();
         chars[0] = toTitleCase(chars[0]);
         return new String(chars);
+    }
+
+    /**
+     * This method 'de-camelizes' a specified String value.
+     * The method replaces each upper-case character that is preceded by a lowercase character by a space plus the
+     * character converted into lowercase (unless the character is followed by another uppercase character).
+     *
+     * @param value The string value that needs to be decamelized.
+     * @return
+     */
+    public static String decamelize(final String value) {
+        if (value == null) return null;
+        final int len = value.length();
+        if (len > 1) {
+            StringBuilder buf = null;
+            for (int i = 1, j = i; i < len; i++, j++) {
+                final char prev = value.charAt(i - 1);
+                final char ch = value.charAt(i);
+                if (isLowerCase(prev) && (isUpperCase(ch) || isTitleCase(ch))) {
+                    buf = buf(buf, value, 1.3f).insert(j++, ' '); // regular 'cC' lower -> upper change.
+                    if (i == len - 1 || !isUpperCase(value.charAt(i + 1))) buf.setCharAt(j, toLowerCase(ch));
+                    // End-of-abbreviation is not yet common, this would for instance replace "JBoss" with "JB oss".
+                    // } else if (i > 1 && isLowerCase(ch) && isUpperCase(prev) && isUpperCase(value.charAt(i - 2))) {
+                    // buf = buf(buf, value, 1.3f).insert(j++, ' '); // end of abbreviation
+                }
+            }
+            if (buf != null) return buf.toString();
+        }
+        return value;
+    }
+
+    private static StringBuilder buf(StringBuilder buf, String source, float factor) {
+        return buf == null ? new StringBuilder((int) (factor * source.length())).append(source) : buf;
     }
 
 }

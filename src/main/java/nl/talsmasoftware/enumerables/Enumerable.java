@@ -551,6 +551,11 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
             this.ordinal = ordinal;
             this.name = name;
         }
+
+        @Override
+        public String toString() { // For debugging purposes only.
+            return this == NONE ? "NONE" : "NameAndOrdinal{ordinal=" + ordinal + ", name=\"" + name + "\"}";
+        }
     }
 
     /**

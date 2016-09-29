@@ -98,7 +98,7 @@ public class EnumerableTest {
 
     /**
      * This description provider will trigger a getDescription() on the enumerable value itself!
-     * This should be caught appropriately.
+     * This should be detected appropriately and handled by calling the default provider.
      */
     private static final class NaiveReverseDescriptionProvider implements DescriptionProvider {
         public String describe(Enumerable enumerable) {
@@ -108,14 +108,13 @@ public class EnumerableTest {
         }
     }
 
-
-    public static final class ListWithReverseOmschrijvingProvider extends Enumerable {
+    public static final class ListWithReverseDescriptionProvider extends Enumerable {
         private static final DescriptionProvider provider = new ReverseDescriptionProvider();
 
-        public static final ListWithReverseOmschrijvingProvider FIRST_ELEMENT = new ListWithReverseOmschrijvingProvider("FIRST_ELEMENT");
+        public static final ListWithReverseDescriptionProvider FIRST_ELEMENT = new ListWithReverseDescriptionProvider("FIRST_ELEMENT");
 
-        private ListWithReverseOmschrijvingProvider(String waarde) {
-            super(waarde);
+        private ListWithReverseDescriptionProvider(String value) {
+            super(value);
         }
     }
 
@@ -455,7 +454,7 @@ public class EnumerableTest {
 
     @Test
     public void testDescription_selfConfiguringProvider() {
-        assertThat(ListWithReverseOmschrijvingProvider.FIRST_ELEMENT.getDescription(),
+        assertThat(ListWithReverseDescriptionProvider.FIRST_ELEMENT.getDescription(),
                 is(equalTo("Tnemele tsrif")));
     }
 

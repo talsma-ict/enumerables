@@ -17,7 +17,10 @@
 
 package nl.talsmasoftware.enumerables;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author Sjoerd Talsma
@@ -68,6 +71,13 @@ public final class CarBrand extends Enumerable {
         super(value);
     }
 
+    private static final Map<String, CarBrand> LENIENT_BRANDS = Collections.unmodifiableMap(new HashMap<String, CarBrand>() {{
+        for (CarBrand brand : Enumerable.values(CarBrand.class)) {
+            put(lenient(brand.getValue()), brand);
+            put(lenient(brand.name()), brand);
+        }
+    }});
+
     /**
      * Lenient parser because I am too lazy to remember exactly how I declared the constants ;-) ..
      * <p>
@@ -77,22 +87,16 @@ public final class CarBrand extends Enumerable {
      * @return The parsed carbrand.
      */
     public static CarBrand parseLeniently(final CharSequence carbrand) {
-        if (carbrand != null) {
-            final String lenientMatch = lenient(carbrand.toString());
-            for (CarBrand brand : Enumerable.values(CarBrand.class)) {
-                if (lenientMatch.equals(lenient(brand.getValue())) || lenientMatch.equals(lenient(brand.name())))
-                    return brand;
-            }
-        }
-        return Enumerable.parse(CarBrand.class, carbrand);
+        final CarBrand foundConstant = LENIENT_BRANDS.get(lenient(carbrand));
+        return foundConstant != null ? foundConstant : Enumerable.parse(CarBrand.class, carbrand);
     }
 
     /**
      * Provides some leniency by stripping the string of all non-relevant characters for the comparison and converting
      * it to lowercase.
      */
-    private static String lenient(String value) {
-        return value.replaceAll("[\\s\\-_]*", "").toLowerCase(Locale.ENGLISH);
+    private static String lenient(CharSequence value) {
+        return value != null ? value.toString().replaceAll("[\\s\\-_]*", "").toLowerCase(Locale.ENGLISH) : null;
     }
 
 }

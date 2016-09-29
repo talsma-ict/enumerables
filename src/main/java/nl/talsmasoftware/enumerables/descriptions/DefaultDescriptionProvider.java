@@ -20,6 +20,7 @@ import nl.talsmasoftware.enumerables.Enumerable;
 import java.util.Locale;
 
 import static nl.talsmasoftware.enumerables.descriptions.Descriptions.capitalize;
+import static nl.talsmasoftware.enumerables.descriptions.Descriptions.decamelize;
 
 /**
  * Default implementation for providing descriptions of {@link Enumerable} objects in a human-readable way.
@@ -49,7 +50,9 @@ final class DefaultDescriptionProvider implements DescriptionProvider {
      * <li>Otherwise, the {@link Enumerable#name() constant name} is used as base of the description.</li>
      * <li>In case the value is no constant, the actual {@link Enumerable#getValue() value} will be the base of the
      * description.</li>
-     * <li>The result is then transformed into {@link String#toLowerCase(Locale) lowercase} characters.</li>
+     * <li>The result is then {@link Descriptions#decamelize(String) decamelized},
+     * turning <code>"CamelCase"</code> words into words separated by whitespace (e.g. <code>"Camel case"</code>).</li>
+     * <li>Next, the result is transformed into {@link String#toLowerCase(Locale) lowercase} characters.</li>
      * <li>All occurrances of the underscore character ('_') are {@link String#replace(char, char) replaced}
      * by whitespace characters.</li>
      * <li>Finally, the first character of the resulting string is {@link Descriptions#capitalize(String) capitalized}.</li>
@@ -70,7 +73,7 @@ final class DefaultDescriptionProvider implements DescriptionProvider {
                 if (description == null)
                     throw new IllegalStateException("The value of an enumerable object instance may never be null!");
             }
-            description = capitalize(description.toLowerCase(Locale.ENGLISH)).replace('_', ' ');
+            description = capitalize(decamelize(description).toLowerCase(Locale.ENGLISH)).replace('_', ' ');
         }
         return description;
     }
