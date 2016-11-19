@@ -66,7 +66,9 @@ import static java.util.Collections.*;
  * <p>
  * TODO: Talk about values(), ordinal(), and other enum concepts.
  * TODO: Document an example of how using it.
- * TODO: Generify? (instead of String, maybe also support other immutable value object types?) Not sure about this one!
+ * <p>
+ * Here is a generated UML class diagram for this core <code>Enumerable</code> class:<br>
+ * <center><img src="package.svg" alt="Class diagram of enumerables package"></center>
  *
  * @author Sjoerd Talsma
  */
@@ -225,8 +227,8 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
     /**
      * @return Re-parse an enumerable object after deserialization to ensure that constants remain constant.
      */
-    protected Object readResolve() {
-        Enumerable reParsed = parse(getClass(), value);
+    private Object readResolve() {
+        final Enumerable reParsed = parse(getClass(), value);
         return reParsed.name() != null ? reParsed : this; // name found? Then return the parsed constant reference.
     }
 
@@ -263,9 +265,9 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
      * If there is no enumerable constant of the requested <code>type</code> found by that <code>name</code>,
      * the method will throw an {@link ConstantNotFoundException exception}.
      * <p>
-     * Please note that this method looks at the {@link #name() constant name} and <strong>not</strong>
+     * Please note that this method looks at the constant {@link #name() name} and <strong>not</strong>
      * the {@link #getValue() value} of this enumerable object. To obtain an enumerable object from a
-     * specific <code>value</code>, please use the {@link #parse(Class, CharSequence) parse} method instead.
+     * specific {@link #getValue() value}, please use the {@link #parse(Class, CharSequence) parse} method instead.
      * That method will not throw any exceptions for yet-unknown values, but attempt to instantiate a
      * new enumerable instance in that case.
      *

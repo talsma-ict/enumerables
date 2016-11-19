@@ -86,7 +86,7 @@
         <maven-scm-plugin.version>1.9</maven-scm-plugin.version>
         <nexus-staging-maven-plugin.version>1.6.6</nexus-staging-maven-plugin.version>
         <buildnumber-maven-plugin.version>1.1</buildnumber-maven-plugin.version>
-        <umldoclet.version>1.0.2</umldoclet.version>
+        <umldoclet.version>1.0.7</umldoclet.version>
     </properties>
 
     <build>
@@ -193,7 +193,7 @@
                 <version>${maven-javadoc-plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>generate-uml</id>
+                        <id>attach-javadocs</id>
                         <goals>
                             <goal>jar</goal>
                         </goals>
@@ -207,16 +207,10 @@
                             <docencoding>UTF-8</docencoding>
                             <useStandardDocletOptions>true</useStandardDocletOptions>
                             <additionalparam>
-                                -umlSkipStandardDoclet true
+                                -umlSkipStandardDoclet false
                                 -umlImageFormat SVG
                             </additionalparam>
                         </configuration>
-                    </execution>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>
