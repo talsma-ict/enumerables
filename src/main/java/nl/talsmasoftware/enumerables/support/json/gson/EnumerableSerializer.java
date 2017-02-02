@@ -25,7 +25,7 @@ import java.lang.reflect.Type;
 import java.util.Map;
 
 import static nl.talsmasoftware.enumerables.support.json.SerializationMethod.PLAIN_STRING;
-import static nl.talsmasoftware.reflection.beans.BeanReflectionSupport.getPropertyValues;
+import static nl.talsmasoftware.reflection.beans.BeanReflection.getPropertyValues;
 
 /**
  * @author Sjoerd Talsma
