@@ -256,11 +256,13 @@
                         <goals>
                             <goal>sign</goal>
                         </goals>
+<!--
                         <configuration>
                             <gpgArguments>
-                                <gpgArgument>--batch</gpgArgument>
+                                <gpgArgument>&#45;&#45;batch</gpgArgument>
                             </gpgArguments>
                         </configuration>
+-->
                     </execution>
                 </executions>
             </plugin>
