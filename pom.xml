@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <!-- Artifact identification -->
-    <groupId>nl.talsmasoftware</groupId>
+    <groupId>nl.talsmasoftware.enumerables</groupId>
     <artifactId>enumerables</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
