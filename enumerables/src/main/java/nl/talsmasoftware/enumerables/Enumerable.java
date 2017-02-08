@@ -85,7 +85,7 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
      */
     protected Enumerable(String value) {
         if (value == null) {
-            throw new IllegalArgumentException(String.format("Value of type %s was <null>.", getClass().getSimpleName()));
+            throw new IllegalArgumentException("Value of type " + getClass().getSimpleName() + " was <null>.");
         }
         this.value = value;
     }
@@ -241,7 +241,7 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
      * @return The description provider for this enumerable type
      * or <code>null</code> in case this type did not have a custom description provider registered.
      */
-    protected DescriptionProvider descriptionProvider() {
+    private DescriptionProvider _descriptionProvider() {
         _initConstants(); // This may also trigger an automatic description provider registration.
         return DescriptionProviderRegistry.getInstance().getDescriptionProviderFor(getClass());
     }
@@ -378,15 +378,18 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = Logger.getLogger(Enumerable.class.getName());
     // Map from concrete subclass type to array of reflected constants.
-    private static final ConcurrentMap<Class<?>, Object> CONSTANTS_CACHE = new ConcurrentHashMap<Class<?>, Object>();
+    private static final ConcurrentMap<String, Object> CONSTANTS = new ConcurrentHashMap<String, Object>();
+
     // Recursion detection for descriptions.
-    private static final ConcurrentMap<Class<?>, ThreadLocal<Boolean>> DESCRIPTION_RECURSION = new ConcurrentHashMap<Class<?>, ThreadLocal<Boolean>>();
+    // TODO move description functionality out of this class.
+    private static final ConcurrentMap<Class<?>, ThreadLocal<Boolean>> DESCRIPTION_RECURSION =
+            new ConcurrentHashMap<Class<?>, ThreadLocal<Boolean>>();
 
     /**
      * Initializes the constants for this class if that has not yet been done.
      */
     private void _initConstants() {
-        if (!CONSTANTS_CACHE.containsKey(getClass())) {
+        if (!CONSTANTS.containsKey(getClass().getName())) {
             _rawValues(getClass());
         }
     }
@@ -429,7 +432,8 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
     @SuppressWarnings("unchecked")
     private static <E extends Enumerable> E[] _rawValues(final Class<E> enumerableType) {
         if (enumerableType == null) throw new IllegalArgumentException("Enumerable type is <null>.");
-        E[] values = (E[]) CONSTANTS_CACHE.get(enumerableType);
+        final String enumerableTypeName = enumerableType.getName();
+        E[] values = (E[]) CONSTANTS.get(enumerableTypeName);
         if (values == null) {
             final List<E> constants = new ArrayList<E>();
             for (Field field : enumerableType.getDeclaredFields()) {
@@ -444,15 +448,16 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
                         } catch (IllegalAccessException iae) {
                             throw new IllegalStateException(String.format(
                                     "Reading constant \"%s.%s\" was not allowed!",
-                                    enumerableType.getName(), field.getName()), iae);
+                                    enumerableTypeName, field.getName()), iae);
                         }
                     } else {
                         _registerDescriptionProvider(enumerableType, field);
                     }
                 }
             }
-            CONSTANTS_CACHE.putIfAbsent(enumerableType, constants.toArray((E[]) Array.newInstance(enumerableType, constants.size())));
-            values = (E[]) CONSTANTS_CACHE.get(enumerableType);
+            CONSTANTS.putIfAbsent(enumerableTypeName,
+                    constants.toArray((E[]) Array.newInstance(enumerableType, constants.size())));
+            values = (E[]) CONSTANTS.get(enumerableTypeName);
         }
         return values;
     }
@@ -539,7 +544,7 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
      * @return The description from the provider, or <code>null</code> if none was found.
      */
     private String _descriptionFromProvider() {
-        DescriptionProvider provider = descriptionProvider();
+        DescriptionProvider provider = _descriptionProvider();
         return provider == null ? null : provider.describe(this);
     }
 

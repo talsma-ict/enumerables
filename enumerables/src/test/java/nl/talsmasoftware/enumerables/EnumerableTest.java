@@ -429,30 +429,6 @@ public class EnumerableTest {
     }
 
     @Test
-    public void testDescription_exceptionObtainingProvider() {
-        assertThat(new Enumerable("tst") {
-            @Override
-            protected DescriptionProvider descriptionProvider() {
-                throw new IllegalStateException("Error getting provider!");
-            }
-        }.getDescription(), is(equalTo("Tst")));
-    }
-
-    @Test
-    public void testDescription_providerException() {
-        assertThat(new Enumerable("apple") {
-            @Override
-            protected DescriptionProvider descriptionProvider() {
-                return new DescriptionProvider() {
-                    public String describe(Enumerable enumerable) {
-                        throw new UnsupportedOperationException("Not allowed!");
-                    }
-                };
-            }
-        }.getDescription(), is(equalTo("Apple")));
-    }
-
-    @Test
     public void testDescription_selfConfiguringProvider() {
         assertThat(ListWithReverseDescriptionProvider.FIRST_ELEMENT.getDescription(),
                 is(equalTo("Tnemele tsrif")));

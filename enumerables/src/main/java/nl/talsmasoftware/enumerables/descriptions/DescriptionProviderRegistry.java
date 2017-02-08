@@ -30,6 +30,8 @@ import java.util.logging.Logger;
  * The default implementation of {@link Enumerable#getDescription()} uses this registry to find a suitable description
  * provider for itself.
  *
+ * TODO: Simplify and make package-protected!
+ *
  * @author Sjoerd Talsma
  */
 @SuppressWarnings("deprecation")
