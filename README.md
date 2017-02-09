@@ -37,11 +37,49 @@ introduced but allow for a stable API definition.
 Introducing a new value in a new API release does not break the
 existing contract since the consumer should have already anticipated this value.
 
+## Example
+
+Here's a working example of an `Enumerable` type:
+
+```java
+public final class CarBrand extends Enumerable {
+    public static final CarBrand ASTON_MARTIN = new CarBrand("Aston martin");
+    public static final CarBrand JAGUAR = new CarBrand("Jaguar");
+    public static final CarBrand TESLA = new CarBrand("Tesla");
+    
+    // ... we all know there's more CarBrands than the ones we identified here, 
+    // not a good fit for a java.lang.Enum, but suitable for Enumerable.
+
+    private CarBrand(String value) { super(value); }
+}
+```
+
+We can interact with `CarBrand` similar to `Enum`: 
+ - `CarBrand[] knownCarBrands = Enumerable.values(CarBrand.class);`
+ - `assert CarBrand.ASTON_MARTIN == Enumerable.valueOf(CarBrand.class, "ASTON_MARTIN");`
+ - `assert CarBrand.JAGUAR.ordinal() == 1;`
+ - `assert CarBrand.TESLA.name().equals("TESLA");`
+ 
+But you can also:
+ - `assert CarBrand.ASTON_MARTIN.getValue().equals("Aston martin");`
+ - Parse another 'unknown' car brand: `CarBrand porsche = Enumerable.parse(CarBrand.class, "Porsche");`
+ - Compare all `CarBrand` instances with each-other.  
+   Constants sort in declaration order before 'unknown' values,
+   which in turn sort alphabetically, case-insensitive.
+ - Consistent with the sorting order, `ordinal()` of non-constants are _by definition_:
+   `assert porsche.ordinal() == Integer.MAX_VALUE;`
+ - As they aren't defined by a constant, `name()` of non-constants _always_ returns `null`:
+   `assert porsche.name() == null;`
+
 ## Parsing
 
 The parsing functionality first compares the given value with all known constants 
 of the specified `Enumerable` type, so normally you will get a constant reference back.
 A new object instance is only created for non-constant values.
+
+The counterpart of parsing, _printing_ is also covered.
+`public String Enumberable.print(Enumerable enumerable);` returns: 
+`enumerable == null ? null : enumerable.getValue()`. 
 
 ## Enum-like behaviour
 
