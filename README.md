@@ -66,9 +66,9 @@ But you can also:
  - Compare all `CarBrand` instances with each-other.  
    Constants sort in declaration order before 'unknown' values,
    which in turn sort alphabetically, case-insensitive.
- - Consistent with the sorting order, `ordinal()` of non-constants are _by definition_:
+ - Consistent with the sorting order, `ordinal()` of non-constants are _by definition_:  
    `assert porsche.ordinal() == Integer.MAX_VALUE;`
- - As they aren't defined by a constant, `name()` of non-constants _always_ returns `null`:
+ - As they aren't defined by a constant, `name()` of non-constants _always_ returns `null`:  
    `assert porsche.name() == null;`
 
 ## Parsing
