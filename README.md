@@ -47,7 +47,22 @@ A new object instance is only created for non-constant values.
 
 ### Enumerable.valueOf()
 
-_Documentation coming when I get some time_
+```java
+public static <E extends Enumerable> E valueOf(Class<E> type, CharSequence name)
+        throws ConstantNotFoundException;
+```
+
+This method is comparable with the `Enum.valueOf(Class, String)` method.
+
+This method returns the constant with the specified `name`.
+If there is no constant within the requested enumerable class found by that `name`,
+the method will throw a `ConstantNotFoundException`.
+
+Please note that this method looks at the constant `name` and **not** the String `value` 
+of this enumerable object. To obtain an enumerable object from a specific `value`, 
+please use the `parse(Class, CharSequence)` method instead.
+That method will not throw any exceptions for yet-unknown values, but returns a
+new enumerable instance containing the `value` instead.
 
 ### Enumerable.values()
 
