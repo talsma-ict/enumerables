@@ -15,9 +15,6 @@
  */
 package nl.talsmasoftware.enumerables;
 
-import nl.talsmasoftware.enumerables.descriptions.DescriptionProvider;
-import nl.talsmasoftware.enumerables.descriptions.DescriptionProviderRegistry;
-import nl.talsmasoftware.enumerables.descriptions.Descriptions;
 import org.junit.Test;
 
 import java.util.Set;
@@ -25,8 +22,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Integer.signum;
-import static java.util.Locale.ENGLISH;
-import static nl.talsmasoftware.enumerables.descriptions.Descriptions.capitalize;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
@@ -72,8 +67,6 @@ public class EnumerableTest {
     }
 
     public static final class Wordpairs extends Enumerable {
-        private static final DescriptionProvider provider = new NaiveReverseDescriptionProvider();
-
         public static final Wordpairs DESSERTS = new Wordpairs("desserts");
         public static final Wordpairs LIVED = new Wordpairs("lived");
         public static final Wordpairs EDIT = new Wordpairs("edit");
@@ -81,39 +74,6 @@ public class EnumerableTest {
         public static final Wordpairs STRAW = new Wordpairs("straw");
 
         private Wordpairs(String value) {
-            super(value);
-        }
-    }
-
-    public static final class ReverseDescriptionProvider implements DescriptionProvider {
-        public String describe(Enumerable enumerable) {
-            String description = Descriptions.defaultProvider().describe(enumerable);
-            if (description == null || description.length() == 0) return description;
-            StringBuilder reverse = new StringBuilder(description).reverse();
-            reverse.setCharAt(reverse.length() - 1, Character.toLowerCase(reverse.charAt(reverse.length() - 1)));
-            reverse.setCharAt(0, Character.toUpperCase(reverse.charAt(0)));
-            return reverse.toString();
-        }
-    }
-
-    /**
-     * This description provider will trigger a getDescription() on the enumerable value itself!
-     * This should be detected appropriately and handled by calling the default provider.
-     */
-    private static final class NaiveReverseDescriptionProvider implements DescriptionProvider {
-        public String describe(Enumerable enumerable) {
-            String description = enumerable == null ? null : enumerable.getDescription();
-            return description == null ? null
-                    : capitalize(new StringBuilder(description.toLowerCase(ENGLISH)).reverse().toString());
-        }
-    }
-
-    public static final class ListWithReverseDescriptionProvider extends Enumerable {
-        private static final DescriptionProvider provider = new ReverseDescriptionProvider();
-
-        public static final ListWithReverseDescriptionProvider FIRST_ELEMENT = new ListWithReverseDescriptionProvider("FIRST_ELEMENT");
-
-        private ListWithReverseDescriptionProvider(String value) {
             super(value);
         }
     }
@@ -128,7 +88,6 @@ public class EnumerableTest {
         BigCo bigCoEmpty = Enumerable.parse(BigCo.class, "");
         assertThat(bigCoEmpty, is(notNullValue()));
         assertThat(bigCoEmpty.getValue(), is(equalTo("")));
-        assertThat(bigCoEmpty.getDescription(), is(equalTo("")));
         assertThat(bigCoEmpty, hasToString(equalTo("BigCo{value=}")));
     }
 
@@ -262,15 +221,6 @@ public class EnumerableTest {
         assertThat(Fruit.APPLE, hasToString("Fruit{name=APPLE, value=Apple}"));
         assertThat(new Fruit("Apple"), hasToString("Fruit{name=APPLE, value=Apple}"));
         assertThat(new Fruit("Pineapple"), hasToString("Fruit{value=Pineapple}"));
-    }
-
-    @Test
-    public void testGetDescription() {
-        assertThat(Fruit.APPLE.getDescription(), is(equalTo("Apple")));
-        assertThat(Fruit.ORANGE.getDescription(), is(equalTo("Orange")));
-        assertThat(new Fruit(Fruit.APPLE.getValue()).getDescription(), is(equalTo("Apple")));
-        assertThat(new BigCo("JBoss").getDescription(), is(equalTo("Jboss")));
-        assertThat(new BigCo("SOME_COMPANY").getDescription(), is(equalTo("Some company")));
     }
 
     @Test
@@ -408,39 +358,6 @@ public class EnumerableTest {
         } catch (Enumerable.ConstantNotFoundException expected) {
             assertThat(expected.getMessage(), is(equalTo("No Enumerable constant \"Fruit.Grapefruit\" found.")));
         }
-    }
-
-    @Test
-    public void testDescription_byProvider() {
-        final DescriptionProviderRegistry registry = DescriptionProviderRegistry.getInstance();
-        final DescriptionProvider previousProvider = registry.getDescriptionProviderFor(BigCo.class);
-        try {
-
-            registry.registerDescriptionProviderFor(BigCo.class, new DescriptionProvider() {
-                public String describe(Enumerable enumerable) {
-                    return enumerable.getClass().getSimpleName() + "." + enumerable.name();
-                }
-            });
-            assertThat(BigCo.APPLE.getDescription(), is(equalTo("BigCo.APPLE")));
-
-        } finally {
-            registry.registerDescriptionProviderFor(BigCo.class, previousProvider);
-        }
-    }
-
-    @Test
-    public void testDescription_selfConfiguringProvider() {
-        assertThat(ListWithReverseDescriptionProvider.FIRST_ELEMENT.getDescription(),
-                is(equalTo("Tnemele tsrif")));
-    }
-
-    @Test
-    public void testDescription_descriptionProviderRecursionFix() {
-        assertThat(Wordpairs.DESSERTS.getDescription(), is(equalTo("Stressed")));
-        assertThat(Wordpairs.LIVED.getDescription(), is(equalTo("Devil")));
-        assertThat(Wordpairs.EDIT.getDescription(), is(equalTo("Tide")));
-        assertThat(Wordpairs.MAPS.getDescription(), is(equalTo("Spam")));
-        assertThat(Wordpairs.STRAW.getDescription(), is(equalTo("Warts")));
     }
 
 }

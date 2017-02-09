@@ -59,7 +59,6 @@ public class EnumerableGsonTest {
 
     @Test
     public void testSerialization_jsonObject() throws IOException, JSONException {
-        assertThat(astonMartin.brand.getDescription(), equalTo("Aston martin"));
         String expectedJson = fixture("../aston_martin_object.json");
         String json = createGsonBuilder(JSON_OBJECT).create().toJson(astonMartin);
         JSONAssert.assertEquals(expectedJson, json, true);

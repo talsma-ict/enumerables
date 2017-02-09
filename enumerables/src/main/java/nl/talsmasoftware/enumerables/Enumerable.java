@@ -15,10 +15,6 @@
  */
 package nl.talsmasoftware.enumerables;
 
-import nl.talsmasoftware.enumerables.descriptions.DescriptionProvider;
-import nl.talsmasoftware.enumerables.descriptions.DescriptionProviderRegistry;
-import nl.talsmasoftware.enumerables.descriptions.Descriptions;
-
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -31,7 +27,6 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static java.lang.Integer.signum;
@@ -123,32 +118,6 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
     }
 
     /**
-     * Provides a short description of this {@link Enumerable} object value that could be used in drop-down boxes etc.
-     * <p>
-     * The intention is to provide a human-friendly variant of the constant or value represented by this object.
-     *
-     * @return The human-friendly description of this enumerable object.
-     */
-    public String getDescription() {
-        String description = null;
-        final ThreadLocal<Boolean> recursionDetection = _descriptionRecursionDetection();
-        if (!recursionDetection.get()) {
-            try {
-                recursionDetection.set(true);
-                description = _descriptionFromProvider();
-            } catch (RuntimeException descriptionEx) {
-                final String name = name();
-                LOGGER.log(Level.FINE, "Obtaining description for {0}.{1} failed due to: {2}",
-                        new Object[]{getClass().getSimpleName(), name != null ? name : value,
-                                descriptionEx.getMessage(), descriptionEx});
-            } finally {
-                recursionDetection.remove();
-            }
-        }
-        return description == null ? Descriptions.defaultProvider().describe(this) : description;
-    }
-
-    /**
      * @return hashcode for this enumerable object.
      */
     @Override
@@ -232,18 +201,6 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
     private Object readResolve() {
         final Enumerable reParsed = parse(getClass(), value);
         return reParsed.name() != null ? reParsed : this; // name found? Then return the parsed constant reference.
-    }
-
-    /**
-     * Returns the description provider for this enumerable type in case one has been registered.
-     * In case no description provider was registered, the method may simply return <code>null</code>.
-     *
-     * @return The description provider for this enumerable type
-     * or <code>null</code> in case this type did not have a custom description provider registered.
-     */
-    private DescriptionProvider _descriptionProvider() {
-        _initConstants(); // This may also trigger an automatic description provider registration.
-        return DescriptionProviderRegistry.getInstance().getDescriptionProviderFor(getClass());
     }
 
     /**
@@ -380,11 +337,6 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
     // Map from concrete subclass type to array of reflected constants.
     private static final ConcurrentMap<String, Object> CONSTANTS = new ConcurrentHashMap<String, Object>();
 
-    // Recursion detection for descriptions.
-    // TODO move description functionality out of this class.
-    private static final ConcurrentMap<Class<?>, ThreadLocal<Boolean>> DESCRIPTION_RECURSION =
-            new ConcurrentHashMap<Class<?>, ThreadLocal<Boolean>>();
-
     /**
      * Initializes the constants for this class if that has not yet been done.
      */
@@ -450,8 +402,6 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
                                     "Reading constant \"%s.%s\" was not allowed!",
                                     enumerableTypeName, field.getName()), iae);
                         }
-                    } else {
-                        _registerDescriptionProvider(enumerableType, field);
                     }
                 }
             }
@@ -487,65 +437,6 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
                 if (!accessible) constructor.setAccessible(false);
             }
         }
-    }
-
-    /**
-     * Registers a static final constant of type DescriptionProvider as description provider for this type.
-     */
-    private static <E extends Enumerable> void _registerDescriptionProvider(final Class<E> type, final Field field) {
-        if (DescriptionProvider.class.isAssignableFrom(field.getType())) {
-            synchronized (field) {
-                boolean accessible = field.isAccessible();
-                try {
-                    field.setAccessible(true);
-                    DescriptionProvider provider = (DescriptionProvider) field.get(null);
-                    DescriptionProviderRegistry.getInstance().registerDescriptionProviderFor(type, provider);
-                } catch (IllegalAccessException iae) {
-                    LOGGER.log(Level.WARNING,
-                            "Not allowed to register DescriptionProvider for enumerable type \"{0}\" from field \"{1}\" due to: {2}",
-                            new Object[]{type.getName(), field, iae.getMessage(), iae});
-                } catch (RuntimeException rte) {
-                    LOGGER.log(Level.WARNING,
-                            "Error registering DescriptionProvider for enumerable type \"{0}\" from field \"{1}\" due to: {2}",
-                            new Object[]{type.getName(), field, rte.getMessage(), rte});
-                } finally {
-                    if (!accessible) {
-                        field.setAccessible(false);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * For each <code>Enumerable</code> type, a single 'recursion detection' instance will be created to prevent
-     * any stack overflows in recursive {@link #getDescription()} calls.
-     * This is necessary because we have relinquished control over descriptions through the {@link DescriptionProvider}
-     * mechanism and therefore have no longer full control over the {@link #getDescription} implementation.
-     *
-     * @return A boolean state that indicates per-thread whether or not we're in the "getDescription()" method.
-     */
-    private ThreadLocal<Boolean> _descriptionRecursionDetection() {
-        final Class<? extends Enumerable> myType = getClass();
-        ThreadLocal<Boolean> recursionDetection = DESCRIPTION_RECURSION.get(myType);
-        if (recursionDetection == null) {
-            DESCRIPTION_RECURSION.putIfAbsent(myType, new ThreadLocal<Boolean>() {
-                @Override
-                public Boolean initialValue() {
-                    return false;
-                }
-            });
-            recursionDetection = DESCRIPTION_RECURSION.get(myType);
-        }
-        return recursionDetection;
-    }
-
-    /**
-     * @return The description from the provider, or <code>null</code> if none was found.
-     */
-    private String _descriptionFromProvider() {
-        DescriptionProvider provider = _descriptionProvider();
-        return provider == null ? null : provider.describe(this);
     }
 
     /**
