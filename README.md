@@ -55,7 +55,7 @@ public static <E extends Enumerable> E valueOf(Class<E> type, CharSequence name)
 This method is comparable with the `Enum.valueOf(Class, String)` method.
 
 This method returns the constant with the specified `name`.
-If there is no constant within the requested enumerable class found by that `name`,
+If there is no constant within the requested `type` found by that `name`,
 the method will throw a `ConstantNotFoundException`.
 
 Please note that this method looks at the constant `name` and **not** the String `value` 
@@ -66,7 +66,16 @@ new enumerable instance containing the `value` instead.
 
 ### Enumerable.values()
 
-_Documentation coming when I get some time_
+```java
+public static <E extends Enumerable> E[] values(Class<E> enumerableType);
+```
+
+This method is comparable with the `Enum.values()` method.
+
+It finds all public constants of the requested `enumerableType`
+that have been declared in the class of the enumerable itself.
+
+These constants must be **public final static** fields of its own the `enumerableType`.
 
 ### Enumerable.ordinal()
 
