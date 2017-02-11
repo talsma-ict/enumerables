@@ -117,7 +117,18 @@ These constants must be **public final static** fields of its own the `enumerabl
 
 ### Enumerable.ordinal()
 
-_Documentation coming when I get some time_
+```java
+public final int ordinal();
+```
+
+Returns the 'enum ordinal' for an enumerable value.
+
+For a constant value, this method returns the index of the constant within the `Enumerable.values()` array.
+
+For non-constant values, this method will always return `Integer.MAX_VALUE`.
+There are various reasons for this choice, but the most obvious one is that the `#compareTo(Enumerable)`
+implementation is greatly influenced by this `ordinal` value, 
+automatically sorting all constants before any non-constant parsed values.
 
 ### Enumerable.name()
 
