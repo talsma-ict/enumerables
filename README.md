@@ -142,8 +142,6 @@ For a constant value, this method returns the `name` of the defined constant as 
 
 For non-constant values, this method will always return `null`.
 
-_Documentation coming when I get some time_
-
 ## Serialization / deserialization
 
 Similar to parsing, a deserialized `Enumerable` object normally resolves back to the
