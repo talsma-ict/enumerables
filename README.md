@@ -148,22 +148,9 @@ Similar to parsing, a deserialized `Enumerable` object normally resolves back to
 listed constant reference if it is recognized.
 Only unanticipated values will result in new objects.
 
-## JSON
-
-_Documentation coming when I get some time_
-
-## XML
-
-_Documentation coming when I get some time_
-
-## Descriptions
-
-_Documentation coming when I get some time_
-
-[//]: # (TODO: Enum.values)
-[//]: # (TODO: Enum.ordinal)
-[//]: # (TODO: other enum concepts)
-[//]: # (TODO: Document an example on how to use it)
+[//]: # (TODO: JSON serialization)
+[//]: # (TODO: XML serialization)
+[//]: # (TODO: Custom descriptions)
 
 
   [ci-img]: https://img.shields.io/travis/talsma-ict/enumerables/master.svg
