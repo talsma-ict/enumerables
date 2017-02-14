@@ -73,13 +73,23 @@ But you can also:
 
 ## Parsing
 
-The parsing functionality first compares the given value with all known constants 
-of the specified `Enumerable` type, so normally you will get a constant reference back.
-A new object instance is only created for non-constant values.
+```java
+public static <E extends Enumerable> E parse(Class<E> type, CharSequence value);
+```
+
+The parse method first compares the given value with the values of all known constants 
+for the specified `Enumerable` type. This results in a constant reference in most cases.
+A new object instance is only created using the `String` constructor for non-constant values.
+
+### Printing
 
 The counterpart of parsing, _printing_ is also covered.
-`public String Enumberable.print(Enumerable enumerable);` returns: 
-`enumerable == null ? null : enumerable.getValue()`. 
+
+```java
+public static String print(Enumerable enumerable);
+```
+
+This simply returns `enumerable == null ? null : enumerable.getValue()`.
 
 ## Enum-like behaviour
 
