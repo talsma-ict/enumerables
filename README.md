@@ -71,7 +71,7 @@ But you can also:
  - As they aren't defined by a constant, `name()` of non-constants _always_ returns `null`:  
    `assert porsche.name() == null;`
 
-## Parsing
+## Parsing / printing
 
 ```java
 public static <E extends Enumerable> E parse(Class<E> type, CharSequence value);
@@ -81,9 +81,7 @@ The parse method first compares the given value with the values of all known con
 for the specified `Enumerable` type. This results in a constant reference in most cases.
 A new object instance is only created using the `String` constructor for non-constant values.
 
-### Printing
-
-The counterpart of parsing, _printing_ is also covered.
+The counterpart of parsing, _printing_ is also covered:
 
 ```java
 public static String print(Enumerable enumerable);
@@ -154,8 +152,15 @@ For non-constant values, this method will always return `null`.
 
 ## Serialization / deserialization
 
-Similar to parsing, a deserialized `Enumerable` object normally resolves back to the
-listed constant reference if it is recognized.
+*Serialization*: The `Enumerable` implements `Serializable`. 
+This means that a concrete subclass is serializable if it does not contain 
+any non-serializable and non-transient fields. 
+Note that additional class fields should be either specified in the 
+constant declaration or be deducable from the `String` constructor 
+if they carry meaning after deserialization.
+
+*Deserialization*: Similar to parsing, a deserialized `Enumerable` object 
+resolves back to a listed constant reference if its value matches the constant.  
 Only unanticipated values will result in new objects.
 
 [//]: # (TODO: JSON serialization)
