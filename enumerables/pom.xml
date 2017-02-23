@@ -17,6 +17,7 @@
 
     <dependencies>
         <!-- Optionally provided dependencies: -->
+<!--
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
@@ -24,11 +25,13 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
+-->
         <dependency>
             <groupId>nl.talsmasoftware</groupId>
             <artifactId>reflection</artifactId>
             <version>0.1.2</version>
         </dependency>
+<!--
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
@@ -50,6 +53,7 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
+-->
 
         <!-- Test dependencies: -->
         <dependency>
