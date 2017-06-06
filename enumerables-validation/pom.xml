@@ -27,7 +27,7 @@
         <version>0.1.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>enumerable-validation</artifactId>
+    <artifactId>enumerables-validation</artifactId>
     <name>Enumerables (validation)</name>
     <packaging>jar</packaging>
 
