@@ -27,16 +27,13 @@
         <version>0.1.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>enumerables-validation</artifactId>
-    <name>Enumerables (validation)</name>
+    <artifactId>enumerables-jaxrs</artifactId>
+    <name>Enumerables (jaxrs)</name>
     <packaging>jar</packaging>
 
     <properties>
         <root.basedir>${project.parent.basedir}</root.basedir>
-
-        <validation-api.version>1.1.0.Final</validation-api.version>
-        <hibernate-validator.version>5.3.4.Final</hibernate-validator.version>
-        <javax-el.version>3.0.0</javax-el.version>
+        <jaxrs-api.version>2.0.1</jaxrs-api.version>
     </properties>
 
     <dependencies>
@@ -44,40 +41,19 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>enumerables</artifactId>
         </dependency>
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-        </dependency>
 
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.el</artifactId>
-            <scope>test</scope>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
         </dependency>
     </dependencies>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>javax.validation</groupId>
-                <artifactId>validation-api</artifactId>
-                <version>${validation-api.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-validator</artifactId>
-                <version>${hibernate-validator.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish</groupId>
-                <artifactId>javax.el</artifactId>
-                <version>${javax-el.version}</version>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>javax.ws.rs-api</artifactId>
+                <version>${jaxrs-api.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
