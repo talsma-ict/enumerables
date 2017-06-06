@@ -33,7 +33,7 @@ public class EnumerableParamConverterProvider implements ParamConverterProvider 
 
     @SuppressWarnings("unchecked")
     public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType, Annotation[] annotations) {
-        if (!(Enumerable.class.isAssignableFrom(rawType))) return null;
+        if (rawType == null || !(Enumerable.class.isAssignableFrom(rawType))) return null;
         Class<? extends Enumerable> enumerableType = (Class<? extends Enumerable>) rawType;
         return (ParamConverter<T>) new EnumerableParamConverter(enumerableType);
     }
