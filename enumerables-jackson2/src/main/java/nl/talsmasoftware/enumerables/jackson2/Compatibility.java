@@ -15,13 +15,21 @@
  */
 package nl.talsmasoftware.enumerables.jackson2;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.SerializationConfig;
+import com.fasterxml.jackson.databind.type.SimpleType;
+import nl.talsmasoftware.enumerables.Enumerable;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableCollection;
 
 /**
  * Compatibility class to overcome API differences between various Jackson-2 versions.
@@ -30,6 +38,12 @@ import java.util.logging.Logger;
  */
 final class Compatibility {
     private static final Logger LOGGER = Logger.getLogger(Compatibility.class.getName());
+
+    // Names of 'inclusions' where null values should be skipped.
+    private static final Collection<String> SKIP_NULL_INCLUSIONS = unmodifiableCollection(asList(
+            "NON_NULL", "NON_ABSENT", "NON_EMPTY"
+    ));
+
 
     private static boolean supportsContextualType = true;
     private static boolean supportsTypeId = true;
@@ -50,7 +64,7 @@ final class Compatibility {
     /**
      * {@link JsonParser#getTypeId()} exists since Jackson 2.3
      */
-    public static Object getTypeId(JsonParser jp) throws IOException {
+    static Object getTypeId(JsonParser jp) throws IOException {
         if (supportsTypeId) try {
             return jp.getTypeId();
         } catch (LinkageError le) {
@@ -58,6 +72,42 @@ final class Compatibility {
             supportsTypeId = false;
         }
         return null;
+    }
+
+    static boolean mustIncludeNull(SerializationConfig config, Class<? extends Enumerable> enumerableType) {
+        try { // getDefaultPropertyInclusion exists since Jackson 2.7
+            JsonInclude.Value inclusion = config.getDefaultPropertyInclusion(enumerableType);
+            if (inclusion != null) return !SKIP_NULL_INCLUSIONS.contains(inclusion.getValueInclusion().name());
+        } catch (LinkageError le) {
+            LOGGER.log(Level.FINEST, "SerializationConfig.getDefaultPropertyInclusion() unavailable. Using Jackson < 2.7?", le);
+        }
+        try {
+            JsonInclude.Include inclusion = config.getSerializationInclusion();
+            if (inclusion != null) return !SKIP_NULL_INCLUSIONS.contains(inclusion.name());
+        } catch (LinkageError le) {
+            LOGGER.log(Level.FINEST, "SerializationConfig.getSerializationInclusion() unavailable. Deprecation removed?", le);
+        }
+        return true;
+    }
+
+    static JavaType asJavaType(SerializationConfig config, Class<? extends Enumerable> enumerableType) {
+        JavaType javaType = null;
+        if (config != null && enumerableType != null) try {
+            javaType = config.constructType(enumerableType);
+        } catch (LinkageError le) {
+            LOGGER.log(Level.FINEST, "SerializationConfig.constructType() unavailable.", le);
+        } catch (RuntimeException rte) {
+            if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE,
+                    "Exception constructing Jackson JavaType for " + enumerableType.getSimpleName() + ".", rte);
+        }
+
+        if (javaType == null) try {
+            javaType = SimpleType.construct(enumerableType);
+        } catch (LinkageError le) {
+            LOGGER.log(Level.FINEST, "SimpleType.construct() unavailable. Deprecation removed?", le);
+        }
+
+        return javaType;
     }
 
 }
