@@ -37,6 +37,7 @@
         <module>enumerables</module>
         <module>enumerables-validation</module>
         <module>enumerables-jaxrs</module>
+        <module>enumerables-jackson2</module>
     </modules>
 
     <licenses>
