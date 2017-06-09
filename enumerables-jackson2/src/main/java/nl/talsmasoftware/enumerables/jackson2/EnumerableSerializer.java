@@ -38,7 +38,7 @@ import static nl.talsmasoftware.enumerables.jackson2.Compatibility.mustIncludeNu
  *
  * @author Sjoerd Talsma
  */
-public class EnumerableJackson2Serializer extends StdSerializer<Enumerable> {
+public class EnumerableSerializer extends StdSerializer<Enumerable> {
     /**
      * Cache for reflected objects based on classname.
      */
@@ -47,11 +47,11 @@ public class EnumerableJackson2Serializer extends StdSerializer<Enumerable> {
 
     private final SerializationMethod serializationMethod;
 
-    public EnumerableJackson2Serializer() {
+    public EnumerableSerializer() {
         this(null);
     }
 
-    public EnumerableJackson2Serializer(SerializationMethod serializationMethod) {
+    public EnumerableSerializer(SerializationMethod serializationMethod) {
         super(Enumerable.class);
         this.serializationMethod = serializationMethod == null ? SerializationMethod.AS_STRING : serializationMethod;
     }

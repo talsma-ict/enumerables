@@ -26,13 +26,13 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static nl.talsmasoftware.enumerables.jackson2.EnumerableJackson2DeserializerTest.jsonString;
+import static nl.talsmasoftware.enumerables.jackson2.EnumerableDeserializerTest.jsonString;
 import static nl.talsmasoftware.enumerables.jackson2.SerializationMethod.AS_OBJECT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-public class EnumerableJackson2SerializerTest {
+public class EnumerableSerializerTest {
 
     ObjectMapper mapper;
 
@@ -41,7 +41,7 @@ public class EnumerableJackson2SerializerTest {
         mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         SimpleModule bigCoModule = new SimpleModule("BigCo module", Version.unknownVersion());
-        bigCoModule.addSerializer(BigCo.class, new EnumerableJackson2Serializer());
+        bigCoModule.addSerializer(BigCo.class, new EnumerableSerializer());
         mapper.registerModule(bigCoModule);
     }
 
@@ -69,7 +69,7 @@ public class EnumerableJackson2SerializerTest {
     @Test
     public void testSerialize_asJsonObject() throws IOException {
         SimpleModule bigCoModule = new SimpleModule("BigCo module", Version.unknownVersion());
-        bigCoModule.addSerializer(BigCo.class, new EnumerableJackson2Serializer(AS_OBJECT));
+        bigCoModule.addSerializer(BigCo.class, new EnumerableSerializer(AS_OBJECT));
         mapper.registerModule(bigCoModule);
 
         for (BigCo bigCo : Enumerable.values(BigCo.class)) {

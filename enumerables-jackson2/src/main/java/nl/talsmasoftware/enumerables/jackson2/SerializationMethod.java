@@ -35,14 +35,14 @@ import static java.util.Arrays.binarySearch;
  */
 public final class SerializationMethod {
     /**
-     * Constant for standard String-serialization for all {@link Enumerable} types.
+     * Constant for default String-serialization for all {@link Enumerable} types.
      * Please see {@link #except(Class[])} to add exception types that should be serialized as JSON objects.
      */
     public static final SerializationMethod AS_STRING =
             new SerializationMethod(false, null);
 
     /**
-     * Constant for standaard JSON Object-serialization for all {@link Enumerable} types.
+     * Constant for default JSON Object-serialization for all {@link Enumerable} types.
      * Please see {@link #except(Class[])} to add exception types that should be serialized as primitive JSON strings.
      */
     public static final SerializationMethod AS_OBJECT =

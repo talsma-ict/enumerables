@@ -28,9 +28,15 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasToString;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
 
-public class EnumerableJackson2DeserializerTest {
+public class EnumerableDeserializerTest {
 
     ObjectMapper mapper;
 
@@ -43,7 +49,7 @@ public class EnumerableJackson2DeserializerTest {
     public void setUp() {
         mapper = new ObjectMapper();
         SimpleModule bigCoModule = new SimpleModule("BigCo module", Version.unknownVersion());
-        JsonDeserializer<? extends Enumerable> deserializer = new EnumerableJackson2Deserializer();
+        JsonDeserializer<? extends Enumerable> deserializer = new EnumerableDeserializer();
         bigCoModule.addDeserializer(Enumerable.class, deserializer);
         bigCoModule.addDeserializer(BigCo.class, (JsonDeserializer<BigCo>) deserializer);
         mapper.registerModule(bigCoModule);
@@ -110,6 +116,7 @@ public class EnumerableJackson2DeserializerTest {
         Enumerable deserialized = mapper.readValue(json, Enumerable.class);
         assertThat(deserialized, is(notNullValue()));
         assertThat(deserialized.getValue(), is(equalTo("IBM")));
-        assertThat(deserialized, is(instanceOf(UnknownEnumerable.class)));
+        assertThat(deserialized, is(instanceOf(EnumerableDeserializer.UnknownEnumerable.class)));
     }
+
 }
