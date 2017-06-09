@@ -28,7 +28,7 @@ import java.lang.reflect.Type;
 /**
  * @author Sjoerd Talsma
  */
-public class EnumerableDeserializer implements JsonDeserializer<Enumerable> {
+final class EnumerableDeserializer implements JsonDeserializer<Enumerable> {
 
     public Enumerable deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
         final Class<? extends Enumerable> enumerableType = enumerableSubTypeOf(type);
