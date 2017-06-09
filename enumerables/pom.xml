@@ -26,7 +26,7 @@
     </parent>
 
     <artifactId>enumerables</artifactId>
-    <name>Enumerables core</name>
+    <name>Enumerables (core)</name>
     <packaging>jar</packaging>
 
     <properties>
