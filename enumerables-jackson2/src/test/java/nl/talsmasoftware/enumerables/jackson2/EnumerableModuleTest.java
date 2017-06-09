@@ -17,7 +17,11 @@ package nl.talsmasoftware.enumerables.jackson2;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.MappingJsonFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import nl.talsmasoftware.enumerables.Enumerable;
 import nl.talsmasoftware.enumerables.jackson2.PlainTestObject.BigCo;
@@ -31,15 +35,20 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import java.io.IOException;
 import java.util.Locale;
 
-import static nl.talsmasoftware.enumerables.jackson2.EnumerableJackson2DeserializerTest.jsonString;
+import static nl.talsmasoftware.enumerables.jackson2.EnumerableDeserializerTest.jsonString;
 import static nl.talsmasoftware.enumerables.jackson2.SerializationMethod.AS_OBJECT;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasToString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
 
-public class EnumerableJackson2ModuleTest {
+public class EnumerableModuleTest {
 
     ObjectMapper mapper, mapperAsObject, mapperWithException;
-    EnumerableJackson2Module module;
+    EnumerableModule module;
 
     private final ThreadLocal<Locale> defaultLocale = new ThreadLocal<Locale>();
 
@@ -65,11 +74,11 @@ public class EnumerableJackson2ModuleTest {
 
     @Before
     public void setUpMappers() {
-        module = new EnumerableJackson2Module();
+        module = new EnumerableModule();
         mapper = createMapper().registerModule(module);
-        mapperAsObject = createMapper().registerModule(new EnumerableJackson2Module(AS_OBJECT));
+        mapperAsObject = createMapper().registerModule(new EnumerableModule(AS_OBJECT));
         mapperWithException = createMapper().registerModule(
-                new EnumerableJackson2Module(AS_OBJECT.except(BigCo.class)));
+                new EnumerableModule(AS_OBJECT.except(BigCo.class)));
     }
 
     @Test
@@ -130,16 +139,16 @@ public class EnumerableJackson2ModuleTest {
     }
 
     @Test
-    public void testDeserialize_jsonNullWaarde() throws IOException {
+    public void testDeserialize_jsonNullValue() throws IOException {
         assertThat(mapper.readValue("null", BigCo.class), nullValue());
     }
 
     @Test
     public void testDeserialize_emptyString() throws IOException {
-        BigCo bigCoLeeg = mapper.readValue("\"\"", BigCo.class);
-        MatcherAssert.assertThat(bigCoLeeg, notNullValue());
-        MatcherAssert.assertThat(bigCoLeeg.getValue(), is(equalTo("")));
-        MatcherAssert.assertThat(bigCoLeeg.toString(), is(equalTo("BigCo{value=}")));
+        BigCo emptyBigCo = mapper.readValue("\"\"", BigCo.class);
+        MatcherAssert.assertThat(emptyBigCo, notNullValue());
+        MatcherAssert.assertThat(emptyBigCo.getValue(), is(equalTo("")));
+        MatcherAssert.assertThat(emptyBigCo.toString(), is(equalTo("BigCo{value=}")));
     }
 
     @Test
@@ -187,7 +196,7 @@ public class EnumerableJackson2ModuleTest {
 
     @Test
     public void testToString() {
-        assertThat(module, hasToString("EnumerableJackson2Module{serializationMethod=As string}"));
+        assertThat(module, hasToString("EnumerableModule{serializationMethod=As string}"));
     }
 
     @Test

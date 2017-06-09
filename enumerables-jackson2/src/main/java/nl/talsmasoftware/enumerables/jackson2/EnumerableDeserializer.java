@@ -17,7 +17,11 @@ package nl.talsmasoftware.enumerables.jackson2;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.BeanProperty;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import nl.talsmasoftware.enumerables.Enumerable;
@@ -29,14 +33,14 @@ import java.io.IOException;
  *
  * @author Sjoerd Talsma
  */
-public class EnumerableJackson2Deserializer extends StdDeserializer<Enumerable> implements ContextualDeserializer {
+public class EnumerableDeserializer extends StdDeserializer<Enumerable> implements ContextualDeserializer {
     private final JavaType javaType;
 
-    public EnumerableJackson2Deserializer() {
+    public EnumerableDeserializer() {
         this(null);
     }
 
-    private EnumerableJackson2Deserializer(JavaType javaType) {
+    private EnumerableDeserializer(JavaType javaType) {
         super(javaType);
         this.javaType = javaType;
     }
@@ -44,11 +48,11 @@ public class EnumerableJackson2Deserializer extends StdDeserializer<Enumerable> 
     public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) throws JsonMappingException {
         if (javaType == null) { // Are we the 'untyped' Enumerable deserializer?
             if (property != null && property.getType() != null) {
-                return new EnumerableJackson2Deserializer(property.getType());
+                return new EnumerableDeserializer(property.getType());
             } else if (ctxt != null) {
                 final JavaType contextualType = Compatibility.getContextualType(ctxt);
                 if (contextualType != null) {
-                    return new EnumerableJackson2Deserializer(contextualType);
+                    return new EnumerableDeserializer(contextualType);
                 }
             }
         }
@@ -124,6 +128,15 @@ public class EnumerableJackson2Deserializer extends StdDeserializer<Enumerable> 
             }
         }
         throw new IllegalStateException("JSON stream ended while parsing an Enumerable object.");
+    }
+
+    /**
+     * Non-abstract {@link Enumerable} class to serialize to if the concrete type can somehow not be determined.
+     */
+    static final class UnknownEnumerable extends Enumerable {
+        private UnknownEnumerable(String value) {
+            super(value);
+        }
     }
 
 }

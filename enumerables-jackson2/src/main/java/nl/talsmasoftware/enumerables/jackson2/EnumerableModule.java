@@ -29,16 +29,16 @@ import static nl.talsmasoftware.enumerables.jackson2.SerializationMethod.AS_STRI
  *
  * @author Sjoerd Talsma
  */
-public class EnumerableJackson2Module extends SimpleModule {
+public class EnumerableModule extends SimpleModule {
 
     private final SerializationMethod serializationMethod;
-    private final EnumerableJackson2Deserializer deserializer = new EnumerableJackson2Deserializer();
+    private final EnumerableDeserializer deserializer = new EnumerableDeserializer();
 
     /**
      * Constructor that will serialize {@link Enumerable} objects as primitive String values.
      * Both primitive Strings and JSON object representations can be deserialized.
      */
-    public EnumerableJackson2Module() {
+    public EnumerableModule() {
         this(null);
     }
 
@@ -50,10 +50,10 @@ public class EnumerableJackson2Module extends SimpleModule {
      * @see SerializationMethod#AS_STRING
      * @see SerializationMethod#AS_OBJECT
      */
-    public EnumerableJackson2Module(SerializationMethod serializationMethod) {
+    public EnumerableModule(SerializationMethod serializationMethod) {
         super("Enumerable mapping module");
         this.serializationMethod = serializationMethod == null ? AS_STRING : serializationMethod;
-        super.addSerializer(Enumerable.class, new EnumerableJackson2Serializer(this.serializationMethod));
+        super.addSerializer(Enumerable.class, new EnumerableSerializer(this.serializationMethod));
         super.addDeserializer(Enumerable.class, this.deserializer);
     }
 
@@ -79,7 +79,7 @@ public class EnumerableJackson2Module extends SimpleModule {
                 public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config, BeanDescription beanDesc, JsonDeserializer<?> deserializer) {
                     // Jackson wants to use its default bean deserializer for subtypes of Enumerable.
                     // We must prevent that; return the deserializer for Enumerables instead.
-                    return isEnumberableSubtype(beanDesc) ? EnumerableJackson2Module.this.deserializer
+                    return isEnumberableSubtype(beanDesc) ? EnumerableModule.this.deserializer
                             : super.modifyDeserializer(config, beanDesc, deserializer);
                 }
             });
@@ -94,8 +94,8 @@ public class EnumerableJackson2Module extends SimpleModule {
 
     @Override
     public boolean equals(Object other) {
-        return this == other || (other instanceof EnumerableJackson2Module
-                && serializationMethod.equals(((EnumerableJackson2Module) other).serializationMethod));
+        return this == other || (other instanceof EnumerableModule
+                && serializationMethod.equals(((EnumerableModule) other).serializationMethod));
     }
 
     @Override
