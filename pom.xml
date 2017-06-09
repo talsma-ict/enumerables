@@ -38,6 +38,7 @@
         <module>enumerables-validation</module>
         <module>enumerables-jaxrs</module>
         <module>enumerables-jackson2</module>
+        <module>enumerables-gson</module>
     </modules>
 
     <licenses>
@@ -143,6 +144,16 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>enumerables-jaxrs</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>enumerables-jackson2</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>enumerables-gson</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
