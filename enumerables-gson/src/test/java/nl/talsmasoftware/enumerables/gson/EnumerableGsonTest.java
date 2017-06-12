@@ -27,9 +27,7 @@ import static nl.talsmasoftware.enumerables.gson.GsonEnumerables.defaultGsonBuil
 import static nl.talsmasoftware.enumerables.gson.SerializationMethod.AS_OBJECT;
 import static nl.talsmasoftware.enumerables.gson.SerializationMethod.AS_STRING;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
 
 /**
@@ -91,6 +89,15 @@ public class EnumerableGsonTest {
         assertThat(parsed, is(equalTo(astonMartin)));
         parsed = createGsonBuilder(AS_OBJECT).create().fromJson(ASTON_MARTIN_OBJECT_JSON, Car.class);
         assertThat(parsed, is(equalTo(astonMartin)));
+    }
+
+    @Test
+    public void testDeserialization_asBoolean() throws IOException {
+        Car parsed = defaultGsonBuilder().create().fromJson("{\"brand\": true}", Car.class);
+        assertThat(parsed, is(equalTo(new Car("true"))));
+
+        parsed = defaultGsonBuilder().create().fromJson("{\"brand\": {\"value\": true}}", Car.class);
+        assertThat(parsed, is(equalTo(new Car("true"))));
     }
 
     @Test

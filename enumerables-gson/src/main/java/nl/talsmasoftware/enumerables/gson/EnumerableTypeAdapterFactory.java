@@ -22,11 +22,15 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import nl.talsmasoftware.enumerables.Enumerable;
-import nl.talsmasoftware.enumerables.gson.EnumerableDeserializer.UnknownEnumerable;
 
 import java.io.IOException;
 
+import static java.lang.reflect.Modifier.isAbstract;
+
 /**
+ * Gson type adapter factory for {@link Enumerable} subclasses.
+ * A new {@link TypeAdapter} is returned for each concrete {@link Enumerable} sub-type.
+ *
  * @author Sjoerd Talsma
  */
 final class EnumerableTypeAdapterFactory implements TypeAdapterFactory {
@@ -37,7 +41,7 @@ final class EnumerableTypeAdapterFactory implements TypeAdapterFactory {
         this.serializationMethod = serializationMethod == null ? SerializationMethod.AS_STRING : serializationMethod;
     }
 
-    @SuppressWarnings("unchecked") // Beware: Intentional typecasts here.
+    @SuppressWarnings("unchecked") // Intentional typecasts here.
     public <T> TypeAdapter<T> create(final Gson gson, final TypeToken<T> type) {
         return isEnumerable(type) ?
                 (TypeAdapter<T>) new EnumerableTypeAdapter(
@@ -59,7 +63,7 @@ final class EnumerableTypeAdapterFactory implements TypeAdapterFactory {
 
         EnumerableTypeAdapter(TypeAdapter<Enumerable> delegate, Class<? extends Enumerable> enumerableType, SerializationMethod serializationMethod) {
             this.delegate = delegate;
-            this.enumerableType = Enumerable.class.equals(enumerableType) ? UnknownEnumerable.class : enumerableType;
+            this.enumerableType = isAbstract(enumerableType.getModifiers()) ? UnknownEnumerable.class : enumerableType;
             this.serializationMethod = serializationMethod;
         }
 
@@ -72,8 +76,59 @@ final class EnumerableTypeAdapterFactory implements TypeAdapterFactory {
         }
 
         public Enumerable read(JsonReader in) throws IOException {
-            // TODO: Replace the EnumerableDeserializer by actual parsing in here (similar to Jackson parser)
+            switch (in.peek()) {
+                case NULL:
+                    in.nextNull();
+                    return null;
+                case BOOLEAN:
+                    return Enumerable.parse(enumerableType, Boolean.toString(in.nextBoolean()));
+                case NUMBER:
+                case STRING:
+                    return Enumerable.parse(enumerableType, in.nextString());
+                case BEGIN_OBJECT:
+                    return readObject(in);
+                default:
+                    // fall-through to delegate reader; a custom deserializer may have been registered
+            }
             return delegate.read(in);
+        }
+
+        private Enumerable readObject(JsonReader in) throws IOException {
+            boolean valueFound = false;
+            Enumerable enumerable = null;
+
+            for (in.beginObject(); in.hasNext(); in.endObject()) {
+                if ("value".equals(in.nextName())) {
+                    valueFound = true;
+                    switch (in.peek()) {
+                        case NULL:
+                            in.nextNull();
+                            enumerable = null;
+                            break;
+                        case BOOLEAN:
+                            enumerable = Enumerable.parse(enumerableType, Boolean.toString(in.nextBoolean()));
+                            break;
+                        default: // Assume value is either NUMBER or STRING:
+                            enumerable = Enumerable.parse(enumerableType, in.nextString());
+                    }
+                } else {
+                    in.skipValue();
+                }
+            }
+
+            if (!valueFound) {
+                throw new IllegalStateException("Attribute \"value\" is required to parse an Enumerable JSON object.");
+            }
+            return enumerable;
+        }
+    }
+
+    /**
+     * Non-abstract {@link Enumerable} class to serialize to if the concrete type can somehow not be determined.
+     */
+    static final class UnknownEnumerable extends Enumerable {
+        private UnknownEnumerable(String value) {
+            super(value);
         }
     }
 
