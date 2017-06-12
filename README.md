@@ -1,6 +1,6 @@
 [![Build Status][ci-img]][ci]
+[![Coverage Status][coveralls-img]][coveralls]
 [![Released Version][maven-img]][maven]
-
 
 # Enumerables
 
@@ -172,3 +172,5 @@ Only unanticipated values will result in new objects.
   [ci]: https://travis-ci.org/talsma-ict/enumerables
   [maven-img]: https://img.shields.io/maven-central/v/nl.talsmasoftware.enumerables/enumerables.svg
   [maven]: http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22nl.talsmasoftware.enumerables%22
+  [coveralls-img]: https://coveralls.io/repos/github/talsma-ict/enumerables/badge.svg
+  [coveralls]: https://coveralls.io/github/talsma-ict/enumerables

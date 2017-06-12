@@ -32,6 +32,9 @@ install:
 script:
   - .travis/publish.sh
 
+after_success:
+ - ./mvnw -s .mvn/settings.xml jacoco:report coveralls:report
+
 branches:
   except:
     - /^[0-9]/
