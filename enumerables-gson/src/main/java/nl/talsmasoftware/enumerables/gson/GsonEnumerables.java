@@ -59,9 +59,7 @@ public final class GsonEnumerables {
      */
     public static GsonBuilder configureGsonBuilder(GsonBuilder gsonBuilder, SerializationMethod serializationMethod) {
         if (gsonBuilder != null) {
-            gsonBuilder = gsonBuilder
-                    .registerTypeAdapterFactory(new EnumerableTypeAdapterFactory(serializationMethod))
-                    .registerTypeHierarchyAdapter(Enumerable.class, new EnumerableDeserializer());
+            gsonBuilder = gsonBuilder.registerTypeAdapterFactory(new EnumerableTypeAdapterFactory(serializationMethod));
         }
         return gsonBuilder;
     }
