@@ -97,7 +97,8 @@ final class EnumerableTypeAdapterFactory implements TypeAdapterFactory {
             boolean valueFound = false;
             Enumerable enumerable = null;
 
-            for (in.beginObject(); in.hasNext(); in.endObject()) {
+            in.beginObject();
+            while (in.hasNext()) {
                 if ("value".equals(in.nextName())) {
                     valueFound = true;
                     switch (in.peek()) {
@@ -115,6 +116,7 @@ final class EnumerableTypeAdapterFactory implements TypeAdapterFactory {
                     in.skipValue();
                 }
             }
+            in.endObject();
 
             if (!valueFound) {
                 throw new IllegalStateException("Attribute \"value\" is required to parse an Enumerable JSON object.");

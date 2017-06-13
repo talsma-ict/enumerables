@@ -27,7 +27,11 @@ import static nl.talsmasoftware.enumerables.gson.GsonEnumerables.defaultGsonBuil
 import static nl.talsmasoftware.enumerables.gson.SerializationMethod.AS_OBJECT;
 import static nl.talsmasoftware.enumerables.gson.SerializationMethod.AS_STRING;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.fail;
 
 /**
@@ -88,6 +92,25 @@ public class EnumerableGsonTest {
         Car parsed = createGsonBuilder(AS_STRING).create().fromJson(ASTON_MARTIN_OBJECT_JSON, Car.class);
         assertThat(parsed, is(equalTo(astonMartin)));
         parsed = createGsonBuilder(AS_OBJECT).create().fromJson(ASTON_MARTIN_OBJECT_JSON, Car.class);
+        assertThat(parsed, is(equalTo(astonMartin)));
+    }
+
+    @Test
+    public void testDeserialization_jsonObject_valueNull() throws IOException {
+        Car parsed = createGsonBuilder(AS_OBJECT).create().fromJson("{\"brand\": {\"value\": null}}", Car.class);
+        assertThat(parsed, is(notNullValue()));
+        assertThat(parsed.brand, is(nullValue()));
+    }
+
+    @Test(expected = JsonSyntaxException.class)
+    public void testDeserialization_array() throws IOException {
+        defaultGsonBuilder().create().fromJson("{\"brand\": []}", Car.class);
+        fail("Json syntax exception expected.");
+    }
+
+    @Test
+    public void testDeserialization_irrelevantFields() throws IOException {
+        Car parsed = defaultGsonBuilder().create().fromJson("{\"brand\": {\"value\": \"Aston martin\", \"type\": \"Sports coupe\"}}", Car.class);
         assertThat(parsed, is(equalTo(astonMartin)));
     }
 

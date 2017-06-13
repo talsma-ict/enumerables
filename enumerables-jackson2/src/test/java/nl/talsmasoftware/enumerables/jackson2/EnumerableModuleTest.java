@@ -33,12 +33,16 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 import static nl.talsmasoftware.enumerables.jackson2.EnumerableDeserializerTest.jsonString;
 import static nl.talsmasoftware.enumerables.jackson2.SerializationMethod.AS_OBJECT;
+import static nl.talsmasoftware.enumerables.jackson2.SerializationMethod.AS_STRING;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -209,5 +213,16 @@ public class EnumerableModuleTest {
         ObjectNode objectNode = mapper.readTree(jp);
         PlainTestObject actual = mapper.readValue(mapper.treeAsTokens(objectNode), PlainTestObject.class);
         assertThat(actual, is(equalTo(new PlainTestObject(BigCo.MICROSOFT))));
+    }
+
+    @Test
+    public void testHashcode_equals() {
+        Set<EnumerableModule> set = new HashSet<EnumerableModule>();
+        assertThat(set.add(module), is(true));
+        assertThat(set.add(module), is(false));
+        assertThat(set.add(new EnumerableModule(AS_STRING)), is(false));
+        assertThat(set.add(new EnumerableModule(AS_OBJECT)), is(true));
+        assertThat(set.add(new EnumerableModule(AS_STRING.except(BigCo.class))), is(true));
+        assertThat(set, hasSize(3));
     }
 }
