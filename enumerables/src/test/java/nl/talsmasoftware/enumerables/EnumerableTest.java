@@ -17,6 +17,12 @@ package nl.talsmasoftware.enumerables;
 
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -357,6 +363,43 @@ public class EnumerableTest {
             fail("Exception expected due to non-constant value.");
         } catch (Enumerable.ConstantNotFoundException expected) {
             assertThat(expected.getMessage(), is(equalTo("No Enumerable constant \"Fruit.Grapefruit\" found.")));
+        }
+    }
+
+    @Test
+    public void testDeserialize_nonConstantValue() {
+        Fruit grapefruit = Enumerable.parse(Fruit.class, "Grapefruit");
+        Fruit deserialized = deserialize(serialize(grapefruit));
+
+        assertThat(deserialized, is(equalTo(grapefruit)));
+    }
+
+    @Test
+    public void testDeserialize_sameConstantInstance() {
+        Fruit deserialized = deserialize(serialize(Fruit.ORANGE));
+
+        assertThat(deserialized, is(equalTo(Fruit.ORANGE)));
+        assertThat(deserialized, is(sameInstance(Fruit.ORANGE)));
+    }
+
+    private static byte[] serialize(Serializable value) {
+        try {
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            new ObjectOutputStream(output).writeObject(value);
+            return output.toByteArray();
+        } catch (IOException ioe) {
+            throw new IllegalStateException("Unexpected serialization I/O exception: " + ioe.getMessage(), ioe);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <S extends Serializable> S deserialize(byte[] bytes) {
+        try {
+            return (S) new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject();
+        } catch (IOException ioe) {
+            throw new IllegalStateException("Unexpected deserialization I/O exception: " + ioe.getMessage(), ioe);
+        } catch (ClassNotFoundException cnfe) {
+            throw new IllegalStateException("Deserialized class missing: " + cnfe.getMessage(), cnfe);
         }
     }
 

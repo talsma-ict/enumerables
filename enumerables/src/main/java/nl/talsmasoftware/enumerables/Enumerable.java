@@ -30,9 +30,13 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
 import static java.lang.Integer.signum;
-import static java.lang.reflect.Modifier.*;
+import static java.lang.reflect.Modifier.isFinal;
+import static java.lang.reflect.Modifier.isPublic;
+import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.asList;
-import static java.util.Collections.*;
+import static java.util.Collections.emptySet;
+import static java.util.Collections.singleton;
+import static java.util.Collections.unmodifiableSet;
 
 /**
  * The <code>Enumerable</code> class is <strong>very</strong> similar to a standard Java {@link Enum} type.
@@ -198,7 +202,7 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
     /**
      * @return Re-parse an enumerable object after deserialization to ensure that constants remain constant.
      */
-    private Object readResolve() {
+    protected Object readResolve() {
         final Enumerable reParsed = parse(getClass(), value);
         return reParsed.name() != null ? reParsed : this; // name found? Then return the parsed constant reference.
     }
