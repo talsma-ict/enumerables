@@ -15,6 +15,7 @@
  */
 package nl.talsmasoftware.enumerables.validation;
 
+import nl.talsmasoftware.enumerables.Enumerable;
 import nl.talsmasoftware.enumerables.constraints.IsOneOf;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -31,7 +32,12 @@ import java.util.Set;
 import static java.util.Locale.ENGLISH;
 import static java.util.Locale.GERMAN;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.hasToString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 
 /**
@@ -43,8 +49,16 @@ public class IsOneOfEnumerablesValidatorTest {
         @IsOneOf({"Ferrari", "Aston martin"})
         public CarBrand brand;
 
+        @IsOneOf(value = {"Ferrari", "Aston martin"}, caseSensitive = false)
+        public CarBrand caseInsensitiveBrand;
+
         ValidatedObject(CarBrand brand) {
+            this(brand, null);
+        }
+
+        ValidatedObject(CarBrand brand, CarBrand caseInsensitiveBrand) {
             this.brand = brand;
+            this.caseInsensitiveBrand = caseInsensitiveBrand;
         }
     }
 
@@ -87,6 +101,19 @@ public class IsOneOfEnumerablesValidatorTest {
         violations = validator.validate(new ValidatedObject(CarBrand.LAMBORGHINI));
         assertThat(violations, hasSize(1));
         assertThat(violations.iterator().next().getPropertyPath(), hasToString("brand"));
+    }
+
+    @Test
+    public void testIsOneOf_caseInsensitive() {
+        CarBrand loweredFerrari = Enumerable.parse(CarBrand.class, "ferrari");
+        assertThat(loweredFerrari, is(not(equalTo(CarBrand.FERRARI))));
+
+        // Verify validationerror
+        violations = validator.validate(new ValidatedObject(loweredFerrari));
+        assertThat(violations, hasSize(1));
+
+        violations = validator.validate(new ValidatedObject(null, loweredFerrari));
+        assertThat(violations, is(empty()));
     }
 
     @Test
