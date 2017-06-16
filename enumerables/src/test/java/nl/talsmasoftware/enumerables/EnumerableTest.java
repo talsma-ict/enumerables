@@ -177,6 +177,24 @@ public class EnumerableTest {
         assertThat("Factory may not have been called", called.get(), is(false));
     }
 
+    static final class EnumerableWithoutStringConstructor extends Enumerable {
+        EnumerableWithoutStringConstructor() {
+            super(null);
+        }
+    }
+
+    @Test
+    public void testParse_classWithoutStringConstructor() {
+        try {
+            Enumerable.parse(EnumerableWithoutStringConstructor.class, "Dummy value");
+            fail("Exception expected.");
+        } catch (RuntimeException expected) {
+            assertThat(expected, hasToString(containsString(
+                    "Could not create new \"" + EnumerableWithoutStringConstructor.class.getName() +
+                            "\" object with value \"Dummy value\"")));
+        }
+    }
+
     @Test
     public void testValues_typeNull() {
         try {

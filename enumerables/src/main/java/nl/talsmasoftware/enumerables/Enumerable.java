@@ -27,7 +27,6 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.logging.Logger;
 
 import static java.lang.Integer.signum;
 import static java.lang.reflect.Modifier.isFinal;
@@ -176,8 +175,8 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
 
     /**
      * The implementation of <code>toString()</code> is importantly different from Java's {@link Enum} implementation,
-     * which by default returns the {@link #name() name} of the enumeration constant.
-     * The problem with this is, is that lazy developers can start depending on that behaviour and comparing with
+     * which by default returns the {@link #name() name} of the enumeration constant.<br>
+     * The problem with this is, is that lazy developers may start depending on that behaviour and comparing with
      * implicitly 'toString'-ed values where they <em>should</em> compare to the constant's {@link Enum#name() name}
      * instead. This increases the likelyhood of bugs.
      * <p>
@@ -337,7 +336,6 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
 
     // Class constants, all private:
     private static final long serialVersionUID = 1L;
-    private static final Logger LOGGER = Logger.getLogger(Enumerable.class.getName());
     // Map from concrete subclass type to array of reflected constants.
     private static final ConcurrentMap<String, Object> CONSTANTS = new ConcurrentHashMap<String, Object>();
 
@@ -421,8 +419,6 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
     private static <T> T _callStringConstructor(Class<T> type, String value)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         Constructor<T> constructor = type.getDeclaredConstructor(String.class);
-        if (constructor == null)
-            throw new IllegalStateException(String.format("String constructor for %s is null.", type));
         synchronized (constructor) {
             final boolean accessible = constructor.isAccessible();
             try {
@@ -445,11 +441,6 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
         private NameAndOrdinal(int ordinal, String name) {
             this.ordinal = ordinal;
             this.name = name;
-        }
-
-        @Override
-        public String toString() { // For debugging purposes only.
-            return this == NONE ? "NONE" : "NameAndOrdinal{ordinal=" + ordinal + ", name=\"" + name + "\"}";
         }
     }
 
