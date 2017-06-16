@@ -342,15 +342,6 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
     private static final ConcurrentMap<String, Object> CONSTANTS = new ConcurrentHashMap<String, Object>();
 
     /**
-     * Initializes the constants for this class if that has not yet been done.
-     */
-    private void _initConstants() {
-        if (!CONSTANTS.containsKey(getClass().getName())) {
-            _rawValues(getClass());
-        }
-    }
-
-    /**
      * <ul>
      * <li>If and only if a constant was detected for this value, the constants name and ordinal.</li>
      * <li>Otherwise {@code NONE}.</li>
