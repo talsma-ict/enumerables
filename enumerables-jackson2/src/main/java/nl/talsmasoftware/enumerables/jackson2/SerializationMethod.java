@@ -84,7 +84,7 @@ public final class SerializationMethod {
             if (exceptionType != null) sortedExceptionSet.add(exceptionType.getName());
         }
         return this.sortedExceptionTypes.length == sortedExceptionSet.size() ? this
-                : new SerializationMethod(this.objectSerializationByDefault, sortedExceptionSet);
+                : new SerializationMethod(isObjectSerializationByDefault(), sortedExceptionSet);
     }
 
     private boolean isException(Class<? extends Enumerable> enumerableType) {
@@ -103,7 +103,7 @@ public final class SerializationMethod {
      * @see #isObjectSerializationByDefault()
      */
     public boolean serializeAsObject(Class<? extends Enumerable> enumerableType) {
-        return objectSerializationByDefault != isException(enumerableType);
+        return isObjectSerializationByDefault() != isException(enumerableType);
     }
 
     @Override
@@ -122,15 +122,15 @@ public final class SerializationMethod {
      * @return String representation {@code "As object"} of {@code "As string"} plus any exceptions.
      */
     public String toString() {
-        String result = objectSerializationByDefault ? "As object" : "As string";
+        String result = isObjectSerializationByDefault() ? "As object" : "As string";
         if (sortedExceptionTypes.length > 0) {
-            StringBuilder builder = new StringBuilder(result).append(", except {");
+            StringBuilder builder = new StringBuilder(result).append(", except [");
             String sep = "";
             for (String exceptionType : sortedExceptionTypes) {
                 builder.append(sep).append(exceptionType.substring(exceptionType.lastIndexOf('.') + 1));
                 sep = ", ";
             }
-            result = builder.append('}').toString();
+            result = builder.append(']').toString();
         }
         return result;
     }

@@ -18,8 +18,18 @@ package nl.talsmasoftware.enumerables.jaxrs;
 import nl.talsmasoftware.enumerables.Enumerable;
 import org.junit.Test;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasToString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.junit.Assert.fail;
 
 public class EnumerableParamConverterTest {
@@ -56,4 +66,18 @@ public class EnumerableParamConverterTest {
         assertThat(converter.toString(null), is(nullValue()));
     }
 
+    @Test
+    public void testForLoggingErrors() {
+        Logger logger = Logger.getLogger(EnumerableParamConverter.class.getName());
+        logger.setLevel(Level.FINEST);
+        testFromString();
+        testToString();
+        logger.setLevel(Level.INFO);
+    }
+
+    @Test
+    public void testConverterToString() {
+        assertThat(new EnumerableParamConverter<TestEnumerable>(TestEnumerable.class),
+                hasToString(stringContainsInOrder(asList("EnumerableParamConverter", "TestEnumerable"))));
+    }
 }

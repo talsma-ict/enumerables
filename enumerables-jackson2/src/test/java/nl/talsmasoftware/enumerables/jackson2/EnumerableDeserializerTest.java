@@ -111,6 +111,17 @@ public class EnumerableDeserializerTest {
     }
 
     @Test
+    public void testDeserialize_irrelevantOtherFields() throws IOException {
+        String json = "{ \"bigCo\" : { \"name\" : \"Company name\", " +
+                "\"childObject\" : {\"type\" : \"dummy\" }, " +
+                "\"emptyArray\" : [], " +
+                "\"someNumber\" : 12, " +
+                "\"value\" : \"Apple\"" +
+                " } }";
+        assertThat(mapper.readValue(json, PlainTestObject.class), is(equalTo(new PlainTestObject(BigCo.APPLE))));
+    }
+
+    @Test
     public void testDeserialize_EnumerableClass() throws IOException {
         String json = "{ \"value\" : \"IBM\", \"description\" : \"International Business Machines\" }";
         Enumerable deserialized = mapper.readValue(json, Enumerable.class);

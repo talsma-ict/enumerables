@@ -28,8 +28,10 @@ import java.io.IOException;
 
 import static nl.talsmasoftware.enumerables.jackson2.EnumerableDeserializerTest.jsonString;
 import static nl.talsmasoftware.enumerables.jackson2.SerializationMethod.AS_OBJECT;
+import static nl.talsmasoftware.enumerables.jackson2.SerializationMethod.AS_STRING;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 
 public class EnumerableSerializerTest {
@@ -82,4 +84,13 @@ public class EnumerableSerializerTest {
         assertThat(actual, is(equalTo(expected)));
     }
 
+    @Test
+    public void testToString() {
+        assertThat(new EnumerableSerializer(AS_OBJECT),
+                hasToString("EnumerableSerializer{As object}"));
+        assertThat(new EnumerableSerializer(AS_STRING),
+                hasToString("EnumerableSerializer{As string}"));
+        assertThat(new EnumerableSerializer(AS_OBJECT.except(BigCo.class)),
+                hasToString("EnumerableSerializer{As object, except [PlainTestObject$BigCo]}"));
+    }
 }
