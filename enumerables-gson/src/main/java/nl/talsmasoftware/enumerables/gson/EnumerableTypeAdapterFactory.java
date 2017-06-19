@@ -56,6 +56,23 @@ final class EnumerableTypeAdapterFactory implements TypeAdapterFactory {
         return rawType != null && Enumerable.class.isAssignableFrom(rawType);
     }
 
+    @Override
+    public int hashCode() {
+        return serializationMethod.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return this == other || (other instanceof EnumerableTypeAdapterFactory
+                && serializationMethod.equals(((EnumerableTypeAdapterFactory) other).serializationMethod)
+        );
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + '{' + serializationMethod + '}';
+    }
+
     static class EnumerableTypeAdapter extends TypeAdapter<Enumerable> {
         final TypeAdapter<Enumerable> delegate;
         final Class<? extends Enumerable> enumerableType;
