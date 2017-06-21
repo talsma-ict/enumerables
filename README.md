@@ -163,7 +163,6 @@ if they carry meaning after deserialization.
 resolves back to a listed constant reference if its value matches the constant.  
 Only unanticipated values will result in new objects.
 
-[//]: # (TODO: JSON serialization)
 [//]: # (TODO: XML serialization)
 [//]: # (TODO: Custom descriptions)
 
