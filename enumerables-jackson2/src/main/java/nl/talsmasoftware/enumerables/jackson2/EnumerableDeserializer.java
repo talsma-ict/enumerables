@@ -17,11 +17,7 @@ package nl.talsmasoftware.enumerables.jackson2;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.BeanProperty;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import nl.talsmasoftware.enumerables.Enumerable;
@@ -69,7 +65,7 @@ public class EnumerableDeserializer extends StdDeserializer<Enumerable> implemen
      * @throws IOException when reading the parser threw I/O exceptions.
      */
     protected Class<? extends Enumerable> getType(JsonParser jp) throws IOException {
-        Class<? extends Enumerable> type = javaType == null ? null : asEnumerableSubtype(javaType.getRawClass());
+        Class<? extends Enumerable> type = javaType == null ? null : asEnumerableSubtype(javaType);
         if (type == null) {
             final Object typeId = Compatibility.getTypeId(jp);
             type = asEnumerableSubtype(typeId instanceof JavaType ? ((JavaType) typeId).getRawClass() : typeId);
@@ -79,7 +75,13 @@ public class EnumerableDeserializer extends StdDeserializer<Enumerable> implemen
 
     @SuppressWarnings("unchecked")
     public static <E extends Enumerable> Class<E> asEnumerableSubtype(Object type) {
-        return type instanceof Class<?> && Enumerable.class.isAssignableFrom((Class<?>) type) ? (Class<E>) type : null;
+        if (type instanceof Class<?> && Enumerable.class.isAssignableFrom((Class<?>) type)) return (Class<E>) type;
+        if (type instanceof JavaType) {
+            return asEnumerableSubtype(((JavaType) type).isContainerType()
+                    ? ((JavaType) type).getContentType()
+                    : ((JavaType) type).getRawClass());
+        }
+        return null;
     }
 
     /**
