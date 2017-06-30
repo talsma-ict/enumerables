@@ -21,8 +21,8 @@ import nl.talsmasoftware.enumerables.jackson2.EnumerableModule;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
 
+import static java.util.Arrays.asList;
 import static nl.talsmasoftware.enumerables.jackson2.SerializationMethod.AS_STRING;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,40 +35,33 @@ public class DeserializationEqualityTest {
     private static final ObjectMapper MAPPER = new ObjectMapper()
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .registerModule(new EnumerableModule(AS_STRING));
-//            .registerModule(new WaardenlijstJackson2Module(WaardenlijstSerialisatieWijze.ALS_STRING));
 
     @Test
     public void testAsList() throws IOException {
         TypeWithEnumerableList original = new TypeWithEnumerableList();
-        original.stringValue = "Een String";
-        original.teammembers = Arrays.asList(Team.RICHARD);
+        original.stringValue = "A String value";
+        original.teammembers = asList(Team.RICHARD);
         String asString = MAPPER.writeValueAsString(original);
 
         TypeWithEnumerableList deserialized = MAPPER.readValue(asString, TypeWithEnumerableList.class);
-
-        System.out.println("Serialized: " + asString);
-
-        assertThat("deserialized representatie", deserialized, equalTo(original));
+        assertThat("deserialized representation", deserialized, equalTo(original));
     }
 
     @Test
     public void testAsWrappedList() throws IOException {
         TypeWithListContainingNestedEnumerable original = new TypeWithListContainingNestedEnumerable();
-        original.stringValue = "Een String";
+        original.stringValue = "A String value";
 
         TypeWithEnumerable wrappedWaardelijst = new TypeWithEnumerable();
         wrappedWaardelijst.teammember = Team.RICHARD;
-        wrappedWaardelijst.otherValue = "Een String";
+        wrappedWaardelijst.otherValue = "Another String value";
 
-        original.teammembers = Arrays.asList(wrappedWaardelijst);
+        original.teammembers = asList(wrappedWaardelijst);
 
         String asString = MAPPER.writeValueAsString(original);
 
         TypeWithListContainingNestedEnumerable deserialized = MAPPER.readValue(asString, TypeWithListContainingNestedEnumerable.class);
-
-        System.out.println("Serialized: " + asString);
-
-        assertThat("deserialized representatie", deserialized, equalTo(original));
+        assertThat("deserialized representation", deserialized, equalTo(original));
     }
 
 }

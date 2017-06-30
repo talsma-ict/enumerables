@@ -16,7 +16,7 @@
 package nl.talsmasoftware.enumerables.jackson2;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import nl.talsmasoftware.enumerables.Enumerable;
@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import static com.fasterxml.jackson.core.Version.unknownVersion;
 import static nl.talsmasoftware.enumerables.jackson2.EnumerableDeserializerTest.jsonString;
 import static nl.talsmasoftware.enumerables.jackson2.SerializationMethod.AS_OBJECT;
 import static nl.talsmasoftware.enumerables.jackson2.SerializationMethod.AS_STRING;
@@ -42,7 +43,7 @@ public class EnumerableSerializerTest {
     public void setUp() {
         mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        SimpleModule bigCoModule = new SimpleModule("BigCo module", Version.unknownVersion());
+        SimpleModule bigCoModule = new SimpleModule("BigCo module", unknownVersion());
         bigCoModule.addSerializer(BigCo.class, new EnumerableSerializer());
         mapper.registerModule(bigCoModule);
     }
@@ -58,7 +59,7 @@ public class EnumerableSerializerTest {
     }
 
     @Test
-    public void testSerialize_asString() throws IOException {
+    public void testSerialize_stringValue() throws IOException {
         for (BigCo bigCo : Enumerable.values(BigCo.class)) {
             String expected = jsonString(bigCo.getValue());
             String actual = mapper.writeValueAsString(bigCo);
@@ -69,8 +70,8 @@ public class EnumerableSerializerTest {
     }
 
     @Test
-    public void testSerialize_asJsonObject() throws IOException {
-        SimpleModule bigCoModule = new SimpleModule("BigCo module", Version.unknownVersion());
+    public void testSerialize_jsonObject() throws IOException {
+        SimpleModule bigCoModule = new SimpleModule("BigCo module", unknownVersion());
         bigCoModule.addSerializer(BigCo.class, new EnumerableSerializer(AS_OBJECT));
         mapper.registerModule(bigCoModule);
 
@@ -85,6 +86,22 @@ public class EnumerableSerializerTest {
     }
 
     @Test
+    public void testSerialize_jsonWithAdditionalField() throws JsonProcessingException {
+        mapper.registerModule(new SimpleModule().addSerializer(Enumerable.class, new EnumerableSerializer(AS_OBJECT)));
+
+        assertThat(mapper.writeValueAsString(Numbers.ONE),
+                is("{\"value\":\"ONE\",\"number\":1}"));
+        assertThat(mapper.writeValueAsString(Numbers.TWO),
+                is("{\"value\":\"TWO\",\"number\":2}"));
+        assertThat(mapper.writeValueAsString(Enumerable.parse(Numbers.class, "THIRTEEN")),
+                is("{\"value\":\"THIRTEEN\"}"));
+
+        mapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
+        assertThat(mapper.writeValueAsString(Enumerable.parse(Numbers.class, "THIRTEEN")),
+                is("{\"value\":\"THIRTEEN\",\"number\":null}"));
+    }
+
+    @Test
     public void testToString() {
         assertThat(new EnumerableSerializer(AS_OBJECT),
                 hasToString("EnumerableSerializer{As object}"));
@@ -93,4 +110,5 @@ public class EnumerableSerializerTest {
         assertThat(new EnumerableSerializer(AS_OBJECT.except(BigCo.class)),
                 hasToString("EnumerableSerializer{As object, except [PlainTestObject$BigCo]}"));
     }
+
 }
