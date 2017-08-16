@@ -45,7 +45,7 @@ public class EnumerableModule extends SimpleModule {
     /**
      * Constructor for custom {@link SerializationMethod} for {@link Enumerable} types.
      *
-     * @param serializationMethod The serialization method to use. This paramter may be {@code null} in which case the
+     * @param serializationMethod The serialization method to use. This parameter may be {@code null} in which case the
      *                            {@code AS_STRING} method will be used by default.
      * @see SerializationMethod#AS_STRING
      * @see SerializationMethod#AS_OBJECT
@@ -57,7 +57,7 @@ public class EnumerableModule extends SimpleModule {
         super.addDeserializer(Enumerable.class, this.deserializer);
     }
 
-    private static boolean isEnumberableSubtype(BeanDescription beanDesc) {
+    private static boolean isEnumerableSubtype(BeanDescription beanDesc) {
         final Class<?> type = beanDesc == null ? null : beanDesc.getType().getRawClass();
         return type != null && Enumerable.class.isAssignableFrom(type) && !Enumerable.class.equals(type);
     }
@@ -79,7 +79,7 @@ public class EnumerableModule extends SimpleModule {
                 public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config, BeanDescription beanDesc, JsonDeserializer<?> deserializer) {
                     // Jackson wants to use its default bean deserializer for subtypes of Enumerable.
                     // We must prevent that; return the deserializer for Enumerables instead.
-                    return isEnumberableSubtype(beanDesc) ? EnumerableModule.this.deserializer
+                    return isEnumerableSubtype(beanDesc) ? EnumerableModule.this.deserializer
                             : super.modifyDeserializer(config, beanDesc, deserializer);
                 }
             });
