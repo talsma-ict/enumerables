@@ -16,7 +16,7 @@ However, it has a special feature that makes it suitable for using in an API you
 Ever have an actual `Enum` returned in an API? Then have the customer come up with an additional value for
 that `Enum` that should also be supported?  
 \***Bang!**\* there goes your API compatibility.
-You will either have to tel all your existing customers
+You will either have to tell all your existing customers
 _"sorry, the api is now broken"_ or create a new version 
 **beside** the existing API and declare the old one deprecated.
 However, you'll still have to think about how to represent 
