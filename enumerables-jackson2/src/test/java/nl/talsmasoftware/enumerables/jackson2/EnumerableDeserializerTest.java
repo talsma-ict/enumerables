@@ -28,13 +28,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasToString;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.hamcrest.Matchers.*;
 
 public class EnumerableDeserializerTest {
 
@@ -130,4 +124,17 @@ public class EnumerableDeserializerTest {
         assertThat(deserialized, is(instanceOf(EnumerableDeserializer.UnknownEnumerable.class)));
     }
 
+    @Test
+    public void testDeserialize_EnumberableField() throws IOException {
+        String json = "{\"member\" : \"Value\" }";
+        ContainsEnumerable container = mapper.readValue(json, ContainsEnumerable.class);
+        assertThat(container, is(notNullValue()));
+        assertThat(container.member, is(notNullValue()));
+        assertThat(container.member, is(instanceOf(EnumerableDeserializer.UnknownEnumerable.class)));
+        assertThat(container.member.getValue(), is("Value"));
+    }
+
+    static class ContainsEnumerable {
+        public Enumerable member;
+    }
 }
