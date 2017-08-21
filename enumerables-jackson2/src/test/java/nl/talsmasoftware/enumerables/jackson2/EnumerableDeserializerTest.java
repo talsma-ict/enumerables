@@ -147,6 +147,17 @@ public class EnumerableDeserializerTest {
         verify(jp).getTypeId();
     }
 
+    @Test
+    public void testGetType_fromJsonParser_nonEnumerable() throws IOException {
+        JsonParser jp = mock(JsonParser.class);
+        when(jp.getTypeId()).thenReturn(String.class);
+
+        Class<? extends Enumerable> type = new EnumerableDeserializer().getType(jp);
+        assertThat(type, equalTo((Class) EnumerableDeserializer.UnknownEnumerable.class));
+
+        verify(jp).getTypeId();
+    }
+
     static class ContainsEnumerable {
         public Enumerable member;
     }
