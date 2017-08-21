@@ -15,6 +15,7 @@
  */
 package nl.talsmasoftware.enumerables.jackson2;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -29,6 +30,7 @@ import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
 
 public class EnumerableDeserializerTest {
 
@@ -132,6 +134,17 @@ public class EnumerableDeserializerTest {
         assertThat(container.member, is(notNullValue()));
         assertThat(container.member, is(instanceOf(EnumerableDeserializer.UnknownEnumerable.class)));
         assertThat(container.member.getValue(), is("Value"));
+    }
+
+    @Test
+    public void testGetType_fromJsonParser() throws IOException {
+        JsonParser jp = mock(JsonParser.class);
+        when(jp.getTypeId()).thenReturn(PlainTestObject.BigCo.class);
+
+        Class<? extends Enumerable> type = new EnumerableDeserializer().getType(jp);
+        assertThat(type, equalTo((Class) PlainTestObject.BigCo.class));
+
+        verify(jp).getTypeId();
     }
 
     static class ContainsEnumerable {
