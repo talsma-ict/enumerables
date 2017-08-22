@@ -163,6 +163,12 @@ if they carry meaning after deserialization.
 resolves back to a listed constant reference if its value matches the constant.  
 Only unanticipated values will result in new objects.
 
+## Validation
+
+The optional [enumerables-validation] module provides several annotations as
+`javax.validation` constraints.
+
+
 [//]: # (TODO: Document JSON serialization)
 [//]: # (TODO: Build + document XML serialization)
 [//]: # (TODO: Build + document Custom descriptions)
