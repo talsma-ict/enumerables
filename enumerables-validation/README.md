@@ -4,7 +4,8 @@ Enumerable values can be validated using the [java validation API][validation-ap
 
 ## Available constraint annotations
 
-The following annotations are available for validating `Enumerable` types:
+The following annotations are defined in the `nl.talsmasoftware.enumerables.constraints` package
+for validating `Enumerable` types:
 
 ### `@KnownValue`
 
