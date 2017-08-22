@@ -17,10 +17,11 @@ package nl.talsmasoftware.enumerables.validation;
 
 import nl.talsmasoftware.enumerables.Enumerable;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
+import static java.util.Collections.unmodifiableMap;
 
 /**
  * @author Sjoerd Talsma
@@ -56,6 +57,7 @@ public final class CarBrand extends Enumerable {
     public static final CarBrand MINI = new CarBrand("Mini");
     public static final CarBrand MITSUBISHI = new CarBrand("Mitsubishi Motors");
     public static final CarBrand NISSAN = new CarBrand("Nissan");
+    public static final CarBrand OPEL = new CarBrand("Opel");
     public static final CarBrand PEUGEOT = new CarBrand("Peugeot");
     public static final CarBrand PORSCHE = new CarBrand("Porsche");
     public static final CarBrand RENAULT = new CarBrand("Renault");
@@ -64,6 +66,7 @@ public final class CarBrand extends Enumerable {
     public static final CarBrand SUZUKI = new CarBrand("Suzuki");
     public static final CarBrand TESLA = new CarBrand("Tesla");
     public static final CarBrand TOYOTA = new CarBrand("Toyota");
+    public static final CarBrand UNITI_SWEDEN = new CarBrand("Uniti");
     public static final CarBrand VOLKSWAGEN = new CarBrand("Volkswagen");
     public static final CarBrand VOLVO = new CarBrand("Volvo");
 
@@ -71,7 +74,7 @@ public final class CarBrand extends Enumerable {
         super(value);
     }
 
-    private static final Map<String, CarBrand> LENIENT_BRANDS = Collections.unmodifiableMap(new HashMap<String, CarBrand>() {{
+    private static final Map<String, CarBrand> LENIENT_BRANDS = unmodifiableMap(new HashMap<String, CarBrand>() {{
         for (CarBrand brand : Enumerable.values(CarBrand.class)) {
             put(lenient(brand.getValue()), brand);
             put(lenient(brand.name()), brand);
@@ -79,7 +82,7 @@ public final class CarBrand extends Enumerable {
     }});
 
     /**
-     * Lenient parser because I am too lazy to remember exactly how I declared the constants ;-) ..
+     * Lenient parser because I am too lazy to remember exactly how I declared the constants and values ;-) ..
      * <p>
      * Also could be used as an example of how lenient parsing might be achieved.
      *
