@@ -165,7 +165,7 @@ Only unanticipated values will result in new objects.
 
 ## Validation
 
-The optional [enumerables-validation] module provides several annotations as
+The optional [enumerables-validation](enumerables-validation) module provides several annotations as
 `javax.validation` constraints.
 
 
