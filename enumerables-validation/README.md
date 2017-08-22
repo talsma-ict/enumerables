@@ -21,7 +21,6 @@ values.
 ```java
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
-import javax.validation.ValidationException;
 import nl.talsmasoftware.enumerables.constraints.KnownValue;
 
 public class Car {    
@@ -33,7 +32,7 @@ public class Car {
         this.brand = brand;
     }
     
-    public Set<ConstraintViolation<Car>> validateMe() throws ValidationException {
+    public Set<ConstraintViolation<Car>> validateMe() {
         return Validation.buildDefaultValidatorFactory().getValidator().validate(this);
     }
 }
