@@ -16,6 +16,9 @@ This will result in `ConstraintViolations` if the `Enumerable` value is not one 
 The annotation accepts an optional parameter `caseSensitive=false` allowing a case-insensitive match with the provided
 values.
 
+**Note**: _The `@IsOneOf` constraint can just as easily be applied to any `CharSequence` property including `String`s.
+The validation rules will be the same._
+
 ### Example
 
 ```java
