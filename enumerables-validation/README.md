@@ -2,7 +2,7 @@
 
 Enumerable values can be validated using the [java validation API][validation-api].
 
-## Available annotations
+## Available constraint annotations
 
 The following annotations are available for validating `Enumerable` types:
 
