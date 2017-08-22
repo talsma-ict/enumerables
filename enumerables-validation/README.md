@@ -22,6 +22,10 @@ The validation rules will be the same._
 
 ### Example
 
+The following example validates its 
+[`CarBrand`](src/test/java/nl/talsmasoftware/enumerables/validation/CarBrand.java)
+property type which is enumerable:
+
 ```java
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
