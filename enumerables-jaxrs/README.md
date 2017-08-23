@@ -3,8 +3,8 @@
 # Parameter conversion in JAX-RS
 
 Enumerable values can be used in [JAX-RS] rest service parameters
-of which `@PathParam` and `@QueryParam` are probably best known.
-For all supported `@...Param` parameter annotations, there's a nice summary on [wikipedia].
+annotated by `@PathParam`, `@QueryParam`, `@MatrixParam`, `@CookieParam` and `@HeaderParam`.  
+For a less technical description of [JAX-RS] please see the [corresponding wikipedia article][wikipedia].
 
 ## Usage
 
@@ -24,7 +24,7 @@ For example, in maven you can add the following dependency:
 
 The [`EnumerableParamConverterProvider`][provider-source]
 is annotated with `@Provider` so if it is managed by a Java-EE loader 
-it should be automatically picked up by your [JAX-RS].  
+it should be automatically picked up by your [JAX-RS] implementation.  
 In non-Java-EE environments it may be necessary to explicitly register the 
 [provider class][provider-source] to the [JAX-RS] implementation you use.
 
