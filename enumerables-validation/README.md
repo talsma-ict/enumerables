@@ -20,6 +20,18 @@ values.
 **Note**: _The `@IsOneOf` constraint can just as easily be applied to any `CharSequence` property including `String`s.
 The validation rules will be the same._
 
+### Getting the module
+
+Add the following dependency to your project or download it from 
+[maven central](http://repo1.maven.org/maven2/nl/talsmasoftware/enumerables/enumerables-validation/).
+```xml
+<dependency>
+    <groupId>nl.talsmasoftware.enumerables</groupId>
+    <artifactId>enumerables-validation</artifactId>
+    <version>[see maven-central badge]</version>
+</dependency>
+```
+
 ### Example
 
 The following example validates its 
