@@ -5,37 +5,8 @@
 # Enumerables
 
 Enumerables are similar to standard Java `Enum` types with the added ability 
-to represent 'unknown' values.  
+to parse 'yet unknown' values.  
 They are invaluable if you attempt to build a stable API.
-
-## Background
-
-The `Enumerable` superclass is **very** similar to a standard Java `Enum` type.  
-However, it has a special feature that makes it suitable for using in an API you are maintaining.
-
-Ever have an actual `Enum` returned in an API? Then have the customer come up with an additional value for
-that `Enum` that should also be supported?  
-\***Bang!**\* there goes your API compatibility.
-You will either have to tell all your existing customers
-_"sorry, the api is now broken"_ or create a new version 
-**beside** the existing API and declare the old one deprecated.
-However, you'll still have to think about how to represent 
-the additional value in the old version or create a special 
-exception for this case.  
-Nasty in any conceivable scenario!  
-What then.. _Strings_ ? But you want to share all those constant values you _do_ know in the API..
-
-That is exactly the reason we've created the `Enumerable` type.
-It is similar to `Enum` in that it represents a number of _known constants_ 
-but also offers a possibility to represent _yet-unknown additional values_
-by parsing them.  
-In API terms, you make a slightly lighter promise to your customer:
-I _currently_ know of these possible values which have meaning in the API, 
-but please be prepared to receive any 'other' value as well (handle as you feel fit).
-Those other values may actually even have meaning to the receiver when they are
-introduced but allow for a stable API definition.
-Introducing a new value in a new API release does not break the
-existing contract since the consumer should have already anticipated this value.
 
 ## Example
 
@@ -163,13 +134,57 @@ if they carry meaning after deserialization.
 resolves back to a listed constant reference if its value matches the constant.  
 Only unanticipated values will result in new objects.
 
-## Validation
+## Add-on modules
 
-The optional [enumerables-validation](enumerables-validation) module provides several annotations as
+### Validation
+
+The [enumerables-validation](enumerables-validation) module provides several annotations as
 `javax.validation` constraints.
 
+### JAX-RS
 
-[//]: # (TODO: Document JSON serialization)
+The [enumerables-jaxrs](enumerables-jaxrs) module provides an 
+[enumerable parameter converter provider](jaxrs-readme/enumerables-jaxrs/src/main/java/nl/talsmasoftware/enumerables/jaxrs/EnumerableParamConverterProvider.java)
+for JAX-RS.
+
+## Background
+
+The `Enumerable` superclass is **very** similar to a standard Java `Enum` type
+but allows representing _currently unknown_ values as well.
+
+### Why represent 'currently unknown' values?
+
+Have you ever had to support an API that returns an actual `Enum` value?  
+Can you remember what happened when the product owner decided that
+an additional value was needed for something?  
+\***Bang!**\* there goes your API compatibility: 
+You will either have to tell all your existing customers _"sorry, the api is now broken"_ 
+or create a new version **beside** the existing API and declare the old one deprecated.  
+Even with a new API version, you still have to think about handling the new value in the old version
+or create a special exception for this case.  
+This is nasty in any conceivable scenario!  
+
+### Change the `Enum` to a `String`, problem solved?  
+
+You still want to document all those constant values that you _do_ know, right?  
+So now there's documentation or best-case a list of constants informing users which values are _special_.
+You also lose all other `Enum` advantages.
+
+### Conclusion 
+
+That is exactly the reason we've created the `Enumerable` type.
+It is similar to `Enum` in that it represents a number of _known constants_ 
+that can be validated, iterated over and used as constants from code.
+By providing a way to parse  _yet-unknown additional values_ it allows API
+designers to make a slightly lighter promise to users:  
+I _currently_ know of these possible values which have meaning in the API,
+but please be prepared to receive any 'other' value as well (handle as you feel fit).  
+Introducing a new value in a new API release does not break the
+existing contract since the consumer should have already anticipated unknown values.
+
+
+
+[//]: # (This is a markdown comment.)
 [//]: # (TODO: Build + document XML serialization)
 [//]: # (TODO: Build + document Custom descriptions)
 
