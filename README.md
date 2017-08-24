@@ -54,7 +54,7 @@ But you can also:
  - As they aren't defined by a constant, `name()` of non-constants _always_ returns `null`:  
    `assert porsche.name() == null;`
 
-## Parsing / printing
+## Parsing and printing
 
 ```java
 public static <E extends Enumerable> E parse(Class<E> type, CharSequence value);
@@ -64,13 +64,11 @@ The parse method first compares the given value with the values of all known con
 for the specified `Enumerable` type. This results in a constant reference in most cases.
 A new object instance is only created using the `String` constructor for non-constant values.
 
-The counterpart of parsing, _printing_ is also covered:
+The counterpart of parsing, _printing_ is also covered which simply returns the value:
 
 ```java
 public static String print(Enumerable enumerable);
 ```
-
-This simply returns `enumerable == null ? null : enumerable.getValue()`.
 
 ## Enum-like behaviour
 
