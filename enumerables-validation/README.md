@@ -1,3 +1,5 @@
+[![Released Version][maven-img]][maven]
+
 # Enumerable validation
 
 Enumerable values can be validated using the [java validation API][validation-api].
@@ -72,5 +74,8 @@ Translations are provided for the following languages
 - [Dutch](src/main/resources/ValidationMessages_nl.properties)
 
 We welcome additional translations; you may submit them through github as a new issue or (preferably) as a pull-request.
+
+  [maven-img]: https://img.shields.io/maven-central/v/nl.talsmasoftware.enumerables/enumerables.svg
+  [maven]: http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22nl.talsmasoftware.enumerables%22
 
   [validation-api]: http://beanvalidation.org/
