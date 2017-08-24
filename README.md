@@ -10,7 +10,7 @@ They are invaluable if you attempt to build a stable API.
 
 ## Example
 
-Here's a working example of an `Enumerable` type:
+A working example of an `Enumerable` type:
 
 ```java
 public final class CarBrand extends Enumerable {
