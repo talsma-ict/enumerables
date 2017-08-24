@@ -8,6 +8,18 @@ Enumerables are similar to standard Java `Enum` types with the added ability
 to parse 'yet unknown' values.  
 They are invaluable if you attempt to build a stable API.
 
+## Getting the library
+
+Add the following dependency to your project or download it 
+[from maven central](http://repo1.maven.org/maven2/nl/talsmasoftware/enumerables/enumerables/).
+```xml
+<dependency>
+    <groupId>nl.talsmasoftware.enumerables</groupId>
+    <artifactId>enumerables</artifactId>
+    <version>[see maven-central badge]</version>
+</dependency>
+```
+
 ## Example
 
 A working example of an `Enumerable` type:
