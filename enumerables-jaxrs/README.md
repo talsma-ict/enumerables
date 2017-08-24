@@ -8,10 +8,10 @@ For a less technical description of [JAX-RS] please see the [corresponding wikip
 
 ## Usage
 
-### Obtaining the module
+### Getting the module
 
-Add the `enumerables-jaxrs` dependency to your application.  
-For example, in maven you can add the following dependency:
+Add the following dependency to your project or download it from 
+[maven central](http://repo1.maven.org/maven2/nl/talsmasoftware/enumerables/enumerables-jaxrs/).
 ```xml
 <dependency>
     <groupId>nl.talsmasoftware.enumerables</groupId>
