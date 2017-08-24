@@ -1,3 +1,5 @@
+[![Released Version][maven-img]][maven]
+
 # Enumerable validation
 
 Enumerable values can be validated using the [java validation API][validation-api].
@@ -19,6 +21,18 @@ values.
 
 **Note**: _The `@IsOneOf` constraint can just as easily be applied to any `CharSequence` property including `String`s.
 The validation rules will be the same._
+
+### Getting the module
+
+Add the following dependency to your project or download it from 
+[maven central](http://repo1.maven.org/maven2/nl/talsmasoftware/enumerables/enumerables-validation/).
+```xml
+<dependency>
+    <groupId>nl.talsmasoftware.enumerables</groupId>
+    <artifactId>enumerables-validation</artifactId>
+    <version>[see maven-central badge]</version>
+</dependency>
+```
 
 ### Example
 
@@ -60,5 +74,8 @@ Translations are provided for the following languages
 - [Dutch](src/main/resources/ValidationMessages_nl.properties)
 
 We welcome additional translations; you may submit them through github as a new issue or (preferably) as a pull-request.
+
+  [maven-img]: https://img.shields.io/maven-central/v/nl.talsmasoftware.enumerables/enumerables.svg
+  [maven]: http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22nl.talsmasoftware.enumerables%22
 
   [validation-api]: http://beanvalidation.org/
