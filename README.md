@@ -29,9 +29,8 @@ public final class CarBrand extends Enumerable {
     public static final CarBrand ASTON_MARTIN = new CarBrand("Aston martin");
     public static final CarBrand JAGUAR = new CarBrand("Jaguar");
     public static final CarBrand TESLA = new CarBrand("Tesla");
-    
-    // ... we all know there's more CarBrands than the ones we identified here, 
-    // not a good fit for a java.lang.Enum, but suitable for Enumerable.
+    // We all know there are more CarBrands than the ones we identified here... 
+    // Not a good fit for a java.lang.Enum, but suitable for Enumerable.
 
     private CarBrand(String value) { super(value); }
 }
