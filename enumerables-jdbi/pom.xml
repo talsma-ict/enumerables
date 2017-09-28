@@ -25,50 +25,39 @@
         <version>1.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>enumerables-bom</artifactId>
-    <packaging>pom</packaging>
-    <name>Enumerables (bill-of-materials)</name>
-    <description>
-        Bill of Materials with exported module versions.
-        This only contains 'opinionated' versions
-        so modules of this library and crucial transitive jars.
-    </description>
+    <artifactId>enumerables-jdbi</artifactId>
+    <name>Enumerables (jdbi)</name>
+    <packaging>jar</packaging>
 
     <properties>
         <root.basedir>${project.parent.basedir}</root.basedir>
+        <jdbi.version>2.78</jdbi.version>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>enumerables</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jdbi</groupId>
+            <artifactId>jdbi</artifactId>
+        </dependency>
+    </dependencies>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>enumerables</artifactId>
+                <artifactId>enumerables-bom</artifactId>
                 <version>${project.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>enumerables-validation</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>enumerables-jaxrs</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>enumerables-jackson2</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>enumerables-gson</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>enumerables-jdbi</artifactId>
-                <version>${project.version}</version>
+                <groupId>org.jdbi</groupId>
+                <artifactId>jdbi</artifactId>
+                <version>${jdbi.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
