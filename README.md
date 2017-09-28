@@ -153,7 +153,7 @@ The [enumerables-validation](enumerables-validation) module provides several ann
 ### JAX-RS
 
 The [enumerables-jaxrs](enumerables-jaxrs) module provides an 
-[enumerable parameter converter provider](jaxrs-readme/enumerables-jaxrs/src/main/java/nl/talsmasoftware/enumerables/jaxrs/EnumerableParamConverterProvider.java)
+[enumerable parameter converter provider](enumerables-jaxrs/src/main/java/nl/talsmasoftware/enumerables/jaxrs/EnumerableParamConverterProvider.java)
 for JAX-RS.
 
 ## Background
