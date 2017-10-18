@@ -267,8 +267,10 @@
                             <docencoding>UTF-8</docencoding>
                             <useStandardDocletOptions>true</useStandardDocletOptions>
                             <additionalparam>
-                                -umlSkipStandardDoclet false
                                 -umlImageFormat SVG
+                                -umlImageDirectory images
+                                -umlCommand "hide empty fields"
+                                -umlCommand "hide empty methods"
                             </additionalparam>
                         </configuration>
                     </execution>
