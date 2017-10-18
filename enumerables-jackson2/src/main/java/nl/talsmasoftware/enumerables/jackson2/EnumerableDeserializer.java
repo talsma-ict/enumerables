@@ -37,7 +37,7 @@ public class EnumerableDeserializer extends StdDeserializer<Enumerable> implemen
     }
 
     private EnumerableDeserializer(JavaType javaType) {
-        super(javaType);
+        super(javaType == null ? Enumerable.class : javaType.getRawClass());
         this.javaType = javaType;
     }
 
