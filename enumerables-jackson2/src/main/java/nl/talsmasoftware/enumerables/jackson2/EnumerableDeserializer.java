@@ -33,11 +33,12 @@ public class EnumerableDeserializer extends StdDeserializer<Enumerable> implemen
     private final JavaType javaType;
 
     public EnumerableDeserializer() {
-        this(null);
+        super(Enumerable.class);
+        this.javaType = null;
     }
 
     private EnumerableDeserializer(JavaType javaType) {
-        super(javaType == null ? Enumerable.class : javaType.getRawClass());
+        super(javaType);
         this.javaType = javaType;
     }
 
@@ -76,7 +77,7 @@ public class EnumerableDeserializer extends StdDeserializer<Enumerable> implemen
     @SuppressWarnings("unchecked")
     public static <E extends Enumerable> Class<E> asEnumerableSubtype(Object type) {
         if (type instanceof Class<?> && Enumerable.class.isAssignableFrom((Class<?>) type)) return (Class<E>) type;
-        if (type instanceof JavaType) {
+        else if (type instanceof JavaType) {
             return asEnumerableSubtype(((JavaType) type).isContainerType()
                     ? ((JavaType) type).getContentType()
                     : ((JavaType) type).getRawClass());
