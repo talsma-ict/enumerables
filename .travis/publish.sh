@@ -118,10 +118,10 @@ if is_pull_request; then
 # If we are on master, we will deploy the latest snapshot or release version
 #   - If a release commit fails to deploy for a transient reason, delete the broken version from bintray and click rebuild
 elif is_travis_branch_master; then
-  ./mvnw --batch-mode -s .mvn/settings.xml -Prelease -nsu -DskipTests deploy
+  ./mvnw --batch-mode -Prelease -nsu -DskipTests deploy
 
 # If we are on a release tag, the following will update any version references and push a version tag for deployment.
 elif build_started_by_tag; then
   safe_checkout_master
-  ./mvnw --batch-mode -s .mvn/settings.xml -Prelease -nsu -DreleaseVersion="$(release_version)" -Darguments="-DskipTests" release:prepare
+  ./mvnw --batch-mode -Prelease -nsu -DreleaseVersion="$(release_version)" -Darguments="-DskipTests" release:prepare
 fi
