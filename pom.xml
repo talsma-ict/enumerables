@@ -74,8 +74,6 @@
     </scm>
 
     <properties>
-        <maven.compiler.source>1.5</maven.compiler.source>
-        <maven.compiler.target>1.5</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <root.basedir>${project.basedir}</root.basedir>
@@ -235,6 +233,8 @@
                     <jdkToolchain>
                         <version>[1.5,1.8]</version>
                     </jdkToolchain>
+                    <source>1.5</source>
+                    <target>1.5</target>
                     <showDeprecation>true</showDeprecation>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
