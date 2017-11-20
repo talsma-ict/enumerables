@@ -29,13 +29,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import static java.lang.Integer.signum;
-import static java.lang.reflect.Modifier.isFinal;
-import static java.lang.reflect.Modifier.isPublic;
-import static java.lang.reflect.Modifier.isStatic;
+import static java.lang.reflect.Modifier.*;
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
-import static java.util.Collections.singleton;
-import static java.util.Collections.unmodifiableSet;
+import static java.util.Collections.*;
 
 /**
  * The <code>Enumerable</code> class is <strong>very</strong> similar to a standard Java {@link Enum} type.
@@ -383,18 +379,16 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
             final List<E> constants = new ArrayList<E>();
             for (Field field : enumerableType.getDeclaredFields()) {
                 final int modifiers = field.getModifiers();
-                if (isStatic(modifiers) && isFinal(modifiers)) {
-                    if (isPublic(modifiers) && enumerableType.equals(field.getType())) {
-                        try {
-                            final E foundConstant = (E) field.get(null);
-                            ((Enumerable) foundConstant)._nameAndOrdinal =
-                                    new NameAndOrdinal(constants.size(), field.getName());
-                            constants.add(foundConstant);
-                        } catch (IllegalAccessException iae) {
-                            throw new IllegalStateException(String.format(
-                                    "Reading constant \"%s.%s\" was not allowed!",
-                                    enumerableTypeName, field.getName()), iae);
-                        }
+                if (isPublic(modifiers) && isStatic(modifiers) && isFinal(modifiers)
+                        && enumerableType.isAssignableFrom(field.getType())) {
+                    try {
+                        final E foundConstant = (E) field.get(null);
+                        ((Enumerable) foundConstant)._nameAndOrdinal =
+                                new NameAndOrdinal(constants.size(), field.getName());
+                        constants.add(foundConstant);
+                    } catch (IllegalAccessException iae) {
+                        throw new IllegalStateException(String.format("Reading constant \"%s.%s\" was not allowed!",
+                                enumerableTypeName, field.getName()), iae);
                     }
                 }
             }
