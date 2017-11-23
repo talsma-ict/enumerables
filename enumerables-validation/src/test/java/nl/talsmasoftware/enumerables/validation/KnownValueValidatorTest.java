@@ -116,7 +116,7 @@ public class KnownValueValidatorTest {
     public void testStandardMessages_i18n() {
         ClientLocaleHolder.set(ENGLISH);
         ConstraintViolation<StandardMessagesObject> violation = validator.validate(new StandardMessagesObject()).iterator().next();
-        assertThat(violation.getMessage(), equalTo("may not be null"));
+        assertThat(violation.getMessage(), equalTo("must not be null"));
 
         ClientLocaleHolder.set(FRENCH);
         violation = validator.validate(new StandardMessagesObject()).iterator().next();
