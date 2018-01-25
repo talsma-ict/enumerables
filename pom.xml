@@ -269,12 +269,12 @@
                             </docletArtifact>
                             <docencoding>UTF-8</docencoding>
                             <useStandardDocletOptions>true</useStandardDocletOptions>
-                            <additionalparam>
-                                -umlImageFormat SVG
-                                -umlImageDirectory images
-                                -umlCommand "hide empty fields"
-                                -umlCommand "hide empty methods"
-                            </additionalparam>
+                            <additionalOptions>
+                                <additionalOption>-umlImageFormat SVG</additionalOption>
+                                <additionalOption>-umlImageDirectory images</additionalOption>
+                                <additionalOption>-umlCommand "hide empty fields"</additionalOption>
+                                <additionalOption>-umlCommand "hide empty methods"</additionalOption>
+                            </additionalOptions>
                         </configuration>
                     </execution>
                 </executions>
