@@ -74,14 +74,20 @@ public class EnumerableSerializer extends StdSerializer<Enumerable> {
         jgen.writeStartObject();
         Class<? extends Enumerable> enumerableType = value.getClass();
         for (BeanPropertyDefinition property : serializationPropertiesFor(enumerableType, config)) {
-            if (property.couldSerialize()) {
-                final Object propertyValue = property.getAccessor().getValue(value);
-                if (propertyValue != null || property.isExplicitlyIncluded() || mustIncludeNull(config, enumerableType)) {
-                    jgen.writeObjectField(property.getName(), propertyValue);
-                }
-            }
+            serializeObjectProperty(property, value, jgen, config);
         }
         jgen.writeEndObject();
+    }
+
+    protected void serializeObjectProperty(
+            BeanPropertyDefinition property, Enumerable value, JsonGenerator jgen, SerializationConfig config)
+            throws IOException {
+        if (property.couldSerialize()) {
+            final Object propertyValue = property.getAccessor().getValue(value);
+            if (propertyValue != null || property.isExplicitlyIncluded() || mustIncludeNull(config, value.getClass())) {
+                jgen.writeObjectField(property.getName(), propertyValue);
+            }
+        }
     }
 
     protected static List<BeanPropertyDefinition> serializationPropertiesFor(
