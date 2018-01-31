@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Talsma ICT
+ * Copyright 2016-2018 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,10 @@ package nl.talsmasoftware.enumerables.jackson2;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.BeanProperty;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import nl.talsmasoftware.enumerables.Enumerable;
@@ -42,7 +45,7 @@ public class EnumerableDeserializer extends StdDeserializer<Enumerable> implemen
         this.javaType = javaType;
     }
 
-    public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) throws JsonMappingException {
+    public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) {
         if (javaType == null) { // Are we the 'untyped' Enumerable deserializer?
             if (property != null && property.getType() != null) {
                 return new EnumerableDeserializer(property.getType());
@@ -109,7 +112,7 @@ public class EnumerableDeserializer extends StdDeserializer<Enumerable> implemen
         }
     }
 
-    private Enumerable parseObject(JsonParser jp, Class<? extends Enumerable> type) throws IOException {
+    protected Enumerable parseObject(JsonParser jp, Class<? extends Enumerable> type) throws IOException {
         Enumerable value = null;
         for (JsonToken nextToken = jp.nextToken(); nextToken != null; nextToken = jp.nextToken()) {
             switch (nextToken) {

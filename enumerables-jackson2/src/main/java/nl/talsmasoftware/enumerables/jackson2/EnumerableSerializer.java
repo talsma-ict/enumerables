@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Talsma ICT
+ * Copyright 2016-2018 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,10 @@ public class EnumerableSerializer extends StdSerializer<Enumerable> {
     private static final ConcurrentMap<String, List<BeanPropertyDefinition>> CACHE =
             new ConcurrentHashMap<String, List<BeanPropertyDefinition>>();
 
-    private final SerializationMethod serializationMethod;
+    /**
+     * The serialization method for enumerables.
+     */
+    protected final SerializationMethod serializationMethod;
 
     public EnumerableSerializer() {
         this(null);
@@ -67,21 +70,27 @@ public class EnumerableSerializer extends StdSerializer<Enumerable> {
         }
     }
 
-    private void serializeObject(Enumerable value, JsonGenerator jgen, SerializationConfig config) throws IOException {
+    protected void serializeObject(Enumerable value, JsonGenerator jgen, SerializationConfig config) throws IOException {
         jgen.writeStartObject();
         Class<? extends Enumerable> enumerableType = value.getClass();
         for (BeanPropertyDefinition property : serializationPropertiesFor(enumerableType, config)) {
-            if (property.couldSerialize()) {
-                final Object propertyValue = property.getAccessor().getValue(value);
-                if (propertyValue != null || property.isExplicitlyIncluded() || mustIncludeNull(config, enumerableType)) {
-                    jgen.writeObjectField(property.getName(), propertyValue);
-                }
-            }
+            serializeObjectProperty(property, value, jgen, config);
         }
         jgen.writeEndObject();
     }
 
-    private static List<BeanPropertyDefinition> serializationPropertiesFor(
+    protected void serializeObjectProperty(
+            BeanPropertyDefinition property, Enumerable value, JsonGenerator jgen, SerializationConfig config)
+            throws IOException {
+        if (property.couldSerialize()) {
+            final Object propertyValue = property.getAccessor().getValue(value);
+            if (propertyValue != null || property.isExplicitlyIncluded() || mustIncludeNull(config, value.getClass())) {
+                jgen.writeObjectField(property.getName(), propertyValue);
+            }
+        }
+    }
+
+    protected static List<BeanPropertyDefinition> serializationPropertiesFor(
             Class<? extends Enumerable> enumerableType, SerializationConfig config) {
         final String cacheKey = enumerableType.getName();
         List<BeanPropertyDefinition> properties = CACHE.get(cacheKey);
