@@ -31,7 +31,7 @@
 
     <properties>
         <root.basedir>${project.parent.basedir}</root.basedir>
-        <jaxrs-api.version>2.0.1</jaxrs-api.version>
+        <jaxrs-api.version>2.1</jaxrs-api.version>
     </properties>
 
     <dependencies>
