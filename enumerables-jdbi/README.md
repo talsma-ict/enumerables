@@ -22,7 +22,7 @@ Add the following dependency to your project or download it from
 
 The [EnumerableArgumentFactory] can convert any `Enumerable` method argument into a `String` query parameter.  
 
-You can add it to a `DBI` configuration simply by calling `dbi.registerArgumentFactory(new EnumerableArgumentFactory())`.
+You can add this [ArgumentFactory] to a `DBI` configuration simply by calling `dbi.registerArgumentFactory(new EnumerableArgumentFactory())`.
 
 Alternatively, you can also add it per-repository (or even per-method)
 by using the `@RegisterArgumentFactory` annotation:
@@ -37,6 +37,21 @@ by using the `@RegisterArgumentFactory` annotation:
     }
 ```
 
+### Mapping Enumerable query results
+
+The [EnumerableColumnMapperFactory] can convert a single-column query result into an `Enumerable`.
+
+For instance, the following returns a list of all `CarBrand` values by registering the [ColumnMapperFactory] with JDBI:
+```java
+    jdbi.registerColumnMapper(new EnumerablecolumnMapperFactory());
+
+    try (Handle handle = jdbi.open()) {
+        List<CarBrand> carBrands = handle
+                .createQuery("select distinct brand from cars")
+                .mapTo(CarBrand.class)
+                .list();
+    }
+```
 
 
   [maven-img]: https://img.shields.io/maven-central/v/nl.talsmasoftware.enumerables/enumerables.svg
@@ -44,3 +59,7 @@ by using the `@RegisterArgumentFactory` annotation:
   [jdbi]: http://jdbi.org
   
   [EnumerableArgumentFactory]: src/main/java/nl/talsmasoftware/enumerables/jdbi/EnumerableArgumentFactory.java
+  [EnumerableColumnMapperFactory]: src/main/java/nl/talsmasoftware/enumerables/jdbi/EnumerableColumnMapperFactory.java
+  [argumentfactory]: http://jdbi.org/#_argumentfactory
+  [columnmapperfactory]: http://jdbi.org/#_columnmapperfactory
+
