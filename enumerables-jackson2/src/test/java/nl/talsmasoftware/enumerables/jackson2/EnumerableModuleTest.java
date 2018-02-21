@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Talsma ICT
+ * Copyright 2016-2018 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.MappingJsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import nl.talsmasoftware.enumerables.Enumerable;
 import nl.talsmasoftware.enumerables.jackson2.PlainTestObject.BigCo;
@@ -41,13 +40,7 @@ import static nl.talsmasoftware.enumerables.jackson2.EnumerableDeserializerTest.
 import static nl.talsmasoftware.enumerables.jackson2.SerializationMethod.AS_OBJECT;
 import static nl.talsmasoftware.enumerables.jackson2.SerializationMethod.AS_STRING;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.hasToString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.hamcrest.Matchers.*;
 
 public class EnumerableModuleTest {
 
@@ -70,8 +63,7 @@ public class EnumerableModuleTest {
 
     private static ObjectMapper createMapper() {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_ABSENT);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper;
     }
@@ -81,8 +73,7 @@ public class EnumerableModuleTest {
         module = new EnumerableModule();
         mapper = createMapper().registerModule(module);
         mapperAsObject = createMapper().registerModule(new EnumerableModule(AS_OBJECT));
-        mapperWithException = createMapper().registerModule(
-                new EnumerableModule(AS_OBJECT.except(BigCo.class)));
+        mapperWithException = createMapper().registerModule(new EnumerableModule(AS_OBJECT.except(BigCo.class)));
     }
 
     @Test
