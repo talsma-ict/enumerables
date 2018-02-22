@@ -191,7 +191,7 @@ public class EnumerableModuleTest {
 
     @Test
     public void testToString() {
-        assertThat(module, hasToString("EnumerableModule{serializationMethod=As string}"));
+        assertThat(module, hasToString("EnumerableModule"));
     }
 
     @Test
@@ -212,8 +212,8 @@ public class EnumerableModuleTest {
         assertThat(set.add(module), is(true));
         assertThat(set.add(module), is(false));
         assertThat(set.add(new EnumerableModule(AS_STRING)), is(false));
-        assertThat(set.add(new EnumerableModule(AS_OBJECT)), is(true));
-        assertThat(set.add(new EnumerableModule(AS_STRING.except(BigCo.class))), is(true));
-        assertThat(set, hasSize(3));
+        assertThat(set.add(new EnumerableModule(AS_OBJECT)), is(false));
+        assertThat(set.add(new EnumerableModule(AS_STRING.except(BigCo.class))), is(false));
+        assertThat(set, hasSize(1));
     }
 }

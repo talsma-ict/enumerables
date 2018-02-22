@@ -1,6 +1,6 @@
 [![Released Version][maven-img]][maven]
 
-# Mapping Enumerabled using Jackson
+# Mapping Enumerables using Jackson
 
 Enumerable values can be mapped to JSON and other formats using [Jackson] data processing tools.
 
@@ -22,34 +22,50 @@ Add the following dependency to your project or download it from
 
 Registering the module in a Jackson ObjectMapper is easy:
 ```java
-    ObjectMapper mapper = new ObjectMapper();
-    SerializationMethod serializationMethod = SerializationMethod.AS_STRING; // or AS_OBJECT
-    mapper.registerModule(new EnumerableModule(serializationMethod));
+ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 ```
 
-_Please note:_ There is currently a [feature pending](#47) to automatically register the `EnumerableModule`
-if it is detected in the application. However we will have to think about
-a way to specify the serialization method.
+`Enumerable` objects will now automatically be parsed from JSON into the declared types
+(eiter from String or JSON objects, see examples below).
+By default, `Enumerable` objects will be serialized to their `String` values.  
+The [serialization method][SerializationMethod] can be customized as follows:
+
+Reconfiguring the whole `ObjectMapper`:
+```java
+// Reconfigure the mapper to serialize Enumerables as JSON object, except CarBrand as String.
+objectMapper = objectMapper.setConfig(objectMapper.getSerializationConfig()
+        .with(ContextAttributes.getEmpty().withSharedAttribute(
+                SerializationMethod.class.getName(), 
+                SerializationMethod.AS_OBJECT.except(CarBrand.class))));
+```
+
+Or, per `Writer`:
+```java
+// Create a writer to serialize Enumerables as String, except CarBrand as JSON objects.
+ObjectWriter writer = objectMapper.findAndRegisterModules()
+        .writer(ContextAttributes.getEmpty().withSharedAttribute(
+                SerializationMethod.class.getName(),
+                SerializationMethod.AS_STRING.except(CarBrand.class)));
+```
 
 ### Mapping Enumerable objects to JSON
 
 Given the following Java classes:
 ```Java
-    public final class CarBrand extends Enumerable {
-        public static final CarBrand ASTON_MARTIN = new CarBrand("Aston martin");
-        public static final CarBrand JAGUAR = new CarBrand("Jaguar");
-        public static final CarBrand TESLA = new CarBrand("Tesla");
-        // We all know there are more CarBrands than the ones we identified here... 
-        // Not a good fit for a java.lang.Enum, but suitable for Enumerable.
-    
-        private CarBrand(String value) { super(value); }
-    }
+public final class CarBrand extends Enumerable {
+    public static final CarBrand ASTON_MARTIN = new CarBrand("Aston martin");
+    public static final CarBrand JAGUAR = new CarBrand("Jaguar");
+    public static final CarBrand TESLA = new CarBrand("Tesla");
+    // We all know there are more CarBrands than the ones we identified here... 
+    // Not a good fit for a java.lang.Enum, but suitable for Enumerable.
 
-    public class Car {
-        public CarBrand brand;
-        public String type;
-    }
-    
+    private CarBrand(String value) { super(value); }
+}
+
+public class Car {
+    public CarBrand brand;
+    public String type;
+}    
 ```
 
 ### Parsing

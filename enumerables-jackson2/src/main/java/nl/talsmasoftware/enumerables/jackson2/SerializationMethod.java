@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Talsma ICT
+ * Copyright 2016-2018 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,35 +15,34 @@
  */
 package nl.talsmasoftware.enumerables.jackson2;
 
-
 import nl.talsmasoftware.enumerables.Enumerable;
 
-import java.util.Arrays;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import static java.util.Arrays.asList;
 import static java.util.Arrays.binarySearch;
 
 /**
  * Object that encapsulates the JSON serialization method. There are two possibilities:
- * as JSON object or String primitive.
+ * as {@link #AS_OBJECT JSON object} or {@link #AS_STRING String primitive}.
  * <p>
- * Enumerable deserializers should be able to handle both methods.
+ * {@linkplain Enumerable} deserializers are capable of handling both methods.
  *
  * @author Sjoerd Talsma
  */
 public final class SerializationMethod {
     /**
      * Constant for default String-serialization for all {@link Enumerable} types.
-     * Please see {@link #except(Class[])} to add exception types that should be serialized as JSON objects.
+     * Please see {@link #except(Class)} to add exception types that should be serialized
+     * as {@code JSON objects}.
      */
     public static final SerializationMethod AS_STRING =
             new SerializationMethod(false, null);
 
     /**
      * Constant for default JSON Object-serialization for all {@link Enumerable} types.
-     * Please see {@link #except(Class[])} to add exception types that should be serialized as primitive JSON strings.
+     * Please see {@link #except(Class)} to add exception types that should be serialized
+     * as primitive {@code JSON strings}.
      */
     public static final SerializationMethod AS_OBJECT =
             new SerializationMethod(true, null);
@@ -51,10 +50,10 @@ public final class SerializationMethod {
     private final boolean objectSerializationByDefault;
     private final String[] sortedExceptionTypes;
 
-    private SerializationMethod(boolean objectSerializationByDefault, SortedSet<String> uitzonderingen) {
+    private SerializationMethod(boolean objectSerializationByDefault, SortedSet<String> exceptionTypes) {
         this.objectSerializationByDefault = objectSerializationByDefault;
-        this.sortedExceptionTypes = uitzonderingen == null ? new String[0]
-                : uitzonderingen.toArray(new String[uitzonderingen.size()]);
+        this.sortedExceptionTypes = exceptionTypes == null ? new String[0]
+                : exceptionTypes.toArray(new String[exceptionTypes.size()]);
     }
 
     /**
@@ -77,8 +76,34 @@ public final class SerializationMethod {
      *
      * @param exceptionTypes The enumerable types that should be serialized as exception to the default method.
      * @return The serialization method with these added exceptions.
+     * @deprecated Due to unchecked generics array creation at the caller location
      */
     public SerializationMethod except(Class<? extends Enumerable>... exceptionTypes) {
+        return except(Arrays.asList(exceptionTypes));
+    }
+
+    /**
+     * Adds one exception to the {@link #isObjectSerializationByDefault()} default serialization method}
+     * for a certain {@link Enumerable} subtype.
+     *
+     * @param exceptionType The enumerable type that should be serialized as exception to the default method.
+     * @return The serialization method with this added exception.
+     * @see #except(Iterable)
+     */
+    @SuppressWarnings("unchecked")
+    public SerializationMethod except(Class<? extends Enumerable> exceptionType) {
+        Set<?> singleton = Collections.singleton(exceptionType);
+        return except((Iterable<Class<? extends Enumerable>>) singleton);
+    }
+
+    /**
+     * Adds zero or more exceptions to the {@link #isObjectSerializationByDefault()} default serialization method}
+     * for certain {@link Enumerable} types.
+     *
+     * @param exceptionTypes The enumerable types that should be serialized as exception to the default method.
+     * @return The serialization method with these added exceptions.
+     */
+    public SerializationMethod except(Iterable<Class<? extends Enumerable>> exceptionTypes) {
         final SortedSet<String> sortedExceptionSet = new TreeSet<String>(asList(this.sortedExceptionTypes));
         for (Class<? extends Enumerable> exceptionType : exceptionTypes) {
             if (exceptionType != null) sortedExceptionSet.add(exceptionType.getName());
