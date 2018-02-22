@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Talsma ICT
+ * Copyright 2016-2018 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,6 @@ import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import nl.talsmasoftware.enumerables.Enumerable;
 
-import static nl.talsmasoftware.enumerables.jackson2.SerializationMethod.AS_STRING;
-
 /**
  * Mapping module for converting one or more {@link Enumerable} types to and from JSON using Jackson v2.
  *
@@ -31,7 +29,6 @@ import static nl.talsmasoftware.enumerables.jackson2.SerializationMethod.AS_STRI
  */
 public class EnumerableModule extends SimpleModule {
 
-    private final SerializationMethod serializationMethod;
     private final EnumerableDeserializer deserializer = new EnumerableDeserializer();
 
     /**
@@ -45,15 +42,14 @@ public class EnumerableModule extends SimpleModule {
     /**
      * Constructor for custom {@link SerializationMethod} for {@link Enumerable} types.
      *
-     * @param serializationMethod The serialization method to use. This parameter may be {@code null} in which case the
-     *                            {@code AS_STRING} method will be used by default.
+     * @param serializationMethod The serialization method to use
+     *                            (optional, the EnumerableSerializer will choose a default otherwise).
      * @see SerializationMethod#AS_STRING
      * @see SerializationMethod#AS_OBJECT
      */
     public EnumerableModule(SerializationMethod serializationMethod) {
-        super("Enumerable mapping module");
-        this.serializationMethod = serializationMethod == null ? AS_STRING : serializationMethod;
-        super.addSerializer(Enumerable.class, new EnumerableSerializer(this.serializationMethod));
+        super("Enumerable mapping module", Compatibility.moduleVersion());
+        super.addSerializer(Enumerable.class, new EnumerableSerializer(serializationMethod));
         super.addDeserializer(Enumerable.class, this.deserializer);
     }
 
@@ -89,18 +85,18 @@ public class EnumerableModule extends SimpleModule {
 
     @Override
     public int hashCode() {
-        return serializationMethod.hashCode();
+        return version().hashCode();
     }
 
     @Override
     public boolean equals(Object other) {
         return this == other || (other instanceof EnumerableModule
-                && serializationMethod.equals(((EnumerableModule) other).serializationMethod));
+                && version().equals(((EnumerableModule) other).version()));
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{serializationMethod=" + serializationMethod + '}';
+        return getClass().getSimpleName();
     }
 
 }

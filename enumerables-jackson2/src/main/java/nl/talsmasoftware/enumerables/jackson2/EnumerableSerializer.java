@@ -16,6 +16,7 @@
 package nl.talsmasoftware.enumerables.jackson2;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.DatabindContext;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.introspect.BasicClassIntrospector;
@@ -39,6 +40,7 @@ import static nl.talsmasoftware.enumerables.jackson2.Compatibility.mustIncludeNu
  * @author Sjoerd Talsma
  */
 public class EnumerableSerializer extends StdSerializer<Enumerable> {
+    private static final String SERIALIZATION_METHOD_ATTRIBUTE = SerializationMethod.class.getName();
     /**
      * Cache for reflected objects based on classname.
      */
@@ -46,7 +48,7 @@ public class EnumerableSerializer extends StdSerializer<Enumerable> {
             new ConcurrentHashMap<String, List<BeanPropertyDefinition>>();
 
     /**
-     * The serialization method for enumerables.
+     * The default serialization method for enumerables.
      */
     protected final SerializationMethod serializationMethod;
 
@@ -63,11 +65,16 @@ public class EnumerableSerializer extends StdSerializer<Enumerable> {
     public void serialize(Enumerable value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
         if (value == null) {
             jgen.writeNull();
-        } else if (serializationMethod.serializeAsObject(value.getClass())) {
+        } else if (determineSerializationMethod(provider).serializeAsObject(value.getClass())) {
             serializeObject(value, jgen, provider.getConfig());
         } else {
             jgen.writeString(Enumerable.print(value));
         }
+    }
+
+    protected SerializationMethod determineSerializationMethod(DatabindContext context) {
+        final Object attribute = context.getAttribute(SERIALIZATION_METHOD_ATTRIBUTE);
+        return attribute instanceof SerializationMethod ? (SerializationMethod) attribute : serializationMethod;
     }
 
     protected void serializeObject(Enumerable value, JsonGenerator jgen, SerializationConfig config) throws IOException {
