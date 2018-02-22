@@ -20,7 +20,16 @@ Add the following dependency to your project or download it from
 
 ### Enabling the module in the Jackson ObjectMapper
 
-_TODO_
+Registering the module in a Jackson ObjectMapper is easy:
+```java
+    ObjectMapper mapper = new ObjectMapper();
+    SerializationMethod serializationMethod = SerializationMethod.AS_STRING; // or AS_OBJECT
+    mapper.registerModule(new EnumerableModule(serializationMethod));
+```
+
+_Please note:_ There is currently a [feature pending](#47) to automatically register the `EnumerableModule`
+if it is detected in the application. However we will have to think about
+a way to specify the serialization method.
 
 ### Mapping Enumerable objects to JSON
 
