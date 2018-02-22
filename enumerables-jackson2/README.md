@@ -42,10 +42,8 @@ objectMapper = objectMapper.setConfig(objectMapper.getSerializationConfig()
 Or, per `Writer`:
 ```java
 // Create a writer to serialize Enumerables as String, except CarBrand as JSON objects.
-ObjectWriter writer = objectMapper.findAndRegisterModules()
-        .writer(ContextAttributes.getEmpty().withSharedAttribute(
-                SerializationMethod.class.getName(),
-                SerializationMethod.AS_STRING.except(CarBrand.class)));
+ObjectWriter writer = objectMapper.writer(ContextAttributes.getEmpty().withSharedAttribute(
+        SerializationMethod.class.getName(), SerializationMethod.AS_STRING.except(CarBrand.class)));
 ```
 
 ### Mapping Enumerable objects to JSON
