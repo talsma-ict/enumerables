@@ -41,6 +41,7 @@
         <module>enumerables-jackson2</module>
         <module>enumerables-gson</module>
         <module>enumerables-jdbi</module>
+        <module>enumerables-swagger</module>
     </modules>
 
     <licenses>
