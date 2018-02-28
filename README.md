@@ -156,6 +156,17 @@ The [enumerables-jaxrs](enumerables-jaxrs) module provides an
 [enumerable parameter converter provider](enumerables-jaxrs/src/main/java/nl/talsmasoftware/enumerables/jaxrs/EnumerableParamConverterProvider.java)
 for JAX-RS.
 
+### JSON serialization
+
+The [enumerables-jackson2](enumerables-jackson2) and [enumerables-gson](enumerables-gson)
+modules provide serialization and deserialization functionality to and from [json].  
+[Jackson] also supports other common formats such as [yaml].
+
+### Swagger documentation
+
+The [enumerables-swagger](enumerables-swagger) module provides [Swagger] API model documentation
+for `Enumerable` types, including example values.
+
 ## Background
 
 The `Enumerable` superclass is **very** similar to a standard Java `Enum` type
@@ -204,3 +215,8 @@ existing contract since the consumer should have already anticipated unknown val
   [maven]: http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22nl.talsmasoftware.enumerables%22
   [coveralls-img]: https://coveralls.io/repos/github/talsma-ict/enumerables/badge.svg
   [coveralls]: https://coveralls.io/github/talsma-ict/enumerables
+
+  [json]: https://www.w3schools.com/js/js_json_intro.asp
+  [yaml]: http://yaml.org/
+  [jackson]: https://github.com/FasterXML/jackson
+  [swagger]: https://swagger.io/
