@@ -9,7 +9,7 @@ Enumerable values can be mapped to JSON and other formats using [Jackson] data p
 ### Getting the module
 
 Add the following dependency to your project or download it from 
-[maven central](http://repo1.maven.org/maven2/nl/talsmasoftware/enumerables/enumerables-jdbi/).
+[maven central](http://repo1.maven.org/maven2/nl/talsmasoftware/enumerables/enumerables-jackson2/).
 ```xml
 <dependency>
     <groupId>nl.talsmasoftware.enumerables</groupId>
@@ -25,8 +25,10 @@ Registering the module in a Jackson ObjectMapper is easy:
 ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 ```
 
-`Enumerable` objects will now automatically be parsed from JSON into the declared types
-(eiter from String or JSON objects, see examples below).
+`Enumerable` objects will now automatically be parsed from JSON into the declared types.
+
+### Customizing the serialization method
+
 By default, `Enumerable` objects will be serialized to their `String` values.  
 The [serialization method][SerializationMethod] can be customized as follows:
 
