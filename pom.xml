@@ -78,6 +78,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <root.basedir>${project.basedir}</root.basedir>
 
+        <jackson2.version>2.9.4</jackson2.version>
+
         <junit.version>4.12</junit.version>
         <hamcrest.version>1.3</hamcrest.version>
         <mockito.version>2.13.0</mockito.version>

@@ -19,7 +19,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.converter.ModelConverters;
-import io.swagger.jackson.ModelResolver;
 import io.swagger.models.Model;
 import org.json.JSONException;
 import org.junit.After;
@@ -43,7 +42,6 @@ public class EnumerableModelConverterTest {
 
     @Before
     public void setUp() {
-        ModelConverters.getInstance().addConverter(new ModelResolver(mapper));
         ModelConverters.getInstance().addConverter(converter);
     }
 
@@ -54,11 +52,15 @@ public class EnumerableModelConverterTest {
 
     @Test
     public void testSwaggerModelForCar() throws JsonProcessingException, JSONException {
+        // To test with example rendered as a JSON object:
+//        ObjectMapper mapper = this.mapper.setConfig(this.mapper.getSerializationConfig()
+//                .with(ContextAttributes.getEmpty()
+//                        .withSharedAttribute(SerializationMethod.class.getName(), SerializationMethod.AS_OBJECT)));
+
         String expectedCarModel = "{" +
                 "\"type\": \"object\"," +
-                "\"simple\": false, " +
                 "\"properties\": {" +
-                "    \"brand\": {}, " +
+                "    \"brand\": {\"$ref\": \"#/definitions/CarBrand\"}, " +
                 "    \"type\": {\"type\": \"string\"}" +
                 "}" +
                 "}";
@@ -68,17 +70,16 @@ public class EnumerableModelConverterTest {
                 "\"name\": \"CarBrand\", " +
                 "\"simple\": true, " +
                 "\"enum\": [\"Tesla\", \"Uniti Sweden\"], " +
-                "\"description\": \"Known CarBrand values. However, unknown values must also be supported.\", " +
+                "\"description\": \"Known CarBrand values, although unknown values are also allowed.\", " +
                 "\"example\": \"Tesla\", " +
                 "\"externalDocs\": {\"description\": \"Enumerables\", \"url\": \"https://github.com/talsma-ict/enumerables\"}" +
                 "}";
 
         Map<String, Model> swagger = ModelConverters.getInstance().readAll(Car.class);
-        System.out.println(mapper.writeValueAsString(swagger));
+        // System.out.println(mapper.writeValueAsString(swagger));
 
-        // TODO: Fix "brand" property in Car
-//        assertThat(swagger, hasKey("Car"));
-//        JSONAssert.assertEquals(expectedCarModel, mapper.writeValueAsString(swagger.get("Car")), true);
+        assertThat(swagger, hasKey("Car"));
+        JSONAssert.assertEquals(expectedCarModel, mapper.writeValueAsString(swagger.get("Car")), true);
 
         assertThat(swagger, hasKey("CarBrand"));
         assertThat(swagger.get("CarBrand"), instanceOf(EnumerableModel.class));

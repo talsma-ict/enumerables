@@ -34,8 +34,7 @@ import static java.util.Collections.unmodifiableMap;
 @JsonPropertyOrder({"type", "required", "discriminator", "properties"})
 public class EnumerableModel extends AbstractModel {
     private static final String WEBSITE_URL = "https://github.com/talsma-ict/enumerables";
-    private static final String DEFAULT_DESCRIPTION =
-            "Known %s values. However, unknown values must also be supported.";
+    private static final String DEFAULT_DESCRIPTION = "Known %s values, although unknown values are also allowed.";
 
     private String type, name, description;
     private boolean simple = true;
@@ -50,7 +49,7 @@ public class EnumerableModel extends AbstractModel {
             this.description = String.format(DEFAULT_DESCRIPTION, name);
             Enumerable[] values = Enumerable.values(enumerableType);
             this.knownValues = knownValuesOf(values);
-            if (values.length > 0) example = values[0].getValue();
+            if (values.length > 0) example = values[0];
             super.setExternalDocs(new ExternalDocs("Enumerables", WEBSITE_URL));
         }
     }
