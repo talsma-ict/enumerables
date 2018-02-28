@@ -22,7 +22,7 @@
     <parent>
         <groupId>nl.talsmasoftware.enumerables</groupId>
         <artifactId>enumerables-root</artifactId>
-        <version>1.0.5</version>
+        <version>1.0.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>enumerables-jackson2</artifactId>
