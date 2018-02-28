@@ -25,22 +25,23 @@
         <version>1.0.5-SNAPSHOT</version>
     </parent>
 
-    <artifactId>enumerables-jackson2</artifactId>
-    <name>Enumerables (jackson2)</name>
+    <artifactId>enumerables-swagger</artifactId>
+    <name>Enumerables (swagger)</name>
     <packaging>jar</packaging>
 
     <properties>
         <root.basedir>${project.parent.basedir}</root.basedir>
+        <swagger.version>1.5.9</swagger.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>enumerables</artifactId>
+            <artifactId>enumerables-jackson2</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-core</artifactId>
         </dependency>
     </dependencies>
 
@@ -54,11 +55,21 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-core</artifactId>
+                <version>${swagger.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
                 <version>${jackson2.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
