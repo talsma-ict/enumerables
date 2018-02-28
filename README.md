@@ -165,7 +165,7 @@ modules provide serialization and deserialization functionality to and from [jso
 ### Swagger documentation
 
 The [enumerables-swagger](enumerables-swagger) module provides [Swagger] API model documentation
-for `Enumerable` types, including example values.
+for `Enumerable` types, including examples.
 
 ## Background
 

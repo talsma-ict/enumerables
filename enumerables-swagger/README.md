@@ -26,14 +26,14 @@ Add the following dependency to your project or download it from
 
 Swagger configuration is static in nature,
 therefore there is only _one_ configuration for your entire application.    
-Register the `EnumerableModelConverter` to your application initialization to enable
-swagger models for Enumerable objects:
+Register the `EnumerableModelConverter` during your application initialization 
+to enable swagger models for Enumerable objects:
 
 ```java
 import io.swagger.converter.ModelConverters;
 import nl.talsmasoftware.enumerables.swagger.EnumerableModelConverter;
 
-// Somewhere in your application initialization:
+// Somewhere in your application initialization
 ModelConverters.getInstance().addConverter(new EnumerableModelConverter());
 ```
 

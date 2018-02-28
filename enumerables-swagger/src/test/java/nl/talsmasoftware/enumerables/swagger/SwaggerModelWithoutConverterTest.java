@@ -15,32 +15,62 @@
  */
 package nl.talsmasoftware.enumerables.swagger;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.Model;
 import io.swagger.models.ModelImpl;
+import org.json.JSONException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.instanceOf;
 
 public class SwaggerModelWithoutConverterTest {
 
+    final ObjectMapper mapper = new ObjectMapper()
+            .findAndRegisterModules()
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
     @Before
-    public void setUp() {
+    @After
+    public void removeEnumerableModelConverter() {
         ModelConverters.getInstance().removeConverter(new EnumerableModelConverter());
     }
 
     @Test
-    public void testSwaggerModelForCar() {
+    public void testSwaggerModelForCar() throws JsonProcessingException, JSONException {
+        String expectedCarModel = "{" +
+                "\"type\": \"object\"," +
+                "\"properties\": {" +
+                "    \"brand\": {\"$ref\": \"#/definitions/CarBrand\"}, " +
+                "    \"type\": {\"type\": \"string\"}" +
+                "}}";
+
+        String expectedCarBrandModel = "{" +
+                "\"type\": \"object\", " +
+                "\"properties\": {" +
+                "    \"value\": {" +
+                "        \"type\": \"string\"" +
+                "    }" +
+                "}}";
+
         Map<String, Model> swagger = ModelConverters.getInstance().readAll(Car.class);
+        // System.out.println(mapper.writeValueAsString(swagger));
+
+        assertThat(swagger, hasKey("Car"));
+        JSONAssert.assertEquals(expectedCarModel, mapper.writeValueAsString(swagger.get("Car")), true);
+
         assertThat(swagger, hasKey("CarBrand"));
-        Model brandModel = swagger.get("CarBrand");
-        assertThat("CarBrand model", brandModel, notNullValue());
-        assertThat(brandModel, instanceOf(ModelImpl.class));
-        assertThat(((ModelImpl) brandModel).getType(), is("object"));
+        assertThat(swagger.get("CarBrand"), instanceOf(ModelImpl.class));
+        JSONAssert.assertEquals(expectedCarBrandModel, mapper.writeValueAsString(swagger.get("CarBrand")), true);
     }
 
 }

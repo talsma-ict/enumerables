@@ -62,8 +62,7 @@ public class EnumerableModelConverterTest {
                 "\"properties\": {" +
                 "    \"brand\": {\"$ref\": \"#/definitions/CarBrand\"}, " +
                 "    \"type\": {\"type\": \"string\"}" +
-                "}" +
-                "}";
+                "}}";
 
         String expectedCarBrandModel = "{" +
                 "\"type\": \"string\", " +
