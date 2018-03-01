@@ -21,16 +21,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.Model;
 import org.json.JSONException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.skyscreamer.jsonassert.JSONAssert;
 
+import java.util.Locale;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.instanceOf;
 
 public class EnumerableModelConverterTest {
 
@@ -39,6 +37,18 @@ public class EnumerableModelConverterTest {
             .setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
     final EnumerableModelConverter converter = new EnumerableModelConverter();
+
+    static Locale previousDefault;
+
+    @BeforeClass
+    public static void captureDefaultLocale() {
+        previousDefault = Locale.getDefault();
+    }
+
+    @AfterClass
+    public static void restoreDefaultLocale() {
+        Locale.setDefault(previousDefault);
+    }
 
     @Before
     public void setUp() {
@@ -52,11 +62,7 @@ public class EnumerableModelConverterTest {
 
     @Test
     public void testSwaggerModelForCar() throws JsonProcessingException, JSONException {
-        // To test with example rendered as a JSON object:
-//        ObjectMapper mapper = this.mapper.setConfig(this.mapper.getSerializationConfig()
-//                .with(ContextAttributes.getEmpty()
-//                        .withSharedAttribute(SerializationMethod.class.getName(), SerializationMethod.AS_OBJECT)));
-
+        Locale.setDefault(Locale.ENGLISH);
         String expectedCarModel = "{" +
                 "\"type\": \"object\"," +
                 "\"properties\": {" +
@@ -66,11 +72,8 @@ public class EnumerableModelConverterTest {
 
         String expectedCarBrandModel = "{" +
                 "\"type\": \"string\", " +
-                "\"name\": \"CarBrand\", " +
-                "\"simple\": true, " +
-                "\"enum\": [\"Tesla\", \"Uniti Sweden\"], " +
-                "\"description\": \"Known CarBrand values, although unknown values are also allowed.\", " +
-                "\"example\": \"Tesla\", " +
+                "\"format\": \"enumerable\", " +
+                "\"description\": \"CarBrand with known values [Tesla, Uniti Sweden]\", " +
                 "\"externalDocs\": {\"description\": \"Enumerables\", \"url\": \"https://github.com/talsma-ict/enumerables\"}" +
                 "}";
 
@@ -81,7 +84,6 @@ public class EnumerableModelConverterTest {
         JSONAssert.assertEquals(expectedCarModel, mapper.writeValueAsString(swagger.get("Car")), true);
 
         assertThat(swagger, hasKey("CarBrand"));
-        assertThat(swagger.get("CarBrand"), instanceOf(EnumerableModel.class));
         JSONAssert.assertEquals(expectedCarBrandModel, mapper.writeValueAsString(swagger.get("CarBrand")), true);
     }
 

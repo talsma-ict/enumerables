@@ -69,7 +69,6 @@ public class SwaggerModelWithoutConverterTest {
         JSONAssert.assertEquals(expectedCarModel, mapper.writeValueAsString(swagger.get("Car")), true);
 
         assertThat(swagger, hasKey("CarBrand"));
-        assertThat(swagger.get("CarBrand"), instanceOf(ModelImpl.class));
         JSONAssert.assertEquals(expectedCarBrandModel, mapper.writeValueAsString(swagger.get("CarBrand")), true);
     }
 
