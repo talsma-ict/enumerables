@@ -25,9 +25,9 @@ section in your maven `pom.xml`
 </dependencyManagement>
 ```
 
-This does **not** add any dependencies to your project,
-but makes sure that dependencies to any `enumerables` modules
-will all be of the declared version, including transitive dependencies.
+This does **not** add any dependencies to your project.  
+However, it will make sure that dependencies to any `enumerables` modules
+that _are_ there (either explicit or transient) will be of the correct version.
 
 
   [maven-img]: https://img.shields.io/maven-central/v/nl.talsmasoftware.enumerables/enumerables.svg
