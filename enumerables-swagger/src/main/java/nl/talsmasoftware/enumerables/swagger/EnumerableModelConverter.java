@@ -20,6 +20,8 @@ import io.swagger.converter.ModelConverter;
 import io.swagger.converter.ModelConverterContext;
 import io.swagger.converter.ModelConverterContextImpl;
 import io.swagger.models.Model;
+import io.swagger.models.ModelImpl;
+import io.swagger.models.RefModel;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import nl.talsmasoftware.enumerables.Enumerable;
@@ -51,23 +53,25 @@ public class EnumerableModelConverter implements ModelConverter {
      * @return The resolved property.
      */
     public Property resolveProperty(Type type, ModelConverterContext context, Annotation[] annotations, Iterator<ModelConverter> chain) {
-        EnumerableModel enumerableModel = resolveEnumerableModelFor(type, context);
-        if (enumerableModel != null) {
-            String name = enumerableModel.getName();
-            LOGGER.debug("Referring to resolved EnumerableModel \"{}\" for {}.", name, type);
-            return new RefProperty(name);
+        Property resolved = resolvePropertyFor(type, context);
+        if (resolved != null) {
+            LOGGER.debug("Resolved enumerable property {} to {}.", type, resolved);
         }
-        return chain.hasNext() ? chain.next().resolveProperty(type, context, annotations, chain) : null;
+        if (resolved == null && chain.hasNext()) {
+            resolved = chain.next().resolveProperty(type, context, annotations, chain);
+        }
+        return resolved;
     }
 
-
     public Model resolve(Type type, ModelConverterContext context, Iterator<ModelConverter> chain) {
-        EnumerableModel enumerableModel = resolveEnumerableModelFor(type, context);
-        if (enumerableModel != null) {
-            LOGGER.debug("Resolved EnumerableModel for {}: {}.", type, enumerableModel);
-            return enumerableModel;
+        Model resolved = resolveModelFor(type, context);
+        if (resolved != null) {
+            LOGGER.debug("Resolved enumerable model for {}: {}.", type, resolved);
         }
-        return chain.hasNext() ? chain.next().resolve(type, context, chain) : null;
+        if (resolved == null && chain.hasNext()) {
+            resolved = chain.next().resolve(type, context, chain);
+        }
+        return resolved;
     }
 
     @SuppressWarnings("unchecked") // Checked by isAssignableFrom
@@ -78,6 +82,11 @@ public class EnumerableModelConverter implements ModelConverter {
             return (Class<? extends Enumerable>) type;
         }
         return null;
+    }
+
+    protected RefProperty resolvePropertyFor(Type type, ModelConverterContext context) {
+        RefModel model = resolveModelFor(type, context);
+        return model == null ? null : new RefProperty(model.getReference());
     }
 
     /**
@@ -95,19 +104,19 @@ public class EnumerableModelConverter implements ModelConverter {
      *                (and to use for existing-model lookup).
      * @return The looked-up model, a newly populated model, or {@code null} if type was not a subtype of Enumerable.
      */
-    protected EnumerableModel resolveEnumerableModelFor(Type type, ModelConverterContext context) {
-        EnumerableModel resolved = null;
+    protected RefModel resolveModelFor(Type type, ModelConverterContext context) {
+        Model resolved = null;
         Class<? extends Enumerable> enumerableType = enumerableSubtype(type);
         if (enumerableType != null) {
             String name = enumerableType.getSimpleName();
 
             if (context instanceof ModelConverterContextImpl) { // Optimization from unnecessary re-defining
                 Model current = ((ModelConverterContextImpl) context).getDefinedModels().get(name);
-                if (current instanceof EnumerableModel) resolved = (EnumerableModel) current;
+                if (current instanceof EnumerableModel) resolved = current;
             }
 
             if (resolved == null) {
-                resolved = EnumerableModel.of(enumerableType);
+                resolved = EnumerableModel.of(enumerableType).name(name);
                 LOGGER.trace("Populated EnumerableModel for {}.", enumerableType);
                 if (!enumerableType.equals(type)) context.defineModel(name, resolved, enumerableType, null);
                 context.defineModel(name, resolved, type, null);
@@ -116,7 +125,14 @@ public class EnumerableModelConverter implements ModelConverter {
                 LOGGER.debug("Returning existing EnumerableModel named \"{}\" for type {}.", name, type);
             }
         }
-        return resolved;
+        return referenceTo(resolved);
+    }
+
+    protected RefModel referenceTo(Model model) {
+        if (model == null || model instanceof RefModel) return (RefModel) model;
+        String reference = model.getReference();
+        if (reference == null && model instanceof ModelImpl) reference = ((ModelImpl) model).getName();
+        return reference == null ? null : new RefModel(reference);
     }
 
     public int hashCode() {
