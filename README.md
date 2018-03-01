@@ -101,12 +101,12 @@ This method is comparable with the `Enum.values()` method.
 It finds all public constants of the requested `enumerableType`
 that have been declared in the class of the enumerable itself.
 
-These constants must be **public final static** fields of its own the `enumerableType`.
+These constants must be **public static final** fields of the own Enumerable type.
 
 ### Enumerable.ordinal()
 
 ```java
-public final int ordinal();
+public int ordinal();
 ```
 
 Returns the 'enum ordinal' for an enumerable value.
@@ -121,7 +121,7 @@ automatically sorting all constants before any non-constant parsed values.
 ### Enumerable.name()
 
 ```java
-public final String name();
+public String name();
 ```
 
 Returns the 'enum constant name' for an enumerable value.
@@ -132,14 +132,14 @@ For non-constant values, this method will always return `null`.
 
 ## Serialization / deserialization
 
-*Serialization*: The `Enumerable` implements `Serializable`. 
+_Serialization_: The `Enumerable` implements `Serializable`. 
 This means that a concrete subclass is serializable if it does not contain 
 any non-serializable and non-transient fields. 
 Note that additional class fields should be either specified in the 
 constant declaration or be deducable from the `String` constructor 
 if they carry meaning after deserialization.
 
-*Deserialization*: Similar to parsing, a deserialized `Enumerable` object 
+_Deserialization_: Similar to parsing, a deserialized `Enumerable` object 
 resolves back to a listed constant reference if its value matches the constant.  
 Only unanticipated values will result in new objects.
 
