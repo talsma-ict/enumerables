@@ -1,12 +1,12 @@
 [![Released Version][maven-img]][maven]
 
-# Creating proper Swagger Models for Enumerable objects
+# Creating Swagger Models for Enumerable objects
 
 Enumerable values can be part of your [Swagger] API.  
 By default, [swagger] documents `Enumerable` values as a JSON object model, while
 normally these will be serialized as `String`.
-Furthermore, an important point of Enumerable values is documenting the known values.
-These should therefore be described in the swagger model.
+Also, an important point of Enumerable values is documenting the known values.
+These should be described in the swagger model too.
 
 ## Usage
 
@@ -25,7 +25,7 @@ Add the following dependency to your project or download it from
 ### Enabling the module in your Swagger API
 
 Swagger configuration is static in nature,
-therefore there is only _one_ configuration for your entire application.    
+so there is only _one_ configuration for your entire application.    
 Register the `EnumerableModelConverter` during your application initialization 
 to enable swagger models for Enumerable objects:
 
