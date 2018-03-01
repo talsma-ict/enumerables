@@ -62,8 +62,7 @@ public final class SerializationMethod {
      * <p>
      * There can be exceptions to this default value; see {@link #except(Class[])} to specify these exceptions.
      *
-     * @return {@code true} indien waardenlijsten standaard als waarde + omschrijving JSON object moeten worden
-     * geserialiseerd, {@code false} indien ze standaard als waarde string moeten worden gerepresenteerd.
+     * @return {@code true} for default serialization as JSON objects, {@code false} for String primitives.
      * @see #serializeAsObject(Class)
      */
     public boolean isObjectSerializationByDefault() {
