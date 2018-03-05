@@ -30,7 +30,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <project.moduleName>nl.talsmasoftware.enumerables.jaxrs</project.moduleName>
+        <project.moduleName>${project.groupId}.jaxrs</project.moduleName>
         <root.basedir>${project.parent.basedir}</root.basedir>
         <jaxrs-api.version>2.1</jaxrs-api.version>
     </properties>

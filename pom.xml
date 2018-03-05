@@ -76,7 +76,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <project.moduleName>nl.talsmasoftware.enumerables.${project.artifactId}</project.moduleName>
+        <project.moduleName>${project.groupId}.${project.artifactId}</project.moduleName>
         <root.basedir>${project.basedir}</root.basedir>
 
         <jackson2.version>2.9.4</jackson2.version>
