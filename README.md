@@ -202,12 +202,11 @@ but please be prepared to receive any 'other' value as well (handle as you feel 
 Introducing a new value in a new API release does not break the
 existing contract since the consumer should have already anticipated unknown values.
 
+## License
 
+[Apache 2.0 license](LICENSE)
 
 [//]: # (This is a markdown comment.)
-[//]: # (TODO: Build + document XML serialization)
-[//]: # (TODO: Build + document Custom descriptions)
-
 
   [ci-img]: https://img.shields.io/travis/talsma-ict/enumerables/master.svg
   [ci]: https://travis-ci.org/talsma-ict/enumerables
