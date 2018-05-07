@@ -25,7 +25,7 @@
     <version>1.0.7-jdbi3-1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>Enumerables rootmodule</name>
+    <name>Enumerables</name>
     <description>
         Similar to standard Java Enums with the added ability to represent 'unknown' values.
         Invaluable if you attempt to build a stable API.
@@ -41,6 +41,7 @@
         <module>enumerables-jackson2</module>
         <module>enumerables-gson</module>
         <module>enumerables-jdbi</module>
+        <module>enumerables-jdbi3</module>
         <module>enumerables-swagger</module>
     </modules>
 
@@ -153,11 +154,8 @@
                 </includes>
             </resource>
             <resource>
-                <directory>doc</directory>
-                <filtering>true</filtering>
-            </resource>
-            <resource>
                 <directory>src/main/resources</directory>
+                <filtering>false</filtering>
                 <excludes>
                     <exclude>**/*.properties</exclude>
                 </excludes>
