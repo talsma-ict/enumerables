@@ -208,7 +208,7 @@ existing contract since the consumer should have already anticipated unknown val
 
 [//]: # (This is a markdown comment.)
 
-  [ci-img]: https://img.shields.io/travis/talsma-ict/enumerables/master.svg
+  [ci-img]: https://img.shields.io/travis/talsma-ict/enumerables/develop.svg
   [ci]: https://travis-ci.org/talsma-ict/enumerables
   [maven-img]: https://img.shields.io/maven-central/v/nl.talsmasoftware.enumerables/enumerables.svg
   [maven]: http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22nl.talsmasoftware.enumerables%22
