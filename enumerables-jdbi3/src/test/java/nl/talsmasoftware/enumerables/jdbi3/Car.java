@@ -21,6 +21,7 @@ import org.jdbi.v3.core.statement.StatementContext;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Objects;
 
 public class Car {
 
@@ -41,15 +42,10 @@ public class Car {
     @Override
     public boolean equals(Object other) {
         return this == other || (other instanceof Car
-                && equals(this.brand, ((Car) other).brand)
-                && equals(this.type, ((Car) other).type)
-                && equals(this.productionYear, ((Car) other).productionYear)
+                && Objects.equals(this.brand, ((Car) other).brand)
+                && Objects.equals(this.type, ((Car) other).type)
+                && Objects.equals(this.productionYear, ((Car) other).productionYear)
         );
-    }
-
-    // because.. java 5
-    private static boolean equals(Object a, Object b) {
-        return a == b || (a != null && a.equals(b));
     }
 
     public static class Mapper implements RowMapper<Car> {
@@ -59,4 +55,5 @@ public class Car {
             return delegate.map(rs, ctx);
         }
     }
+
 }
