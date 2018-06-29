@@ -34,7 +34,7 @@ public class EnumerableJdbiPlugin implements JdbiPlugin {
      * Registers the {@link EnumerableArgumentFactory} and {@link EnumerableColumnMapperFactory} with the provided
      * {@link Jdbi} instance.
      *
-     * @param jdbi The JDBI instance to register the Enumerable mappings for.
+     * @param jdbi The JDBI instance to register the {@code Enumerable} mappings for.
      */
     @Override
     public void customizeJdbi(Jdbi jdbi) {
