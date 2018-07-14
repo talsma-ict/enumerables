@@ -1,6 +1,6 @@
 [![Build Status][ci-img]][ci]
 [![Coverage Status][coveralls-img]][coveralls]
-[![Released Version][maven-img]][maven]
+[![Maven Version][maven-img]][maven]
 
 # Enumerables
 
@@ -210,8 +210,8 @@ existing contract since the consumer should have already anticipated unknown val
 
   [ci-img]: https://img.shields.io/travis/talsma-ict/enumerables/develop.svg
   [ci]: https://travis-ci.org/talsma-ict/enumerables
-  [maven-img]: https://img.shields.io/maven-central/v/nl.talsmasoftware.enumerables/enumerables.svg
-  [maven]: http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22nl.talsmasoftware.enumerables%22
+  [maven-img]: https://img.shields.io/maven-metadata/v/http/central.maven.org/maven2/nl/talsmasoftware/enumerables/enumerables/maven-metadata.xml.svg
+  [maven]: http://mvnrepository.com/artifact/nl.talsmasoftware.enumerables
   [coveralls-img]: https://coveralls.io/repos/github/talsma-ict/enumerables/badge.svg
   [coveralls]: https://coveralls.io/github/talsma-ict/enumerables
 
