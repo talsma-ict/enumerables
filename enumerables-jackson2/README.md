@@ -35,8 +35,9 @@ ObjectMapper objectMapper = new ObjectMapper().registerModule(new EnumerableModu
 
 ### Customizing the serialization method
 
-By default, the `EnumerableModule` will serialize to enumerated the `String` values.  
-However, the [serialization method][SerializationMethod] can be customized as follows:
+There are two [serialization methods][SerializationMethod], as `String` value or as JSON `Object`.
+By default, the module serializes to `String` values.
+The serialization method can be customized as follows:
 
 Reconfiguring an entire `ObjectMapper`:
 ```java
@@ -49,7 +50,7 @@ objectMapper = objectMapper.setConfig(objectMapper.getSerializationConfig()
         )));
 ```
 
-Or even for an individual `Writer`:
+Or an individual `Writer`:
 ```java
 // Create a writer to serialize Enumerables as String, except CarBrand as JSON objects.
 ObjectWriter writer = objectMapper.writer(ContextAttributes.getEmpty()
