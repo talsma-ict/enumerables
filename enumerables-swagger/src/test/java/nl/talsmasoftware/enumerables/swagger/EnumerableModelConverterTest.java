@@ -81,7 +81,7 @@ public class EnumerableModelConverterTest {
         // System.out.println(mapper.writeValueAsString(swagger));
 
         assertThat(swagger, hasKey("Car"));
-        JSONAssert.assertEquals(expectedCarModel, mapper.writeValueAsString(swagger.get("Car")), true);
+        JSONAssert.assertEquals(expectedCarModel, mapper.writeValueAsString(swagger.get("Car")), false);
 
         assertThat(swagger, hasKey("CarBrand"));
         JSONAssert.assertEquals(expectedCarBrandModel, mapper.writeValueAsString(swagger.get("CarBrand")), true);
