@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Talsma ICT
+ * Copyright 2016-2018 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import java.util.logging.Logger;
  *      public interface MyDao {
  *          ...
  *         {@literal @}SqlQuery("select ... as obj from ...  where type = :type")
- *          List&lt;MyValueObject> queryWithType({@literal @}Bind("type") MyTypeEnumerable type);
+ *          List&lt;MyValueObject&gt; queryWithType({@literal @}Bind("type") MyTypeEnumerable type);
  *          ...
  *      }
  * </pre>

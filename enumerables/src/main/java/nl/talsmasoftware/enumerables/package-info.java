@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Talsma ICT
+ * Copyright 2016-2018 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,6 @@
  * but also offers a possibility to represent <em>yet unknown additional values</em> by parsing them.
  * In fact; parsing a known value results in the single constant reference.
  * Same goes for serialization and deserialization.
- * <p>
- * Class diagram for this package:<br><center><img src="package.svg" alt="package class diagram"></center>
  *
  * @author Sjoerd Talsma
  */

@@ -34,7 +34,7 @@ import java.util.Optional;
  *      public interface MyDao {
  *          ...
  *         {@literal @}SqlQuery("select ... as obj from ...  where type = :type")
- *          List&lt;MyValueObject> queryWithType({@literal @}Bind("type") MyTypeEnumerable type);
+ *          List&lt;MyValueObject&gt; queryWithType({@literal @}Bind("type") MyTypeEnumerable type);
  *          ...
  *      }
  * </pre>
