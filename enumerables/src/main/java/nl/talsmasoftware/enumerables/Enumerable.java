@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Talsma ICT
+ * Copyright 2016-2018 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import static java.lang.Integer.signum;
-import static java.lang.reflect.Modifier.*;
+import static java.lang.reflect.Modifier.isFinal;
+import static java.lang.reflect.Modifier.isPublic;
+import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.asList;
-import static java.util.Collections.*;
+import static java.util.Collections.emptySet;
+import static java.util.Collections.singleton;
+import static java.util.Collections.unmodifiableSet;
 
 /**
  * The <code>Enumerable</code> class is <strong>very</strong> similar to a standard Java {@link Enum} type.
@@ -59,9 +63,6 @@ import static java.util.Collections.*;
  * <p>
  * TODO: Talk about values(), ordinal(), and other enum concepts.
  * TODO: Document an example of how using it.
- * <p>
- * Here is a generated UML class diagram for this core <code>Enumerable</code> class:<br>
- * <center><img src="package.svg" alt="Class diagram of enumerables package"></center>
  *
  * @author Sjoerd Talsma
  */
