@@ -28,7 +28,7 @@ import java.util.Optional;
  * as JDBI arguments for {@code String} parameters.
  * <p>
  * This {@link ArgumentFactory} can be registered similar to the following example:
- * <pre>
+ * <pre><code>
  *     {@literal @}RegisterArgumentFactory(EnumerableArgumentFactory.class)
  *     {@literal @}UseRowMapper(MyValueObjectMapper.class) // defining a custom RowMapper
  *      public interface MyDao {
@@ -37,7 +37,7 @@ import java.util.Optional;
  *          List&lt;MyValueObject&gt; queryWithType({@literal @}Bind("type") MyTypeEnumerable type);
  *          ...
  *      }
- * </pre>
+ * </code></pre>
  *
  * @author Sjoerd Talsma
  */

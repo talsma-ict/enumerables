@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  * as JDBI arguments for {@code String} parameters.
  * <p>
  * This {@link ArgumentFactory} can be registered similar to the following example:
- * <pre>
+ * <pre><code>
  *     {@literal @}RegisterArgumentFactory(EnumerableArgumentFactory.class)
  *     {@literal @}RegisterMapper(MyValueObjectMapper.class) // defining a custom ResultSetMapper
  *      public interface MyDao {
@@ -39,7 +39,7 @@ import java.util.logging.Logger;
  *          List&lt;MyValueObject&gt; queryWithType({@literal @}Bind("type") MyTypeEnumerable type);
  *          ...
  *      }
- * </pre>
+ * </code></pre>
  *
  * @author Sjoerd Talsma
  */
