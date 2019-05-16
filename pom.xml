@@ -82,7 +82,7 @@
         <project.moduleName>${project.groupId}.${project.artifactId}</project.moduleName>
         <root.basedir>${project.basedir}</root.basedir>
 
-        <jackson2.version>2.9.8</jackson2.version>
+        <jackson2.version>2.9.9</jackson2.version>
 
         <junit.version>4.12</junit.version>
         <hamcrest.version>2.1</hamcrest.version>
