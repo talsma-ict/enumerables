@@ -29,8 +29,17 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasToString;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class EnumerableDeserializerTest {
 
@@ -51,9 +60,16 @@ public class EnumerableDeserializerTest {
         mapper.registerModule(bigCoModule);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testDeserialize_nullString() throws IOException {
-        mapper.readValue((String) null, BigCo.class);
+        try {
+            mapper.readValue((String) null, BigCo.class);
+            throw new AssertionError("Exception expected");
+        } catch (RuntimeException expected) {
+            assertThat(expected, anyOf(
+                    instanceOf(NullPointerException.class),
+                    instanceOf(IllegalArgumentException.class)));
+        }
     }
 
     @Test
