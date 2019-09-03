@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Talsma ICT
+ * Copyright 2016-2019 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,15 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static nl.talsmasoftware.enumerables.jdbi3.CarBrand.*;
+import static nl.talsmasoftware.enumerables.jdbi3.CarBrand.ASTON_MARTIN;
+import static nl.talsmasoftware.enumerables.jdbi3.CarBrand.JAGUAR;
+import static nl.talsmasoftware.enumerables.jdbi3.CarBrand.TESLA;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 
 public class Jdbi3SupportTest {
 

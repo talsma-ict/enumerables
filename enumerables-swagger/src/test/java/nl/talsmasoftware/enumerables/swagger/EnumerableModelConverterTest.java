@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Talsma ICT
+ * Copyright 2016-2019 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.Model;
 import org.json.JSONException;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.Locale;
