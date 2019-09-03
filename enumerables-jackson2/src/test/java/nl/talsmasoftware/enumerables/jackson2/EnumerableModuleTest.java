@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Talsma ICT
+ * Copyright 2016-2019 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,15 @@ import static nl.talsmasoftware.enumerables.jackson2.EnumerableDeserializerTest.
 import static nl.talsmasoftware.enumerables.jackson2.SerializationMethod.AS_OBJECT;
 import static nl.talsmasoftware.enumerables.jackson2.SerializationMethod.AS_STRING;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.hasToString;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
 
 public class EnumerableModuleTest {
 
@@ -128,9 +136,16 @@ public class EnumerableModuleTest {
         JSONAssert.assertEquals(expected, actual, true);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testDeserialize_nullString() throws IOException {
-        mapper.readValue((String) null, BigCo.class);
+        try {
+            mapper.readValue((String) null, BigCo.class);
+            throw new AssertionError("Exception expected");
+        } catch (RuntimeException expected) {
+            assertThat(expected, anyOf(
+                    instanceOf(NullPointerException.class),
+                    instanceOf(IllegalArgumentException.class)));
+        }
     }
 
     @Test
