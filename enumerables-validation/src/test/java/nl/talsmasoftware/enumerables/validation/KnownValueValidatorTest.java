@@ -38,7 +38,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
-
+import static org.hamcrest.Matchers.not;
 
 /**
  * @author Sjoerd Talsma
@@ -120,13 +120,14 @@ public class KnownValueValidatorTest {
 
     @Test
     public void testStandardMessages_i18n() {
+        final String englishNonNullMessage = "must not be null";
         ClientLocaleHolder.set(ENGLISH);
         ConstraintViolation<StandardMessagesObject> violation = validator.validate(new StandardMessagesObject()).iterator().next();
-        assertThat(violation.getMessage(), equalTo("must not be null"));
+        assertThat(violation.getMessage(), equalTo(englishNonNullMessage));
 
         ClientLocaleHolder.set(FRENCH);
         violation = validator.validate(new StandardMessagesObject()).iterator().next();
-        assertThat(violation.getMessage(), equalTo("ne peut pas \u00EAtre nul"));
+        assertThat(violation.getMessage(), not(equalTo(englishNonNullMessage)));
     }
 
 }
