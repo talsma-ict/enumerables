@@ -92,7 +92,7 @@
         <jsonassert.version>1.5.0</jsonassert.version>
 
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-        <maven-source-plugin.version>3.1.0</maven-source-plugin.version>
+        <maven-source-plugin.version>3.2.0</maven-source-plugin.version>
         <maven-javadoc-plugin.version>3.1.1</maven-javadoc-plugin.version>
         <maven-shade-plugin.version>3.1.0</maven-shade-plugin.version>
         <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
