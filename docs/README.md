@@ -210,7 +210,7 @@ existing contract since the consumer should have already anticipated unknown val
 
   [ci-img]: https://travis-ci.org/talsma-ict/enumerables.svg?branch=develop
   [ci]: https://travis-ci.org/talsma-ict/enumerables
-  [maven-img]: https://img.shields.io/maven-metadata/v/http/central.maven.org/maven2/nl/talsmasoftware/enumerables/enumerables/maven-metadata.xml.svg
+  [maven-img]: https://img.shields.io/maven-central/v/nl.talsmasoftware.enumerables/enumerables
   [maven]: http://mvnrepository.com/artifact/nl.talsmasoftware.enumerables
   [coveralls-img]: https://coveralls.io/repos/github/talsma-ict/enumerables/badge.svg
   [coveralls]: https://coveralls.io/github/talsma-ict/enumerables
