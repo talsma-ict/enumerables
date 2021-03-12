@@ -213,8 +213,7 @@
                     </mapping>
                     <excludes>
                         <exclude>.gitignore</exclude>
-                        <exclude>.travis.yml</exclude>
-                        <exclude>.travis/**</exclude>
+                        <exclude>.github/**</exclude>
                         <exclude>.mvn/**</exclude>
                         <exclude>mvnw*</exclude>
                         <exclude>**/.idea/**</exclude>
@@ -391,6 +390,8 @@
                                 <configuration>
                                     <gpgArguments>
                                         <gpgArgument>--batch</gpgArgument>
+                                        <gpgArgument>--pinentry-mode</gpgArgument>
+                                        <gpgArgument>loopback</gpgArgument>
                                     </gpgArguments>
                                 </configuration>
                             </execution>
