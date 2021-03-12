@@ -1,4 +1,4 @@
-[![Build Status][ci-img]][ci]
+[![CI build][ci-img]][ci]
 [![Coverage Status][coveralls-img]][coveralls]
 [![Maven Version][maven-img]][maven]
 [![Javadoc][javadoc-img]][javadoc]
@@ -149,24 +149,24 @@ Only unanticipated values will result in new objects.
 
 ### Validation
 
-The [enumerables-validation](../enumerables-validation) module provides several annotations as
+The [enumerables-validation](enumerables-validation) module provides several annotations as
 `javax.validation` constraints.
 
 ### JAX-RS
 
-The [enumerables-jaxrs](../enumerables-jaxrs) module provides an 
-[enumerable parameter converter provider](../enumerables-jaxrs/src/main/java/nl/talsmasoftware/enumerables/jaxrs/EnumerableParamConverterProvider.java)
+The [enumerables-jaxrs](enumerables-jaxrs) module provides an 
+[enumerable parameter converter provider](enumerables-jaxrs/src/main/java/nl/talsmasoftware/enumerables/jaxrs/EnumerableParamConverterProvider.java)
 for JAX-RS.
 
 ### JSON serialization
 
-The [enumerables-jackson2](../enumerables-jackson2) and [enumerables-gson](../enumerables-gson)
+The [enumerables-jackson2](enumerables-jackson2) and [enumerables-gson](enumerables-gson)
 modules provide serialization and deserialization functionality to and from [json].  
 [Jackson] also supports other common formats such as [yaml].
 
 ### Swagger documentation
 
-The [enumerables-swagger](../enumerables-swagger) module provides [Swagger] API model documentation
+The [enumerables-swagger](enumerables-swagger) module provides [Swagger] API model documentation
 for `Enumerable` types, including examples.
 
 ## Background
@@ -206,12 +206,10 @@ existing contract since the consumer should have already anticipated unknown val
 
 ## License
 
-[Apache 2.0 license](../LICENSE)
+[Apache 2.0 license](LICENSE)
 
-[//]: # (This is a markdown comment.)
-
-  [ci-img]: https://travis-ci.org/talsma-ict/enumerables.svg?branch=develop
-  [ci]: https://travis-ci.org/talsma-ict/enumerables
+  [ci-img]: https://github.com/talsma-ict/enumerables/actions/workflows/ci-build.yml/badge.svg
+  [ci]: https://github.com/talsma-ict/enumerables/actions/workflows/ci-build.yml
   [maven-img]: https://img.shields.io/maven-central/v/nl.talsmasoftware.enumerables/enumerables
   [maven]: http://mvnrepository.com/artifact/nl.talsmasoftware.enumerables
   [javadoc-img]: https://www.javadoc.io/badge/nl.talsmasoftware.enumerables/enumerables.svg
