@@ -1,4 +1,4 @@
-[![Build Status][ci-img]][ci]
+[![CI build][ci-img]][ci]
 [![Coverage Status][coveralls-img]][coveralls]
 [![Maven Version][maven-img]][maven]
 [![Javadoc][javadoc-img]][javadoc]
@@ -208,10 +208,8 @@ existing contract since the consumer should have already anticipated unknown val
 
 [Apache 2.0 license](LICENSE)
 
-[//]: # (This is a markdown comment.)
-
-  [ci-img]: https://travis-ci.org/talsma-ict/enumerables.svg?branch=develop
-  [ci]: https://travis-ci.org/talsma-ict/enumerables
+  [ci-img]: https://github.com/talsma-ict/enumerables/actions/workflows/ci-build.yml/badge.svg
+  [ci]: https://github.com/talsma-ict/enumerables/actions/workflows/ci-build.yml
   [maven-img]: https://img.shields.io/maven-central/v/nl.talsmasoftware.enumerables/enumerables
   [maven]: http://mvnrepository.com/artifact/nl.talsmasoftware.enumerables
   [javadoc-img]: https://www.javadoc.io/badge/nl.talsmasoftware.enumerables/enumerables.svg
