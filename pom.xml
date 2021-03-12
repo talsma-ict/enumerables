@@ -294,6 +294,9 @@
                                 <artifactId>umldoclet</artifactId>
                                 <version>${umldoclet.version}</version>
                             </docletArtifact>
+                            <additionalOptions>
+                                <additionalOption>--create-puml-files</additionalOption>
+                            </additionalOptions>
                         </configuration>
                     </execution>
                 </executions>
