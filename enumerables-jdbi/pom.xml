@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright 2016-2020 Talsma ICT
+    Copyright 2016-2021 Talsma ICT
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@
         <project.moduleName>${project.groupId}.jdbi</project.moduleName>
         <root.basedir>${project.parent.basedir}</root.basedir>
         <jdbi.version>2.78</jdbi.version>
-        <h2db.version>1.4.200</h2db.version>
+        <h2db.version>2.0.204</h2db.version>
     </properties>
 
     <dependencies>
