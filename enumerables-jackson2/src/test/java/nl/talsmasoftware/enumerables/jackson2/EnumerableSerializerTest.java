@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 Talsma ICT
+ * Copyright 2016-2022 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,6 +71,8 @@ public class EnumerableSerializerTest {
 
     @Test
     public void testSerialize_jsonObject() throws IOException {
+        mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         SimpleModule bigCoModule = new SimpleModule("BigCo module", unknownVersion());
         bigCoModule.addSerializer(BigCo.class, new EnumerableSerializer(AS_OBJECT));
         mapper.registerModule(bigCoModule);
