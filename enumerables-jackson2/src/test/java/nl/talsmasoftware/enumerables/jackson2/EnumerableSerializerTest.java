@@ -71,6 +71,8 @@ public class EnumerableSerializerTest {
 
     @Test
     public void testSerialize_jsonObject() throws IOException {
+        mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         SimpleModule bigCoModule = new SimpleModule("BigCo module", unknownVersion());
         bigCoModule.addSerializer(BigCo.class, new EnumerableSerializer(AS_OBJECT));
         mapper.registerModule(bigCoModule);
