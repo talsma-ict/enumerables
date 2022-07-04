@@ -104,7 +104,7 @@
         <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
         <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
         <buildnumber-maven-plugin.version>3.0.0</buildnumber-maven-plugin.version>
-        <umldoclet.version>2.0.17</umldoclet.version>
+        <umldoclet.version>2.0.18</umldoclet.version>
     </properties>
 
     <dependencies>
