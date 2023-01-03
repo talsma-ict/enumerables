@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright 2016-2022 Talsma ICT
+    Copyright 2016-2023 Talsma ICT
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -104,7 +104,7 @@
         <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
         <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
         <buildnumber-maven-plugin.version>3.0.0</buildnumber-maven-plugin.version>
-        <umldoclet.version>2.0.20</umldoclet.version>
+        <umldoclet.version>2.1.0</umldoclet.version>
     </properties>
 
     <dependencies>
