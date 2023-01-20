@@ -253,7 +253,7 @@
                         <configuration>
                             <jdkToolchain>
                                 <!-- Required by new mockito version -->
-                                <version>11</version>
+                                <version>[11,)</version>
                             </jdkToolchain>
                             <testSource>8</testSource>
                             <testTarget>8</testTarget>
@@ -267,7 +267,7 @@
                 <version>3.0.0-M7</version>
                 <configuration>
                     <jdkToolchain>
-                        <version>11</version>
+                        <version>[11,)</version>
                     </jdkToolchain>
                 </configuration>
             </plugin>
