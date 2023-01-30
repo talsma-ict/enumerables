@@ -64,7 +64,7 @@
             <dependency> <!-- Swagger is currently incompatible with jackson 2.11! -->
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
-                <version>2.14.1</version>
+                <version>2.14.2</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
