@@ -15,8 +15,7 @@
  */
 package nl.talsmasoftware.enumerables.validation;
 
-import jakarta.validation.MessageInterpolator;
-
+import javax.validation.MessageInterpolator;
 import java.util.Locale;
 
 /**
