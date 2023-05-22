@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 Talsma ICT
+ * Copyright 2016-2023 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  */
 package nl.talsmasoftware.enumerables.validation;
 
-import javax.validation.MessageInterpolator;
+import jakarta.validation.MessageInterpolator;
+
 import java.util.Locale;
 
 /**

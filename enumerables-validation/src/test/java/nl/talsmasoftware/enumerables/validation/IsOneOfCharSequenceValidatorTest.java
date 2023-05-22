@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 Talsma ICT
+ * Copyright 2016-2023 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,16 @@
  */
 package nl.talsmasoftware.enumerables.validation;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import nl.talsmasoftware.enumerables.constraints.IsOneOf;
+import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.validation.Configuration;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
 import java.util.Locale;
 import java.util.Set;
 
@@ -70,11 +70,12 @@ public class IsOneOfCharSequenceValidatorTest {
     public void setUp() {
         Locale.setDefault(GERMAN); // Default to non-dutch or english to test.
         ClientLocaleHolder.set(ENGLISH);
-        Configuration config = Validation.byDefaultProvider().configure();
-        config = config.messageInterpolator(new ClientLocaleMessageInterpolator(config.getDefaultMessageInterpolator()));
-        validator = config.buildValidatorFactory().getValidator();
+        validator = Validation.byDefaultProvider()
+                .configure()
+                .messageInterpolator(new ClientLocaleMessageInterpolator(new ParameterMessageInterpolator()))
+                .buildValidatorFactory()
+                .getValidator();
     }
-
 
     @Test
     public void testIsOneOfCharSeq_charsequence_null() {
