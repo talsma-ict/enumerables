@@ -38,8 +38,8 @@
     <modules>
         <module>enumerables-bom</module>
         <module>enumerables</module>
-        <module>enumerables-validation</module>
         <module>enumerables-jackson2</module>
+        <module>enumerables-javax-validation</module>
         <module>enumerables-jakarta-validation</module>
         <module>enumerables-jaxrs</module>
         <module>enumerables-jdbi</module>
