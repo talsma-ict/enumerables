@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.talsmasoftware.enumerables.validation;
+package nl.talsmasoftware.enumerables.jakarta.validation;
 
 import jakarta.validation.ConstraintValidator;
-import nl.talsmasoftware.enumerables.constraints.IsOneOf;
+import nl.talsmasoftware.enumerables.jakarta.validation.constraints.IsOneOf;
 
 import java.util.Locale;
 

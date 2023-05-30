@@ -27,7 +27,7 @@
     </parent>
 
     <artifactId>enumerables-validation</artifactId>
-    <name>Enumerables (validation)</name>
+    <name>Enumerables (javax validation)</name>
     <packaging>jar</packaging>
 
     <properties>

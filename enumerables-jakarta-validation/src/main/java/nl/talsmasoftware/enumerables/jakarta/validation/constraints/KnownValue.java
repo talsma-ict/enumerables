@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.talsmasoftware.enumerables.constraints;
+package nl.talsmasoftware.enumerables.jakarta.validation.constraints;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
-import nl.talsmasoftware.enumerables.validation.IsOneOfCharSequencesValidator;
-import nl.talsmasoftware.enumerables.validation.IsOneOfEnumerablesValidator;
+import nl.talsmasoftware.enumerables.jakarta.validation.KnownValueValidator;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -32,39 +31,17 @@ import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Constraint that can be used to allow only a subset of known values for an Enumerable object. Given the nature of this
- * check, it may also be used to validate {@link CharSequence} objects with.
- * <p>
- * Supported types are all subclasses of:
- * <ul>
- * <li>{@link nl.talsmasoftware.enumerables.Enumerable Enumerable}, or
- * <li>{@link CharSequence}
- * </ul>
- * <p>
- * The constraint allows specifying whether or not the matching should be done case sensitive.
+ * Supported types are: all subclasses of {@link nl.talsmasoftware.enumerables.Enumerable Enumerable}.
  *
  * @author Sjoerd Talsma
  */
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER})
 @Retention(RUNTIME)
 @Documented
-@Constraint(validatedBy = {IsOneOfEnumerablesValidator.class, IsOneOfCharSequencesValidator.class})
-public @interface IsOneOf {
+@Constraint(validatedBy = KnownValueValidator.class)
+public @interface KnownValue {
 
-    /**
-     * @return The message to use if this constraint is violated.
-     */
-    String message() default "{nl.talsmasoftware.enumerables.constraints.IsOneOf.message}";
-
-    /**
-     * @return The array of values that are accepted by this constraint.
-     */
-    String[] value() default {};
-
-    /**
-     * @return Whether the matching for the accepted values should be done case-sensitive, defaults to <code>true</code>.
-     */
-    boolean caseSensitive() default true;
+    String message() default "{nl.talsmasoftware.enumerables.jakarta.validation.constraints.KnownValue.message}";
 
     Class<?>[] groups() default {};
 

@@ -43,9 +43,10 @@ property type which is enumerable:
 ```java
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
-import nl.talsmasoftware.enumerables.constraints.KnownValue;
 
-public class Car {    
+import nl.talsmasoftware.enumerables.jakarta.validation.constraints.KnownValue;
+
+public class Car {
     @KnownValue
     @IsOneOf(value = {"Ferrari", "Aston martin"}, caseSensitive = false)
     private CarBrand brand;
@@ -53,7 +54,7 @@ public class Car {
     public Car(CarBrand brand) {
         this.brand = brand;
     }
-    
+
     public Set<ConstraintViolation<Car>> validateMe() {
         return Validation.buildDefaultValidatorFactory().getValidator().validate(this);
     }

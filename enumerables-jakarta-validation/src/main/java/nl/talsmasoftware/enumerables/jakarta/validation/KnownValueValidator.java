@@ -13,17 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.talsmasoftware.enumerables.validation;
+package nl.talsmasoftware.enumerables.jakarta.validation;
 
+import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import nl.talsmasoftware.enumerables.Enumerable;
+import nl.talsmasoftware.enumerables.jakarta.validation.constraints.KnownValue;
 
 /**
  * @author Sjoerd Talsma
  */
-public class IsOneOfCharSequencesValidator extends IsOneOfAbstractValidator<CharSequence> {
+public class KnownValueValidator implements ConstraintValidator<KnownValue, Enumerable> {
 
-    public boolean isValid(CharSequence value, ConstraintValidatorContext context) {
-        return value == null || isAccepted(value.toString());
+    public void initialize(KnownValue constraintAnnotation) {
+        // Nothing to initialize, the KnownValue annotation doesn't have any parameters.
+    }
+
+    public boolean isValid(Enumerable value, ConstraintValidatorContext context) {
+        return value == null || value.name() != null;
     }
 
 }

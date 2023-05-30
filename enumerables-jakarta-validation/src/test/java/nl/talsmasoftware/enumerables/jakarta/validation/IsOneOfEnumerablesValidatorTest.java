@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.talsmasoftware.enumerables.validation;
+package nl.talsmasoftware.enumerables.jakarta.validation;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import nl.talsmasoftware.enumerables.Enumerable;
-import nl.talsmasoftware.enumerables.constraints.IsOneOf;
+import nl.talsmasoftware.enumerables.jakarta.validation.constraints.IsOneOf;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.junit.AfterClass;
 import org.junit.Before;
