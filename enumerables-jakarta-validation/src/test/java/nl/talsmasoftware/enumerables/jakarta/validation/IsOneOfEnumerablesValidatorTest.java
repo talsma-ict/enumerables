@@ -122,16 +122,16 @@ public class IsOneOfEnumerablesValidatorTest {
     public void testIsOneOfCharSeq_ValidationMessage_i18n() {
         ClientLocaleHolder.set(ENGLISH);
         ConstraintViolation<ValidatedObject> violation = validator.validate(new ValidatedObject(CarBrand.LAMBORGHINI)).iterator().next();
-        assertThat(violation.getMessage(), equalTo("is not one of the specified values"));
+        assertThat(violation.getMessage(), equalTo("is not one of [Ferrari, Aston martin]"));
 
         ClientLocaleHolder.set(ClientLocaleHolder.DUTCH);
         violation = validator.validate(new ValidatedObject(CarBrand.LAMBORGHINI)).iterator().next();
-        assertThat(violation.getMessage(), equalTo("is niet een opgegeven toegestane waarde"));
+        assertThat(violation.getMessage(), equalTo("is niet een waarde uit [Ferrari, Aston martin]"));
 
         // Does fallback to default work as expected?
         ClientLocaleHolder.set(ClientLocaleHolder.FRISIAN);
         violation = validator.validate(new ValidatedObject(CarBrand.LAMBORGHINI)).iterator().next();
-        assertThat(violation.getMessage(), equalTo("is not one of the specified values"));
+        assertThat(violation.getMessage(), equalTo("is not one of [Ferrari, Aston martin]"));
     }
 
 }

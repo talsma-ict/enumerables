@@ -32,8 +32,7 @@ import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Constraint that can be used to allow only a subset of known values for an Enumerable object. Given the nature of this
- * check, it may also be used to validate {@link CharSequence} objects with.
+ * Constraint to allow only a particular set of values.
  * <p>
  * Supported types are all subclasses of:
  * <ul>
@@ -41,7 +40,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * <li>{@link CharSequence}
  * </ul>
  * <p>
- * The constraint allows specifying whether or not the matching should be done case sensitive.
+ * The constraint allows specifying whether the match is case sensitive or not.
  *
  * @author Sjoerd Talsma
  */
