@@ -10,7 +10,3 @@ updates:
   - sjoerdtalsma
   assignees:
   - sjoerdtalsma
-  ignore:
-  - dependency-name: org.hibernate.validator:hibernate-validator
-    versions:
-    - 7.0.0.Final
