@@ -31,11 +31,11 @@
     <packaging>jar</packaging>
 
     <properties>
-        <project.moduleName>${project.groupId}.jakarta-validation</project.moduleName>
+        <project.moduleName>${project.groupId}.jakarta.validation</project.moduleName>
         <root.basedir>${project.parent.basedir}</root.basedir>
 
         <validation-api.version>3.0.0</validation-api.version>
-        <hibernate-validator.version>7.0.1.Final</hibernate-validator.version>
+        <hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
     </properties>
 
     <dependencies>
