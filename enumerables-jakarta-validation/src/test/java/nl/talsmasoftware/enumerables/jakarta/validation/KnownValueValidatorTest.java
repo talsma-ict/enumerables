@@ -108,16 +108,16 @@ public class KnownValueValidatorTest {
         ClientLocaleHolder.set(ENGLISH);
         ConstraintViolation<ValidatedObject> violation = validator
                 .validate(new ValidatedObject(CarBrand.parseLeniently("Unknown brand"))).iterator().next();
-        assertThat(violation.getMessage(), equalTo("not a known constant for CarBrand"));
+        assertThat(violation.getMessage(), equalTo("not a known constant value"));
 
         ClientLocaleHolder.set(ClientLocaleHolder.DUTCH);
         violation = validator.validate(new ValidatedObject(CarBrand.parseLeniently("Onbekend merk"))).iterator().next();
-        assertThat(violation.getMessage(), equalTo("geen bekende constante voor CarBrand"));
+        assertThat(violation.getMessage(), equalTo("geen bekende constante waarde"));
 
         // Does fallback to default work as expected?
         ClientLocaleHolder.set(ClientLocaleHolder.FRISIAN);
         violation = validator.validate(new ValidatedObject(CarBrand.parseLeniently("Unknown brand"))).iterator().next();
-        assertThat(violation.getMessage(), equalTo("not a known constant for CarBrand"));
+        assertThat(violation.getMessage(), equalTo("not a known constant value"));
     }
 
     @Test
