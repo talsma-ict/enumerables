@@ -199,8 +199,8 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
      * @return Re-parse an enumerable object after deserialization to ensure that constants remain constant.
      */
     protected Object readResolve() {
-        final Enumerable reParsed = parse(getClass(), value);
-        return reParsed.name() != null ? reParsed : this; // name found? Then return the parsed constant reference.
+        final Enumerable reParsed = parse(getClass(), this.value);
+        return reParsed != null && reParsed.name() != null ? reParsed : this; // name found? Return the parsed constant.
     }
 
     /**
