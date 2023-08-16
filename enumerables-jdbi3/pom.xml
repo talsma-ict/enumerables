@@ -34,7 +34,7 @@
     <properties>
         <project.moduleName>${project.groupId}.jdbi3</project.moduleName>
         <root.basedir>${project.parent.basedir}</root.basedir>
-        <jdbi3.version>3.40.0</jdbi3.version>
+        <jdbi3.version>3.41.0</jdbi3.version>
         <h2db.version>2.2.220</h2db.version>
     </properties>
 
