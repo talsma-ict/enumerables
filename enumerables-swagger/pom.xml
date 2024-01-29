@@ -33,7 +33,7 @@
     <properties>
         <project.moduleName>${project.groupId}.swagger</project.moduleName>
         <root.basedir>${project.parent.basedir}</root.basedir>
-        <swagger.version>1.6.12</swagger.version>
+        <swagger.version>1.6.13</swagger.version>
     </properties>
 
     <dependencies>
