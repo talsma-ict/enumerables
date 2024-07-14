@@ -26,7 +26,7 @@
         <version>1.0.13-SNAPSHOT</version>
     </parent>
 
-    <artifactId>enumerables-validation</artifactId>
+    <artifactId>enumerables-javax-validation</artifactId>
     <name>Enumerables (javax validation)</name>
     <packaging>jar</packaging>
 
