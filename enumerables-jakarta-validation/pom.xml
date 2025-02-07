@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright 2016-2024 Talsma ICT
+    Copyright 2016-2025 Talsma ICT
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@
         <project.moduleName>${project.groupId}.jakarta.validation</project.moduleName>
         <root.basedir>${project.parent.basedir}</root.basedir>
 
-        <validation-api.version>3.1.0</validation-api.version>
+        <validation-api.version>3.1.1</validation-api.version>
         <el-api.version>5.0.1</el-api.version>
         <hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
     </properties>
