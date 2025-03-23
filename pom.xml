@@ -411,6 +411,7 @@
                             <execution>
                                 <id>report-coveralls-coverage</id>
                                 <phase>verify</phase>
+                                <inherited>false</inherited>
                                 <goals>
                                     <goal>report</goal>
                                 </goals>
@@ -418,6 +419,9 @@
                         </executions>
                         <configuration>
                             <repoToken>${env.COVERALLS_REPO_TOKEN}</repoToken>
+                            <jacocoReports>
+                                <jacocoReport>coverage/target/**/jacoco.xml</jacocoReport>
+                            </jacocoReports>
                         </configuration>
                     </plugin>
                 </plugins>
