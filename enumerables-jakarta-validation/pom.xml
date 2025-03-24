@@ -36,7 +36,7 @@
 
         <validation-api.version>3.1.1</validation-api.version>
         <el-api.version>5.0.1</el-api.version>
-        <hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
+        <hibernate-validator.version>8.0.2.Final</hibernate-validator.version>
     </properties>
 
     <dependencies>
