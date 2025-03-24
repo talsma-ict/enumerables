@@ -1,4 +1,4 @@
-[![CI build][ci-img]][ci]
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=talsma-ict_enumerables&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=talsma-ict_enumerables)
 [![Coverage Status][coveralls-img]][coveralls]
 [![Maven Version][maven-img]][maven]
 [![Javadoc][javadoc-img]][javadoc]
@@ -208,8 +208,6 @@ existing contract since the consumer should have already anticipated unknown val
 
 [Apache 2.0 license](LICENSE)
 
-  [ci-img]: https://github.com/talsma-ict/enumerables/actions/workflows/ci-build.yml/badge.svg
-  [ci]: https://github.com/talsma-ict/enumerables/actions/workflows/ci-build.yml
   [maven-img]: https://img.shields.io/maven-central/v/nl.talsmasoftware.enumerables/enumerables
   [maven]: https://mvnrepository.com/artifact/nl.talsmasoftware.enumerables
   [javadoc-img]: https://www.javadoc.io/badge/nl.talsmasoftware.enumerables/enumerables.svg
