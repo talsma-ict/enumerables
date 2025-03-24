@@ -46,7 +46,6 @@
         <module>enumerables-jdbi3</module>
         <module>enumerables-gson</module>
         <module>enumerables-swagger</module>
-<!--        <module>coverage</module>-->
         <!-- relocation -->
         <module>enumerables-validation</module>
     </modules>
