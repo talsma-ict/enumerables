@@ -46,7 +46,6 @@
         <module>enumerables-jdbi3</module>
         <module>enumerables-gson</module>
         <module>enumerables-swagger</module>
-        <module>coverage-report</module>
         <!-- relocation -->
         <module>enumerables-validation</module>
     </modules>
@@ -414,7 +413,6 @@
                 <sonar.host.url>https://sonarcloud.io</sonar.host.url>
                 <sonar.organization>talsma-ict</sonar.organization>
                 <sonar.projectKey>talsma-ict_enumerables</sonar.projectKey>
-                <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
             </properties>
             <build>
                 <plugins>
