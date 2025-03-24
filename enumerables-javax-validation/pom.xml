@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright 2016-2024 Talsma ICT
+    Copyright 2016-2025 Talsma ICT
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@
         <root.basedir>${project.parent.basedir}</root.basedir>
 
         <validation-api.version>2.0.1.Final</validation-api.version>
-        <hibernate-validator.version>8.0.2.Final</hibernate-validator.version>
+        <hibernate-validator.version>6.2.0.Final</hibernate-validator.version>
         <javax-el.version>3.0.0</javax-el.version>
     </properties>
 
