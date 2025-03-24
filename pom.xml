@@ -46,7 +46,7 @@
         <module>enumerables-jdbi3</module>
         <module>enumerables-gson</module>
         <module>enumerables-swagger</module>
-        <module>coverage</module>
+<!--        <module>coverage</module>-->
         <!-- relocation -->
         <module>enumerables-validation</module>
     </modules>
@@ -389,39 +389,6 @@
                             <publishingServerId>central</publishingServerId>
                             <autoPublish>true</autoPublish>
                             <waitUntil>published</waitUntil>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <profile>
-            <id>coveralls</id>
-            <activation>
-                <property>
-                    <name>env.COVERALLS_REPO_TOKEN</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.eluder.coveralls</groupId>
-                        <artifactId>coveralls-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>report-coveralls-coverage</id>
-                                <phase>verify</phase>
-                                <inherited>false</inherited>
-                                <goals>
-                                    <goal>report</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <repoToken>${env.COVERALLS_REPO_TOKEN}</repoToken>
-                            <jacocoReports>
-                                <jacocoReport>coverage/target/**/jacoco.xml</jacocoReport>
-                            </jacocoReports>
                         </configuration>
                     </plugin>
                 </plugins>
