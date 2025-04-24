@@ -343,6 +343,7 @@ public abstract class Enumerable implements Comparable<Enumerable>, Serializable
      * <li>Or {@code null} in case the type has not yet been reflected.</li>
      * </ul>
      */
+    @SuppressWarnings("java:S3077") // NameAndOrdinal is immutable, so volatile is valid here.
     private transient volatile NameAndOrdinal _nameAndOrdinal = null;
 
     /**
