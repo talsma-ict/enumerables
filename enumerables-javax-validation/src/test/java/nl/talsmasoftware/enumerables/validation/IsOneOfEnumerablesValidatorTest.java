@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author Sjoerd Talsma
  */
-public class IsOneOfEnumerablesValidatorTest {
+class IsOneOfEnumerablesValidatorTest {
 
     static class ValidatedObject {
         @IsOneOf({"Ferrari", "Aston martin"})
@@ -60,17 +60,17 @@ public class IsOneOfEnumerablesValidatorTest {
     Set<ConstraintViolation<ValidatedObject>> violations;
 
     @BeforeAll
-    public static void rememberOldDefaultLocale() {
+    static void rememberOldDefaultLocale() {
         IsOneOfCharSequenceValidatorTest.rememberOldDefaultLocale();
     }
 
     @AfterAll
-    public static void restoreOldDefaultLocale() {
+    static void restoreOldDefaultLocale() {
         IsOneOfCharSequenceValidatorTest.restoreOldDefaultLocale();
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         Locale.setDefault(GERMAN); // Default to non-dutch or english to test.
         ClientLocaleHolder.set(ENGLISH);
         Configuration config = Validation.byDefaultProvider().configure();
@@ -79,26 +79,26 @@ public class IsOneOfEnumerablesValidatorTest {
     }
 
     @Test
-    public void testIsOneOf_enumerable_null() {
+    void testIsOneOf_enumerable_null() {
         violations = validator.validate(new ValidatedObject(null));
         assertThat(violations).isEmpty();
     }
 
     @Test
-    public void testIsOneOf_validEnumerable() {
+    void testIsOneOf_validEnumerable() {
         violations = validator.validate(new ValidatedObject(CarBrand.FERRARI));
         assertThat(violations).isEmpty();
     }
 
     @Test
-    public void testIsOneOf_otherEnumerable() {
+    void testIsOneOf_otherEnumerable() {
         violations = validator.validate(new ValidatedObject(CarBrand.LAMBORGHINI));
         assertThat(violations).hasSize(1);
         assertThat(violations.iterator().next().getPropertyPath()).hasToString("brand");
     }
 
     @Test
-    public void testIsOneOf_caseInsensitive() {
+    void testIsOneOf_caseInsensitive() {
         CarBrand loweredFerrari = Enumerable.parse(CarBrand.class, "ferrari");
         assertThat(loweredFerrari).isNotEqualTo(CarBrand.FERRARI);
 
@@ -111,7 +111,7 @@ public class IsOneOfEnumerablesValidatorTest {
     }
 
     @Test
-    public void testIsOneOfCharSeq_ValidationMessage_i18n() {
+    void testIsOneOfCharSeq_ValidationMessage_i18n() {
         ClientLocaleHolder.set(ENGLISH);
         ConstraintViolation<ValidatedObject> violation = validator.validate(new ValidatedObject(CarBrand.LAMBORGHINI)).iterator().next();
         assertThat(violation.getMessage()).isEqualTo("is not one of [Ferrari, Aston martin]");

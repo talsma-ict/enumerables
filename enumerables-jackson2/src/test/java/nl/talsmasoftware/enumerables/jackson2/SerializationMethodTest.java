@@ -108,18 +108,20 @@ class SerializationMethodTest {
 
     @Test
     void testHashCode() {
-        assertThat(AS_STRING).hasSameHashCodeAs(AS_STRING);
-        assertThat(AS_STRING).doesNotHaveSameHashCodeAs(AS_OBJECT); // Stronger than hashcode contract
-        assertThat(AS_STRING).hasSameHashCodeAs(AS_STRING.except((Class<? extends Enumerable>) null));
+        assertThat(AS_STRING)
+                .hasSameHashCodeAs(AS_STRING)
+                .doesNotHaveSameHashCodeAs(AS_OBJECT) // Stronger than hashcode contract
+                .hasSameHashCodeAs(AS_STRING.except((Class<? extends Enumerable>) null));
 
         assertThat(AS_OBJECT.except(Enumerable2.class)).hasSameHashCodeAs(AS_OBJECT.except(Enumerable2.class));
     }
 
     @Test
     void testEquals() {
-        assertThat(AS_STRING).isEqualTo(AS_STRING);
-        assertThat(AS_STRING).isNotEqualTo(AS_STRING.except(Enumerable1.class));
-        assertThat(AS_STRING).isNotEqualTo(AS_OBJECT);
+        assertThat(AS_STRING)
+                .isEqualTo(AS_STRING)
+                .isNotEqualTo(AS_STRING.except(Enumerable1.class))
+                .isNotEqualTo(AS_OBJECT);
 
         assertThat(AS_OBJECT.except(Enumerable2.class)).isEqualTo(AS_OBJECT.except(Enumerable2.class));
     }

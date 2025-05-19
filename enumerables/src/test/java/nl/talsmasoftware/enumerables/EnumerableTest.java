@@ -32,7 +32,7 @@ import static java.lang.Integer.signum;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SuppressWarnings({"unused", "deprecation"})
+@SuppressWarnings({"unused"})
 class EnumerableTest {
 
     static final class BigCo extends Enumerable {
@@ -228,7 +228,7 @@ class EnumerableTest {
 
     @Test
     void testOrdinal() {
-        assertThat(Fruit.APPLE.ordinal()).isEqualTo(0);
+        assertThat(Fruit.APPLE.ordinal()).isZero();
         assertThat(Fruit.ORANGE.ordinal()).isEqualTo(1);
         assertThat(new Fruit(Fruit.APPLE.getValue()).ordinal()).isEqualTo(0);
         assertThat(new Fruit("Pineapple").ordinal()).isEqualTo(Integer.MAX_VALUE);
@@ -261,7 +261,7 @@ class EnumerableTest {
 
     @Test
     void testCompareTo() {
-        // Clearly an orange is bigger than an apple? ;-)
+        // An orange is bigger than an apple? ;-)
         assertThat(signum(Fruit.APPLE.compareTo(Fruit.ORANGE))).isEqualTo(-1);
         assertThat(signum(Fruit.APPLE.compareTo(Fruit.APPLE))).isEqualTo(0);
         assertThat(signum(Fruit.ORANGE.compareTo(Fruit.ORANGE))).isEqualTo(0);

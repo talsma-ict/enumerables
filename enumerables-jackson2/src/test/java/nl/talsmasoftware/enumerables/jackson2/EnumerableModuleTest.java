@@ -46,7 +46,7 @@ class EnumerableModuleTest {
     ObjectMapper mapper, mapperAsObject, mapperWithException;
     EnumerableModule module;
 
-    private final ThreadLocal<Locale> defaultLocale = new ThreadLocal<Locale>();
+    private final ThreadLocal<Locale> defaultLocale = new ThreadLocal<>();
 
     @BeforeEach
     void setUpLocale() {
@@ -121,14 +121,14 @@ class EnumerableModuleTest {
         actual = mapperAsObject.writeValueAsString(testObject);
         JSONAssert.assertEquals(expected, actual, true);
 
-        // Serialization as exception to object (i.e. String again)
+        // Serialization as exception to object (i.e., String again)
         expected = "{ \"bigCo\" : \"Microsoft\" }";
         actual = mapperWithException.writeValueAsString(testObject);
         JSONAssert.assertEquals(expected, actual, true);
     }
 
     @Test
-    void testDeserialize_nullString() throws IOException {
+    void testDeserialize_nullString() {
         assertThatThrownBy(() -> mapper.readValue((String) null, BigCo.class))
                 .isInstanceOfAny(NullPointerException.class, IllegalArgumentException.class);
     }
@@ -177,14 +177,14 @@ class EnumerableModuleTest {
     }
 
     @Test
-    void testDeserialize_objectRepresentation_emptyObject() throws IOException {
+    void testDeserialize_objectRepresentation_emptyObject() {
         String json = "{ \"bigCo\" : { } }";
         assertThatThrownBy(() -> mapper.readValue(json, PlainTestObject.class))
                 .isInstanceOf(JsonMappingException.class);
     }
 
     @Test
-    void testDeserialize_unknownObjectRepresentation() throws IOException {
+    void testDeserialize_unknownObjectRepresentation() {
         String json = "{ \"bigCo\" : { \"val\" : \"IBM\" } }";
         assertThatThrownBy(() -> mapper.readValue(json, PlainTestObject.class))
                 .isInstanceOf(JsonMappingException.class);
@@ -209,7 +209,7 @@ class EnumerableModuleTest {
 
     @Test
     void testHashcode_equals() {
-        Set<EnumerableModule> set = new HashSet<EnumerableModule>();
+        Set<EnumerableModule> set = new HashSet<>();
         assertThat(set.add(module)).isTrue();
         assertThat(set.add(module)).isFalse();
         assertThat(set.add(new EnumerableModule(AS_STRING))).isFalse();
