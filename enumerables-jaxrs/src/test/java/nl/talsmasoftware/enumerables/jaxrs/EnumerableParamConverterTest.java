@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 Talsma ICT
+ * Copyright 2016-2025 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,58 +16,46 @@
 package nl.talsmasoftware.enumerables.jaxrs;
 
 import nl.talsmasoftware.enumerables.Enumerable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static java.util.Arrays.asList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasToString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.hamcrest.Matchers.stringContainsInOrder;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class EnumerableParamConverterTest {
-    private static final TestEnumerable FOURTH = Enumerable.parse(TestEnumerable.class, "4th");
+class EnumerableParamConverterTest {
+    static final TestEnumerable FOURTH = Enumerable.parse(TestEnumerable.class, "4th");
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testConstructor_nullType() {
-        try {
-            new EnumerableParamConverter(null);
-            fail("Exception expected");
-        } catch (RuntimeException expected) {
-            assertThat(expected, hasToString(containsString("type is <null>")));
-        }
+    void testConstructor_nullType() {
+        assertThatThrownBy(() -> new EnumerableParamConverter(null))
+                .hasMessageContaining("type is <null>");
     }
 
     @Test
-    public void testFromString() {
+    void testFromString() {
         EnumerableParamConverter<TestEnumerable> converter = new EnumerableParamConverter<TestEnumerable>(TestEnumerable.class);
-        assertThat(converter.fromString("1st"), is(sameInstance(TestEnumerable.FIRST)));
-        assertThat(converter.fromString("2nd"), is(sameInstance(TestEnumerable.SECOND)));
-        assertThat(converter.fromString("3rd"), is(sameInstance(TestEnumerable.THIRD)));
-        assertThat(converter.fromString("4th"), is(equalTo(FOURTH)));
-        assertThat(converter.fromString(null), is(nullValue()));
+        assertThat(converter.fromString("1st")).isSameAs(TestEnumerable.FIRST);
+        assertThat(converter.fromString("2nd")).isSameAs(TestEnumerable.SECOND);
+        assertThat(converter.fromString("3rd")).isSameAs(TestEnumerable.THIRD);
+        assertThat(converter.fromString("4th")).isEqualTo(FOURTH);
+        assertThat(converter.fromString(null)).isNull();
     }
 
     @Test
-    public void testToString() {
+    void testToString() {
         EnumerableParamConverter<TestEnumerable> converter = new EnumerableParamConverter<TestEnumerable>(TestEnumerable.class);
-        assertThat(converter.toString(TestEnumerable.FIRST), is(equalTo("1st")));
-        assertThat(converter.toString(TestEnumerable.SECOND), is(equalTo("2nd")));
-        assertThat(converter.toString(TestEnumerable.THIRD), is(equalTo("3rd")));
-        assertThat(converter.toString(FOURTH), is(equalTo("4th")));
-        assertThat(converter.toString(null), is(nullValue()));
+        assertThat(converter.toString(TestEnumerable.FIRST)).isEqualTo("1st");
+        assertThat(converter.toString(TestEnumerable.SECOND)).isEqualTo("2nd");
+        assertThat(converter.toString(TestEnumerable.THIRD)).isEqualTo("3rd");
+        assertThat(converter.toString(FOURTH)).isEqualTo("4th");
+        assertThat(converter.toString(null)).isNull();
     }
 
     @Test
-    public void testForLoggingErrors() {
+    void testForLoggingErrors() {
         Logger logger = Logger.getLogger(EnumerableParamConverter.class.getName());
         logger.setLevel(Level.FINEST);
         testFromString();
@@ -76,8 +64,8 @@ public class EnumerableParamConverterTest {
     }
 
     @Test
-    public void testConverterToString() {
-        assertThat(new EnumerableParamConverter<TestEnumerable>(TestEnumerable.class),
-                hasToString(stringContainsInOrder(asList("EnumerableParamConverter", "TestEnumerable"))));
+    void testConverterToString() {
+        assertThat(new EnumerableParamConverter<>(TestEnumerable.class))
+                .hasToString("EnumerableParamConverter{%s}", TestEnumerable.class.getName());
     }
 }

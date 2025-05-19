@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 Talsma ICT
+ * Copyright 2016-2025 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 package nl.talsmasoftware.enumerables.validation;
 
 import nl.talsmasoftware.enumerables.constraints.IsOneOf;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.validation.Configuration;
 import javax.validation.ConstraintViolation;
@@ -30,18 +30,12 @@ import java.util.Set;
 
 import static java.util.Locale.ENGLISH;
 import static java.util.Locale.GERMAN;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.hasToString;
-import static org.hamcrest.Matchers.is;
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sjoerd Talsma
  */
-public class IsOneOfCharSequenceValidatorTest {
+class IsOneOfCharSequenceValidatorTest {
 
     static class ValidatedObject {
         @IsOneOf({"Ferrari", "Aston martin"})
@@ -56,18 +50,18 @@ public class IsOneOfCharSequenceValidatorTest {
     Validator validator;
     Set<ConstraintViolation<ValidatedObject>> violations;
 
-    @BeforeClass
-    public static void rememberOldDefaultLocale() {
+    @BeforeAll
+    static void rememberOldDefaultLocale() {
         if (oldDefaultLocale == null) oldDefaultLocale = Locale.getDefault();
     }
 
-    @AfterClass
-    public static void restoreOldDefaultLocale() {
+    @AfterAll
+    static void restoreOldDefaultLocale() {
         Locale.setDefault(oldDefaultLocale);
     }
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         Locale.setDefault(GERMAN); // Default to non-dutch or english to test.
         ClientLocaleHolder.set(ENGLISH);
         Configuration config = Validation.byDefaultProvider().configure();
@@ -77,38 +71,38 @@ public class IsOneOfCharSequenceValidatorTest {
 
 
     @Test
-    public void testIsOneOfCharSeq_charsequence_null() {
+    void testIsOneOfCharSeq_charsequence_null() {
         violations = validator.validate(new ValidatedObject(null));
-        assertThat(violations, is(empty()));
+        assertThat(violations).isEmpty();
     }
 
     @Test
-    public void testIsOneOfCharSeq_validString() {
+    void testIsOneOfCharSeq_validString() {
         violations = validator.validate(new ValidatedObject("Ferrari"));
-        assertThat(violations, is(empty()));
+        assertThat(violations).isEmpty();
     }
 
     @Test
-    public void testIsOneOfCharSeq_otherString() {
+    void testIsOneOfCharSeq_otherString() {
         violations = validator.validate(new ValidatedObject("Lamborghini"));
-        assertThat(violations, hasSize(1));
-        assertThat(violations.iterator().next().getPropertyPath(), hasToString("brand"));
+        assertThat(violations).hasSize(1);
+        assertThat(violations.iterator().next().getPropertyPath()).hasToString("brand");
     }
 
     @Test
-    public void testIsOneOfCharSeq_ValidationMessage_i18n() {
+    void testIsOneOfCharSeq_ValidationMessage_i18n() {
         ClientLocaleHolder.set(ENGLISH);
         ConstraintViolation<ValidatedObject> violation = validator.validate(new ValidatedObject("Lamborghini")).iterator().next();
-        assertThat(violation.getMessage(), equalTo("is not one of [Ferrari, Aston martin]"));
+        assertThat(violation.getMessage()).isEqualTo("is not one of [Ferrari, Aston martin]");
 
         ClientLocaleHolder.set(ClientLocaleHolder.DUTCH);
         violation = validator.validate(new ValidatedObject("Lamborghini")).iterator().next();
-        assertThat(violation.getMessage(), equalTo("is niet een waarde uit [Ferrari, Aston martin]"));
+        assertThat(violation.getMessage()).isEqualTo("is niet een waarde uit [Ferrari, Aston martin]");
 
         // Does fallback to default work as expected?
         ClientLocaleHolder.set(ClientLocaleHolder.FRISIAN);
         violation = validator.validate(new ValidatedObject("Lamborghini")).iterator().next();
-        assertThat(violation.getMessage(), equalTo("is not one of [Ferrari, Aston martin]"));
+        assertThat(violation.getMessage()).isEqualTo("is not one of [Ferrari, Aston martin]");
     }
 
 }

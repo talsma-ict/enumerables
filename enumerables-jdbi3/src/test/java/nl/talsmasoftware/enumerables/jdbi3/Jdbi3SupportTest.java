@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 Talsma ICT
+ * Copyright 2016-2025 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ package nl.talsmasoftware.enumerables.jdbi3;
 import org.h2.jdbcx.JdbcConnectionPool;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -30,24 +30,19 @@ import java.sql.Statement;
 import static nl.talsmasoftware.enumerables.jdbi3.CarBrand.ASTON_MARTIN;
 import static nl.talsmasoftware.enumerables.jdbi3.CarBrand.JAGUAR;
 import static nl.talsmasoftware.enumerables.jdbi3.CarBrand.TESLA;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class Jdbi3SupportTest {
+class Jdbi3SupportTest {
 
     static DataSource dataSource = JdbcConnectionPool.create("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "user", "pwd");
 
-    @AfterClass
-    public static void shutdownDataSource() {
+    @AfterAll
+    static void shutdownDataSource() {
         ((JdbcConnectionPool) dataSource).dispose();
     }
 
-    @Before
-    public void prepareTestdata() throws SQLException {
+    @BeforeEach
+    void prepareTestdata() throws SQLException {
         Connection connection = null;
         Statement statement = null;
         try {
@@ -64,23 +59,25 @@ public class Jdbi3SupportTest {
     }
 
     @Test
-    public void testDummy() {
+    void testDummy() {
         Jdbi jdbi = Jdbi.create(dataSource);
         jdbi.installPlugin(new SqlObjectPlugin());
         TestDao testDao = jdbi.onDemand(TestDao.class);
 
-        assertThat(testDao.findCars(null, null), containsInAnyOrder(
-                new Car(JAGUAR, "XK", 2006),
-                new Car(TESLA, "Model S", 2015)));
-        assertThat(testDao.findCars(JAGUAR, null), contains(
-                new Car(JAGUAR, "XK", 2006)));
-        assertThat(testDao.findCars(null, "Model S"), contains(
-                new Car(TESLA, "Model S", 2015)));
-        assertThat(testDao.findCars(ASTON_MARTIN, null), hasSize(0));
+        assertThat(testDao.findCars(null, null))
+                .containsExactlyInAnyOrder(
+                        new Car(JAGUAR, "XK", 2006),
+                        new Car(TESLA, "Model S", 2015)
+                );
+        assertThat(testDao.findCars(JAGUAR, null)).containsExactly(
+                new Car(JAGUAR, "XK", 2006));
+        assertThat(testDao.findCars(null, "Model S")).containsExactly(
+                new Car(TESLA, "Model S", 2015));
+        assertThat(testDao.findCars(ASTON_MARTIN, null)).isEmpty();
 
         // The brand should have passed the 'parse' method and therefore reuse the constant instances!
-        assertThat(testDao.findCars(null, "XK").get(0).brand, is(sameInstance(JAGUAR)));
-        assertThat(testDao.findCars(TESLA, "Model S").get(0).brand, is(sameInstance(TESLA)));
+        assertThat(testDao.findCars(null, "XK").get(0).brand).isSameAs(JAGUAR);
+        assertThat(testDao.findCars(TESLA, "Model S").get(0).brand).isSameAs(TESLA);
     }
 
 }

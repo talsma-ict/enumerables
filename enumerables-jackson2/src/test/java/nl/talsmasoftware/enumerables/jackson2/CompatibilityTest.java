@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 Talsma ICT
+ * Copyright 2016-2025 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,17 +19,14 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JavaType;
 import nl.talsmasoftware.enumerables.jackson2.PlainTestObject.BigCo;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 
 import static java.util.Arrays.asList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -38,10 +35,10 @@ import static org.mockito.Mockito.when;
 /**
  * @author Sjoerd Talsma
  */
-public class CompatibilityTest {
+class CompatibilityTest {
 
-    @After
-    public void restoreCompatibilityState() {
+    @AfterEach
+    void restoreCompatibilityState() {
         try {
             for (String fieldName : asList("supportsContextualType", "supportsTypeId")) {
                 Field field = Compatibility.class.getDeclaredField(fieldName);
@@ -57,45 +54,45 @@ public class CompatibilityTest {
     }
 
     @Test
-    public void testGetContextualType() {
+    void testGetContextualType() {
         DeserializationContext ctx = mock(DeserializationContext.class);
         JavaType javaType = mock(JavaType.class);
         when(ctx.getContextualType()).thenReturn(javaType);
 
-        assertThat(Compatibility.getContextualType(ctx), is(equalTo(javaType)));
+        assertThat(Compatibility.getContextualType(ctx)).isEqualTo(javaType);
 
         verify(ctx).getContextualType();
         verifyNoMoreInteractions(ctx, javaType);
     }
 
     @Test
-    public void testGetContextualType_NoSuchMethodError() {
+    void testGetContextualType_NoSuchMethodError() {
         DeserializationContext ctx = mock(DeserializationContext.class);
         when(ctx.getContextualType()).thenThrow(new NoSuchMethodError("DeserializationContext.getContextualType()"));
 
-        assertThat(Compatibility.getContextualType(ctx), is(nullValue())); // No error, but <null> result.
+        assertThat(Compatibility.getContextualType(ctx)).isNull(); // No error, but <null> result.
 
         verify(ctx).getContextualType();
         verifyNoMoreInteractions(ctx);
     }
 
     @Test
-    public void testGetTypeId() throws IOException {
+    void testGetTypeId() throws IOException {
         JsonParser parser = mock(JsonParser.class);
         when(parser.getTypeId()).thenReturn(BigCo.class);
 
-        assertThat(Compatibility.getTypeId(parser), is(equalTo((Object) BigCo.class)));
+        assertThat(Compatibility.getTypeId(parser)).isEqualTo(BigCo.class);
 
         verify(parser).getTypeId();
         verifyNoMoreInteractions(parser);
     }
 
     @Test
-    public void testGetTypeId_NoSuchMethodError() throws IOException {
+    void testGetTypeId_NoSuchMethodError() throws IOException {
         JsonParser parser = mock(JsonParser.class);
         when(parser.getTypeId()).thenThrow(NoSuchMethodError.class);
 
-        assertThat(Compatibility.getTypeId(parser), is(nullValue()));
+        assertThat(Compatibility.getTypeId(parser)).isNull();
 
         verify(parser).getTypeId();
         verifyNoMoreInteractions(parser);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 Talsma ICT
+ * Copyright 2016-2025 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,29 +15,23 @@
  */
 package nl.talsmasoftware.enumerables.gson;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import org.json.JSONException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
-
-import java.io.IOException;
 
 import static nl.talsmasoftware.enumerables.gson.GsonEnumerables.createGsonBuilder;
 import static nl.talsmasoftware.enumerables.gson.GsonEnumerables.defaultGsonBuilder;
 import static nl.talsmasoftware.enumerables.gson.SerializationMethod.AS_OBJECT;
 import static nl.talsmasoftware.enumerables.gson.SerializationMethod.AS_STRING;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * @author Sjoerd Talsma
  */
-public class EnumerableGsonTest {
+class EnumerableGsonTest {
 
     static final String ASTON_MARTIN_OBJECT_JSON = "{\"brand\": {\"value\": \"Aston martin\"}}";
     static final String ASTON_MARTIN_STRING_JSON = "{\"brand\": \"Aston martin\"}";
@@ -47,90 +41,89 @@ public class EnumerableGsonTest {
     Car astonMartin = new Car(Car.Brand.ASTON_MARTIN);
 
     @Test
-    public void testSerialization() throws IOException, JSONException {
+    void testSerialization() throws JSONException {
         String json = defaultGsonBuilder().create().toJson(astonMartin);
         JSONAssert.assertEquals(ASTON_MARTIN_STRING_JSON, json, true);
     }
 
     @Test
-    public void testSerialization_null() throws IOException, JSONException {
+    void testSerialization_null() throws JSONException {
         String json = createGsonBuilder(AS_STRING).create().toJson(new Car());
         JSONAssert.assertEquals("{}", json, true);
     }
 
     @Test
-    public void testSerialization_jsonObject() throws IOException, JSONException {
+    void testSerialization_jsonObject() throws JSONException {
         String json = createGsonBuilder(AS_OBJECT).create().toJson(astonMartin);
         JSONAssert.assertEquals(ASTON_MARTIN_OBJECT_JSON, json, true);
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testSerialization_jsonObject_exception() throws IOException, JSONException {
+    void testSerialization_jsonObject_exception() throws JSONException {
         String json = createGsonBuilder(AS_OBJECT.except(Car.Brand.class)).create().toJson(astonMartin);
         JSONAssert.assertEquals(ASTON_MARTIN_STRING_JSON, json, true);
     }
 
     @Test
-    public void testDeserialization() throws IOException {
+    void testDeserialization() {
         Car parsed = defaultGsonBuilder().create().fromJson(ASTON_MARTIN_STRING_JSON, Car.class);
-        assertThat(parsed, is(equalTo(astonMartin)));
+        assertThat(parsed).isEqualTo(astonMartin);
         parsed = createGsonBuilder(AS_STRING).create().fromJson(ASTON_MARTIN_STRING_JSON, Car.class);
-        assertThat(parsed, is(equalTo(astonMartin)));
+        assertThat(parsed).isEqualTo(astonMartin);
         parsed = createGsonBuilder(AS_OBJECT).create().fromJson(ASTON_MARTIN_STRING_JSON, Car.class);
-        assertThat(parsed, is(equalTo(astonMartin)));
+        assertThat(parsed).isEqualTo(astonMartin);
     }
 
     @Test
-    public void testDeserialization_null() throws IOException {
+    void testDeserialization_null() {
         Car parsed = createGsonBuilder(AS_STRING).create().fromJson(NO_BRAND_JSON, Car.class);
-        assertThat(parsed, is(equalTo(new Car())));
+        assertThat(parsed).isEqualTo(new Car());
     }
 
     @Test
-    public void testDeserialization_jsonObject() throws IOException {
+    void testDeserialization_jsonObject() {
         Car parsed = createGsonBuilder(AS_STRING).create().fromJson(ASTON_MARTIN_OBJECT_JSON, Car.class);
-        assertThat(parsed, is(equalTo(astonMartin)));
+        assertThat(parsed).isEqualTo(astonMartin);
         parsed = createGsonBuilder(AS_OBJECT).create().fromJson(ASTON_MARTIN_OBJECT_JSON, Car.class);
-        assertThat(parsed, is(equalTo(astonMartin)));
+        assertThat(parsed).isEqualTo(astonMartin);
     }
 
     @Test
-    public void testDeserialization_jsonObject_valueNull() throws IOException {
+    void testDeserialization_jsonObject_valueNull() {
         Car parsed = createGsonBuilder(AS_OBJECT).create().fromJson("{\"brand\": {\"value\": null}}", Car.class);
-        assertThat(parsed, is(notNullValue()));
-        assertThat(parsed.brand, is(nullValue()));
-    }
-
-    @Test(expected = JsonSyntaxException.class)
-    public void testDeserialization_array() throws IOException {
-        defaultGsonBuilder().create().fromJson("{\"brand\": []}", Car.class);
-        fail("Json syntax exception expected.");
+        assertThat(parsed).isNotNull();
+        assertThat(parsed.brand).isNull();
     }
 
     @Test
-    public void testDeserialization_irrelevantFields() throws IOException {
+    void testDeserialization_array() {
+        Gson gsonBuilder = defaultGsonBuilder().create();
+        assertThatThrownBy(() -> gsonBuilder.fromJson("{\"brand\": []}", Car.class))
+                .isInstanceOf(JsonSyntaxException.class);
+    }
+
+    @Test
+    void testDeserialization_irrelevantFields() {
         Car parsed = defaultGsonBuilder().create().fromJson("{\"brand\": {\"value\": \"Aston martin\", \"type\": \"Sports coupe\"}}", Car.class);
-        assertThat(parsed, is(equalTo(astonMartin)));
+        assertThat(parsed).isEqualTo(astonMartin);
     }
 
     @Test
-    public void testDeserialization_asBoolean() throws IOException {
+    void testDeserialization_asBoolean() {
         Car parsed = defaultGsonBuilder().create().fromJson("{\"brand\": true}", Car.class);
-        assertThat(parsed, is(equalTo(new Car("true"))));
+        assertThat(parsed).isEqualTo(new Car("true"));
 
         parsed = defaultGsonBuilder().create().fromJson("{\"brand\": {\"value\": true}}", Car.class);
-        assertThat(parsed, is(equalTo(new Car("true"))));
+        assertThat(parsed).isEqualTo(new Car("true"));
     }
 
     @Test
-    public void testDeserialization_emptyBrandObject() {
-        try {
-            defaultGsonBuilder().create().fromJson(EMPTY_BRAND_JSON, Car.class);
-            fail("Exception expected.");
-        } catch (JsonSyntaxException expected) {
-            assertThat(expected.getMessage(), containsString("Attribute \"value\" is required to parse an Enumerable JSON object."));
-        }
+    void testDeserialization_emptyBrandObject() {
+        Gson gsonBuilder = defaultGsonBuilder().create();
+        assertThatThrownBy(() -> gsonBuilder.fromJson(EMPTY_BRAND_JSON, Car.class))
+                .isInstanceOf(JsonSyntaxException.class)
+                .hasMessageContaining("Attribute \"value\" is required to parse an Enumerable JSON object.");
     }
 
 }

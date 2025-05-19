@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 Talsma ICT
+ * Copyright 2016-2025 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,39 +15,37 @@
  */
 package nl.talsmasoftware.enumerables.jaxrs;
 
-import org.junit.Before;
-import org.junit.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.sameInstance;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import javax.ws.rs.ext.ParamConverter;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sjoerd Talsma
  */
-public class EnumerableParamConverterProviderTest {
+class EnumerableParamConverterProviderTest {
 
     EnumerableParamConverterProvider provider;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         provider = new EnumerableParamConverterProvider();
     }
 
     @Test
-    public void testNonEnumerableTypes() {
-        assertThat(provider.getConverter(null, null, null), is(nullValue()));
-        assertThat(provider.getConverter(String.class, null, null), is(nullValue()));
+    void testNonEnumerableTypes() {
+        assertThat(provider.getConverter(null, null, null)).isNull();
+        assertThat(provider.getConverter(String.class, null, null)).isNull();
     }
 
     @Test
-    public void testProvideEnumerableParamConverter() {
-        assertThat(provider.getConverter(TestEnumerable.class, null, null),
-                is(instanceOf(EnumerableParamConverter.class)));
-        assertThat(provider.getConverter(TestEnumerable.class, null, null).fromString("2nd"),
-                is(sameInstance(TestEnumerable.SECOND)));
+    void testProvideEnumerableParamConverter() {
+        ParamConverter<TestEnumerable> converter = provider.getConverter(TestEnumerable.class, null, null);
+        assertThat(converter).isInstanceOf(EnumerableParamConverter.class);
+        assertThat(converter.fromString("2nd")).isSameAs(TestEnumerable.SECOND);
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 Talsma ICT
+ * Copyright 2016-2025 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,39 +21,37 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.cfg.ContextAttributes;
 import org.json.JSONException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.io.IOException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class AutodetectModuleTest {
+class AutodetectModuleTest {
 
     private final ObjectMapper baseMapper = new ObjectMapper();
     private final PlainTestObject subject = new PlainTestObject(PlainTestObject.BigCo.APPLE);
 
     @Test
-    public void testDefaultObjectSerialization() throws JsonProcessingException, JSONException {
+    void testDefaultObjectSerialization() throws JsonProcessingException, JSONException {
         ObjectMapper mapper = baseMapper;
         String expectedJson = "{\"bigCo\": {\"value\": \"Apple\"}}";
         String actualJson = mapper.writeValueAsString(subject);
         JSONAssert.assertEquals(expectedJson, actualJson, true);
     }
 
-    @Test(expected = JsonMappingException.class)
-    public void testFailedDefaultDeserialization() throws IOException {
+    @Test
+    void testFailedDefaultDeserialization() {
         ObjectMapper mapper = baseMapper;
         String json = "{\"bigCo\": {\"value\": \"Apple\"}}";
-        mapper.readValue(json, PlainTestObject.class);
-        fail("Missing deserializer exception expected.");
+        assertThatThrownBy(() -> mapper.readValue(json, PlainTestObject.class))
+                .isInstanceOf(JsonMappingException.class);
     }
 
     @Test
-    public void testAutodetectedSerialization() throws JsonProcessingException, JSONException {
+    void testAutodetectedSerialization() throws JsonProcessingException, JSONException {
         ObjectMapper mapper = baseMapper.copy().findAndRegisterModules();
         String expectedJson = "{\"bigCo\": \"Apple\"}";
         String actualJson = mapper.writeValueAsString(subject);
@@ -61,17 +59,17 @@ public class AutodetectModuleTest {
     }
 
     @Test
-    public void testAutodetectedDeserialization() throws IOException {
+    void testAutodetectedDeserialization() throws IOException {
         ObjectMapper mapper = baseMapper.copy().findAndRegisterModules();
         String json1 = "{\"bigCo\": \"Apple\"}",
                 json2 = "{\"bigCo\": {\"value\": \"Apple\"}}";
 
-        assertThat(mapper.readValue(json1, PlainTestObject.class), is(equalTo(subject)));
-        assertThat(mapper.readValue(json2, PlainTestObject.class), is(equalTo(subject)));
+        assertThat(mapper.readValue(json1, PlainTestObject.class)).isEqualTo(subject);
+        assertThat(mapper.readValue(json2, PlainTestObject.class)).isEqualTo(subject);
     }
 
     @Test
-    public void testAutodetectedSerializationAsObject() throws JsonProcessingException, JSONException {
+    void testAutodetectedSerializationAsObject() throws JsonProcessingException, JSONException {
         ObjectMapper mapper = baseMapper.copy().findAndRegisterModules();
 
         // Reconfigure the mapper to serialize only BigCo types as JSON object. All other Enumerables as Strings.
@@ -85,7 +83,7 @@ public class AutodetectModuleTest {
     }
 
     @Test
-    public void testAutodetectedAsObjectFromExplicitWriter() throws JsonProcessingException, JSONException {
+    void testAutodetectedAsObjectFromExplicitWriter() throws JsonProcessingException, JSONException {
         // Create a writer that serializes only BigCo types to JSON objects. All other Enumerables as strings.
         ObjectWriter writer = baseMapper.copy().findAndRegisterModules()
                 .writer(ContextAttributes.getEmpty().withSharedAttribute(

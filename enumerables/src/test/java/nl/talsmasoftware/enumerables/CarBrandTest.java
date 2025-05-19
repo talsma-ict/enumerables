@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 Talsma ICT
+ * Copyright 2016-2025 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,49 +15,47 @@
  */
 package nl.talsmasoftware.enumerables;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic 'sanity-check' for the parseLeniently method that is being used in other tests.
  *
  * @author Sjoerd Talsma
  */
-public class CarBrandTest {
+class CarBrandTest {
 
     @Test
-    public void testParseLeniently_null() {
-        assertThat(CarBrand.parseLeniently(null), is(nullValue()));
+    void testParseLeniently_null() {
+        assertThat(CarBrand.parseLeniently(null)).isNull();
     }
 
     @Test
-    public void testParseLeniently_empty() {
-        assertThat(CarBrand.parseLeniently(""), is(not(nullValue())));
-        assertThat(CarBrand.parseLeniently("").name(), is(nullValue()));
-        assertThat(CarBrand.parseLeniently("").getValue(), is(equalTo("")));
+    void testParseLeniently_empty() {
+        CarBrand result = CarBrand.parseLeniently("");
+        assertThat(result).isNotNull();
+        assertThat(result.name()).isNull();
+        assertThat(result.getValue()).isEmpty();
     }
 
     @Test
-    public void testParseLeniently() {
-        assertThat(CarBrand.parseLeniently("citroen"), is(sameInstance(CarBrand.CITROEN)));
-        assertThat(CarBrand.parseLeniently("mercedesbenz"), is(sameInstance(CarBrand.MERCEDES_BENZ)));
-        assertThat(CarBrand.parseLeniently("mercedes benz"), is(sameInstance(CarBrand.MERCEDES_BENZ)));
-        assertThat(CarBrand.parseLeniently("gm"), is(sameInstance(CarBrand.GM)));
-        assertThat(CarBrand.parseLeniently("generalMotors"), is(sameInstance(CarBrand.GM)));
+    void testParseLeniently() {
+        assertThat(CarBrand.parseLeniently("citroen")).isSameAs(CarBrand.CITROEN);
+        assertThat(CarBrand.parseLeniently("mercedesbenz")).isSameAs(CarBrand.MERCEDES_BENZ);
+        assertThat(CarBrand.parseLeniently("mercedes benz")).isSameAs(CarBrand.MERCEDES_BENZ);
+        assertThat(CarBrand.parseLeniently("gm")).isSameAs(CarBrand.GM);
+        assertThat(CarBrand.parseLeniently("generalMotors")).isSameAs(CarBrand.GM);
     }
 
     @Test
-    public void testParseLeniently_notFound() {
+    void testParseLeniently_notFound() {
         CarBrand rover = CarBrand.parseLeniently("Rover");
-        assertThat(rover, is(not(nullValue())));
-        assertThat(rover.name(), is(nullValue()));
-        assertThat(rover.getValue(), is(equalTo("Rover")));
-        assertThat(CarBrand.parseLeniently("Rover"), is(equalTo(rover)));
+        assertThat(rover).isNotNull();
+        assertThat(rover.name()).isNull();
+        assertThat(rover.getValue()).isEqualTo("Rover");
+        assertThat(CarBrand.parseLeniently("Rover"))
+                .isNotSameAs(rover)
+                .isEqualTo(rover);
     }
 }

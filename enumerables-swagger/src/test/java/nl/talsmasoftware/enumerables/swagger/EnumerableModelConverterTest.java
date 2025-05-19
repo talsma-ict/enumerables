@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 Talsma ICT
+ * Copyright 2016-2025 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,20 +21,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.Model;
 import org.json.JSONException;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.Locale;
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasKey;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class EnumerableModelConverterTest {
+class EnumerableModelConverterTest {
 
     final ObjectMapper mapper = new ObjectMapper()
             .findAndRegisterModules()
@@ -44,28 +43,28 @@ public class EnumerableModelConverterTest {
 
     static Locale previousDefault;
 
-    @BeforeClass
-    public static void captureDefaultLocale() {
+    @BeforeAll
+    static void captureDefaultLocale() {
         previousDefault = Locale.getDefault();
     }
 
-    @AfterClass
-    public static void restoreDefaultLocale() {
+    @AfterAll
+    static void restoreDefaultLocale() {
         Locale.setDefault(previousDefault);
     }
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         ModelConverters.getInstance().addConverter(converter);
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         ModelConverters.getInstance().removeConverter(converter);
     }
 
     @Test
-    public void testSwaggerModelForCar() throws JsonProcessingException, JSONException {
+    void testSwaggerModelForCar() throws JsonProcessingException, JSONException {
         Locale.setDefault(Locale.ENGLISH);
         String expectedCarModel = "{" +
                 "\"type\": \"object\"," +
@@ -84,10 +83,10 @@ public class EnumerableModelConverterTest {
         Map<String, Model> swagger = ModelConverters.getInstance().readAll(Car.class);
         // System.out.println(mapper.writeValueAsString(swagger));
 
-        assertThat(swagger, hasKey("Car"));
+        assertThat(swagger).containsKey("Car");
         JSONAssert.assertEquals(expectedCarModel, mapper.writeValueAsString(swagger.get("Car")), false);
 
-        assertThat(swagger, hasKey("CarBrand"));
+        assertThat(swagger).containsKey("CarBrand");
         JSONAssert.assertEquals(expectedCarBrandModel, mapper.writeValueAsString(swagger.get("CarBrand")), true);
     }
 
