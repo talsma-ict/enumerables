@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 Talsma ICT
+ * Copyright 2016-2025 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,45 +15,41 @@
  */
 package nl.talsmasoftware.enumerables.gson;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import static nl.talsmasoftware.enumerables.gson.SerializationMethod.AS_OBJECT;
 import static nl.talsmasoftware.enumerables.gson.SerializationMethod.AS_STRING;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.hasToString;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sjoerd Talsma
  */
-public class EnumerableTypeAdapterFactoryTest {
+class EnumerableTypeAdapterFactoryTest {
 
     @Test
-    public void testHashcodeEquals() {
+    void testHashcodeEquals() {
         EnumerableTypeAdapterFactory factory = new EnumerableTypeAdapterFactory(null);
         Set<EnumerableTypeAdapterFactory> set = new HashSet<EnumerableTypeAdapterFactory>();
-        assertThat(set.add(factory), is(true));
-        assertThat(set.add(factory), is(false));
-        assertThat(set.add(new EnumerableTypeAdapterFactory(AS_STRING)), is(false));
-        assertThat(set.add(new EnumerableTypeAdapterFactory(AS_OBJECT)), is(true));
-        assertThat(set.add(new EnumerableTypeAdapterFactory(AS_STRING.except(Car.Brand.class))), is(true));
-        assertThat(set, hasSize(3));
+        assertThat(set.add(factory)).isTrue();
+        assertThat(set.add(factory)).isFalse();
+        assertThat(set.add(new EnumerableTypeAdapterFactory(AS_STRING))).isFalse();
+        assertThat(set.add(new EnumerableTypeAdapterFactory(AS_OBJECT))).isTrue();
+        assertThat(set.add(new EnumerableTypeAdapterFactory(AS_STRING.except(Car.Brand.class)))).isTrue();
+        assertThat(set).hasSize(3);
     }
 
     @Test
-    public void testToString() {
-        assertThat(new EnumerableTypeAdapterFactory(null),
-                hasToString(equalTo("EnumerableTypeAdapterFactory{As string}")));
-        assertThat(new EnumerableTypeAdapterFactory(AS_STRING),
-                hasToString(equalTo("EnumerableTypeAdapterFactory{As string}")));
-        assertThat(new EnumerableTypeAdapterFactory(AS_OBJECT),
-                hasToString(equalTo("EnumerableTypeAdapterFactory{As object}")));
-        assertThat(new EnumerableTypeAdapterFactory(AS_OBJECT.except(Car.Brand.class)),
-                hasToString(equalTo("EnumerableTypeAdapterFactory{As object, except [Car$Brand]}")));
+    void testToString() {
+        assertThat(new EnumerableTypeAdapterFactory(null))
+                .hasToString("EnumerableTypeAdapterFactory{As string}");
+        assertThat(new EnumerableTypeAdapterFactory(AS_STRING))
+                .hasToString("EnumerableTypeAdapterFactory{As string}");
+        assertThat(new EnumerableTypeAdapterFactory(AS_OBJECT))
+                .hasToString("EnumerableTypeAdapterFactory{As object}");
+        assertThat(new EnumerableTypeAdapterFactory(AS_OBJECT.except(Car.Brand.class)))
+                .hasToString("EnumerableTypeAdapterFactory{As object, except [Car$Brand]}");
     }
 }

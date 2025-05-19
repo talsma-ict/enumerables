@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 Talsma ICT
+ * Copyright 2016-2025 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import nl.talsmasoftware.enumerables.Enumerable;
 import nl.talsmasoftware.enumerables.jackson2.PlainTestObject.BigCo;
-import org.hamcrest.MatcherAssert;
 import org.json.JSONException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.io.IOException;
@@ -39,32 +38,24 @@ import java.util.Set;
 import static nl.talsmasoftware.enumerables.jackson2.EnumerableDeserializerTest.jsonString;
 import static nl.talsmasoftware.enumerables.jackson2.SerializationMethod.AS_OBJECT;
 import static nl.talsmasoftware.enumerables.jackson2.SerializationMethod.AS_STRING;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.anyOf;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.hasToString;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class EnumerableModuleTest {
+class EnumerableModuleTest {
 
     ObjectMapper mapper, mapperAsObject, mapperWithException;
     EnumerableModule module;
 
     private final ThreadLocal<Locale> defaultLocale = new ThreadLocal<Locale>();
 
-    @Before
-    public void setUpLocale() {
+    @BeforeEach
+    void setUpLocale() {
         defaultLocale.set(Locale.getDefault());
         Locale.setDefault(Locale.UK);
     }
 
-    @After
-    public void restoreLocale() {
+    @AfterEach
+    void restoreLocale() {
         Locale.setDefault(defaultLocale.get());
         defaultLocale.remove();
     }
@@ -76,8 +67,8 @@ public class EnumerableModuleTest {
         return mapper;
     }
 
-    @Before
-    public void setUpMappers() {
+    @BeforeEach
+    void setUpMappers() {
         module = new EnumerableModule();
         mapper = createMapper().registerModule(module);
         mapperAsObject = createMapper().registerModule(new EnumerableModule(AS_OBJECT));
@@ -85,26 +76,26 @@ public class EnumerableModuleTest {
     }
 
     @Test
-    public void testSerialize_null() throws IOException {
-        assertThat(mapper.writeValueAsString(null), is(equalTo("null")));
+    void testSerialize_null() throws IOException {
+        assertThat(mapper.writeValueAsString(null)).isEqualTo("null");
     }
 
     @Test
-    public void testSerialize_emptyString() throws IOException {
-        assertThat(mapper.writeValueAsString(Enumerable.parse(BigCo.class, "")), is(equalTo(jsonString(""))));
+    void testSerialize_emptyString() throws IOException {
+        assertThat(mapper.writeValueAsString(Enumerable.parse(BigCo.class, ""))).isEqualTo(jsonString(""));
     }
 
     @Test
-    public void testSerialize_stringValue() throws IOException {
+    void testSerialize_stringValue() throws IOException {
         for (BigCo bigCo : Enumerable.values(BigCo.class)) {
-            assertThat(mapper.writeValueAsString(bigCo), is(equalTo(jsonString(bigCo.getValue()))));
+            assertThat(mapper.writeValueAsString(bigCo)).isEqualTo(jsonString(bigCo.getValue()));
         }
-        assertThat(mapper.writeValueAsString(Enumerable.parse(BigCo.class, "VMWare")),
-                is(equalTo(jsonString("VMWare"))));
+        assertThat(mapper.writeValueAsString(Enumerable.parse(BigCo.class, "VMWare")))
+                .isEqualTo(jsonString("VMWare"));
     }
 
     @Test
-    public void testSerialize_asObject() throws IOException, JSONException {
+    void testSerialize_asObject() throws IOException, JSONException {
         for (BigCo bigCo : Enumerable.values(BigCo.class)) {
             String expected = String.format("{ \"value\" : \"%s\" }", bigCo.getValue());
             String actual = mapperAsObject.writeValueAsString(bigCo);
@@ -116,7 +107,7 @@ public class EnumerableModuleTest {
     }
 
     @Test
-    public void testSerialize_usingContainerObject() throws IOException, JSONException {
+    void testSerialize_usingContainerObject() throws IOException, JSONException {
         PlainTestObject testObject = new PlainTestObject();
         testObject.setBigCo(BigCo.MICROSOFT);
 
@@ -137,80 +128,75 @@ public class EnumerableModuleTest {
     }
 
     @Test
-    public void testDeserialize_nullString() throws IOException {
-        try {
-            mapper.readValue((String) null, BigCo.class);
-            throw new AssertionError("Exception expected");
-        } catch (RuntimeException expected) {
-            assertThat(expected, anyOf(
-                    instanceOf(NullPointerException.class),
-                    instanceOf(IllegalArgumentException.class)));
-        }
+    void testDeserialize_nullString() throws IOException {
+        assertThatThrownBy(() -> mapper.readValue((String) null, BigCo.class))
+                .isInstanceOfAny(NullPointerException.class, IllegalArgumentException.class);
     }
 
     @Test
-    public void testDeserialize_jsonNullValue() throws IOException {
-        assertThat(mapper.readValue("null", BigCo.class), nullValue());
+    void testDeserialize_jsonNullValue() throws IOException {
+        assertThat(mapper.readValue("null", BigCo.class)).isNull();
     }
 
     @Test
-    public void testDeserialize_emptyString() throws IOException {
+    void testDeserialize_emptyString() throws IOException {
         BigCo emptyBigCo = mapper.readValue("\"\"", BigCo.class);
-        MatcherAssert.assertThat(emptyBigCo, notNullValue());
-        MatcherAssert.assertThat(emptyBigCo.getValue(), is(equalTo("")));
-        MatcherAssert.assertThat(emptyBigCo.toString(), is(equalTo("BigCo{value=}")));
+        assertThat(emptyBigCo).isNotNull().hasToString("BigCo{value=}");
+        assertThat(emptyBigCo.getValue()).isEmpty();
     }
 
     @Test
-    public void testDeserialize_StringValue() throws IOException {
+    void testDeserialize_StringValue() throws IOException {
         for (BigCo bigCo : Enumerable.values(BigCo.class)) {
             BigCo actual = mapper.readValue(jsonString(bigCo.getValue()), BigCo.class);
-            assertThat(actual, is(sameInstance(bigCo)));
+            assertThat(actual).isSameAs(bigCo);
         }
-        assertThat(mapper.readValue(jsonString("VMWare"), BigCo.class),
-                is(equalTo(Enumerable.parse(BigCo.class, "VMWare"))));
+        assertThat(mapper.readValue(jsonString("VMWare"), BigCo.class))
+                .isEqualTo(Enumerable.parse(BigCo.class, "VMWare"));
     }
 
     @Test
-    public void testDeserialize_wrapperObject() throws IOException {
+    void testDeserialize_wrapperObject() throws IOException {
         String json = "{ \"bigCo\" : \"Microsoft\" }";
         PlainTestObject actual = mapper.readValue(json, PlainTestObject.class);
-        assertThat(actual, is(equalTo(new PlainTestObject(BigCo.MICROSOFT))));
-        assertThat(actual.getBigCo(), is(sameInstance(BigCo.MICROSOFT)));
+        assertThat(actual).isEqualTo(new PlainTestObject(BigCo.MICROSOFT));
+        assertThat(actual.getBigCo()).isSameAs(BigCo.MICROSOFT);
 
         actual = mapperAsObject.readValue(json, PlainTestObject.class);
-        assertThat(actual, is(equalTo(new PlainTestObject(BigCo.MICROSOFT))));
-        assertThat(actual.getBigCo(), is(sameInstance(BigCo.MICROSOFT)));
+        assertThat(actual).isEqualTo(new PlainTestObject(BigCo.MICROSOFT));
+        assertThat(actual.getBigCo()).isSameAs(BigCo.MICROSOFT);
     }
 
     @Test
-    public void testDeserialize_objectRepresentation() throws IOException {
+    void testDeserialize_objectRepresentation() throws IOException {
         String json = "{ \"bigCo\" : { \"value\" : \"IBM\" } }";
         PlainTestObject actual = mapper.readValue(json, PlainTestObject.class);
 
-        assertThat(actual, is(equalTo(new PlainTestObject(BigCo.IBM))));
-        assertThat(actual.getBigCo(), is(sameInstance(BigCo.IBM)));
+        assertThat(actual).isEqualTo(new PlainTestObject(BigCo.IBM));
+        assertThat(actual.getBigCo()).isSameAs(BigCo.IBM);
     }
 
-    @Test(expected = JsonMappingException.class)
-    public void testDeserialize_objectRepresentation_emptyObject() throws IOException {
+    @Test
+    void testDeserialize_objectRepresentation_emptyObject() throws IOException {
         String json = "{ \"bigCo\" : { } }";
-        mapper.readValue(json, PlainTestObject.class);
+        assertThatThrownBy(() -> mapper.readValue(json, PlainTestObject.class))
+                .isInstanceOf(JsonMappingException.class);
     }
 
-    @Test(expected = JsonMappingException.class)
-    public void testDeserialize_unknownObjectRepresentation() throws IOException {
+    @Test
+    void testDeserialize_unknownObjectRepresentation() throws IOException {
         String json = "{ \"bigCo\" : { \"val\" : \"IBM\" } }";
-        mapper.readValue(json, PlainTestObject.class);
+        assertThatThrownBy(() -> mapper.readValue(json, PlainTestObject.class))
+                .isInstanceOf(JsonMappingException.class);
     }
 
     @Test
-    public void testToString() {
-        assertThat(module, hasToString("EnumerableModule"));
+    void testToString() {
+        assertThat(module).hasToString("EnumerableModule");
     }
 
     @Test
-    public void testDeserialize_wrapperObjectFrom_treeAsTokens() throws IOException {
+    void testDeserialize_wrapperObjectFrom_treeAsTokens() throws IOException {
         String json = "{ \"bigCo\" : \"Microsoft\" }";
 
         final MappingJsonFactory jsonFactory = new MappingJsonFactory(mapper);
@@ -218,17 +204,17 @@ public class EnumerableModuleTest {
 
         ObjectNode objectNode = mapper.readTree(jp);
         PlainTestObject actual = mapper.readValue(mapper.treeAsTokens(objectNode), PlainTestObject.class);
-        assertThat(actual, is(equalTo(new PlainTestObject(BigCo.MICROSOFT))));
+        assertThat(actual).isEqualTo(new PlainTestObject(BigCo.MICROSOFT));
     }
 
     @Test
-    public void testHashcode_equals() {
+    void testHashcode_equals() {
         Set<EnumerableModule> set = new HashSet<EnumerableModule>();
-        assertThat(set.add(module), is(true));
-        assertThat(set.add(module), is(false));
-        assertThat(set.add(new EnumerableModule(AS_STRING)), is(false));
-        assertThat(set.add(new EnumerableModule(AS_OBJECT)), is(false));
-        assertThat(set.add(new EnumerableModule(AS_STRING.except(BigCo.class))), is(false));
-        assertThat(set, hasSize(1));
+        assertThat(set.add(module)).isTrue();
+        assertThat(set.add(module)).isFalse();
+        assertThat(set.add(new EnumerableModule(AS_STRING))).isFalse();
+        assertThat(set.add(new EnumerableModule(AS_OBJECT))).isFalse();
+        assertThat(set.add(new EnumerableModule(AS_STRING.except(BigCo.class)))).isFalse();
+        assertThat(set).hasSize(1);
     }
 }

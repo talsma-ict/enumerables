@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 Talsma ICT
+ * Copyright 2016-2025 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,37 +18,36 @@ package nl.talsmasoftware.enumerables.jackson2.bug25;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.talsmasoftware.enumerables.jackson2.EnumerableModule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
 import static java.util.Arrays.asList;
 import static nl.talsmasoftware.enumerables.jackson2.SerializationMethod.AS_STRING;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Created by kroon.r on 28-06-2017.
  */
-public class DeserializationEqualityTest {
+class DeserializationEqualityTest {
 
     private static final ObjectMapper MAPPER = new ObjectMapper()
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .registerModule(new EnumerableModule(AS_STRING));
 
     @Test
-    public void testAsList() throws IOException {
+    void testAsList() throws IOException {
         TypeWithEnumerableList original = new TypeWithEnumerableList();
         original.stringValue = "A String value";
         original.teammembers = asList(Team.RICHARD);
         String asString = MAPPER.writeValueAsString(original);
 
         TypeWithEnumerableList deserialized = MAPPER.readValue(asString, TypeWithEnumerableList.class);
-        assertThat("deserialized representation", deserialized, equalTo(original));
+        assertThat(deserialized).as("Deserialized representation").isEqualTo(original);
     }
 
     @Test
-    public void testAsWrappedList() throws IOException {
+    void testAsWrappedList() throws IOException {
         TypeWithListContainingNestedEnumerable original = new TypeWithListContainingNestedEnumerable();
         original.stringValue = "A String value";
 
@@ -61,7 +60,7 @@ public class DeserializationEqualityTest {
         String asString = MAPPER.writeValueAsString(original);
 
         TypeWithListContainingNestedEnumerable deserialized = MAPPER.readValue(asString, TypeWithListContainingNestedEnumerable.class);
-        assertThat("deserialized representation", deserialized, equalTo(original));
+        assertThat(deserialized).as("Deserialized representation").isEqualTo(original);
     }
 
 }

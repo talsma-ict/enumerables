@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 Talsma ICT
+ * Copyright 2016-2025 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  */
 package nl.talsmasoftware.enumerables;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -28,14 +29,13 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Integer.signum;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SuppressWarnings({"unused", "deprecation"})
-public class EnumerableTest {
+class EnumerableTest {
 
-    public static final class BigCo extends Enumerable {
+    static final class BigCo extends Enumerable {
         private static final long serialVersionUID = 1L;
 
         public static final BigCo MICROSOFT = new BigCo("Microsoft");
@@ -58,7 +58,7 @@ public class EnumerableTest {
         }
     }
 
-    public static final class Fruit extends Enumerable {
+    static final class Fruit extends Enumerable {
 
         private static final long serialVersionUID = 1L;
 
@@ -72,7 +72,7 @@ public class EnumerableTest {
         }
     }
 
-    public static final class Wordpairs extends Enumerable {
+    static final class Wordpairs extends Enumerable {
         public static final Wordpairs DESSERTS = new Wordpairs("desserts");
         public static final Wordpairs LIVED = new Wordpairs("lived");
         public static final Wordpairs EDIT = new Wordpairs("edit");
@@ -85,96 +85,82 @@ public class EnumerableTest {
     }
 
     @Test
-    public void testParse_null() {
-        assertThat(Enumerable.parse(BigCo.class, null), is(nullValue()));
+    void testParse_null() {
+        assertThat(Enumerable.parse(BigCo.class, null)).isNull();
     }
 
     @Test
-    public void testParse_empty() {
+    void testParse_empty() {
         BigCo bigCoEmpty = Enumerable.parse(BigCo.class, "");
-        assertThat(bigCoEmpty, is(notNullValue()));
-        assertThat(bigCoEmpty.getValue(), is(equalTo("")));
-        assertThat(bigCoEmpty, hasToString(equalTo("BigCo{value=}")));
+        assertThat(bigCoEmpty).isNotNull();
+        assertThat(bigCoEmpty.getValue()).isEmpty();
+        assertThat(bigCoEmpty).hasToString("BigCo{value=}");
     }
 
     @Test
-    public void testConstructorNull() {
-        try {
-            new Fruit(null);
-            fail("Exception with reasonable message expected.");
-        } catch (RuntimeException expected) {
-            assertThat(expected, hasToString(containsString("Value of type Fruit was <null>")));
-        }
+    void testConstructorNull() {
+        assertThatThrownBy(() -> new Fruit(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Value of type Fruit was <null>");
     }
 
     @Test
-    public void testParse_withoutEnumerableType() {
-        try {
-            Enumerable.parse(null, "value");
-            fail("Exception expected.");
-        } catch (IllegalArgumentException expected) {
-            assertThat(expected, hasToString(containsString("Enumerable type is <null>")));
-        }
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void testParse_abstractType() {
-        Enumerable.parse(Enumerable.class, "value");
+    void testParse_withoutEnumerableType() {
+        assertThatThrownBy(() -> Enumerable.parse(null, "value"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Enumerable type is <null>");
     }
 
     @Test
-    public void testParse_withExceptionFromFactory() {
-        try {
-            Enumerable.parse(Enumerable.class, "value", new Callable<Enumerable>() {
-                public Enumerable call() throws Exception {
-                    throw new Exception("CHECKED EXCEPTION!");
-                }
-
-            });
-            fail("exception expected");
-        } catch (IllegalStateException expected) {
-            assertThat(expected, hasToString(containsString(
-                    String.format("Could not create new \"%s\" object with value \"value\".", Enumerable.class.getName()))));
-            assertThat(expected.getCause().getMessage(), is(equalTo("CHECKED EXCEPTION!")));
-        }
+    void testParse_abstractType() {
+        assertThatThrownBy(() -> Enumerable.parse(Enumerable.class, "value"))
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
-    public void testParse_withFactory() {
+    void testParse_withExceptionFromFactory() {
+        Callable<Enumerable> factory = () -> {
+            throw new Exception("CHECKED EXCEPTION!");
+        };
+        assertThatThrownBy(() -> Enumerable.parse(Enumerable.class, "value", factory))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("Could not create new \"nl.talsmasoftware.enumerables.Enumerable\" object with value \"value\".")
+                .cause()
+                .hasMessage("CHECKED EXCEPTION!");
+    }
+
+    @Test
+    void testParse_withFactory() {
         final String jboss = "JBoss";
         final AtomicBoolean called = new AtomicBoolean(false);
-        Callable<BigCo> factory = new Callable<BigCo>() {
-            public BigCo call() throws Exception {
-                called.set(true);
-                return new BigCo(jboss);
-            }
+        Callable<BigCo> factory = () -> {
+            called.set(true);
+            return new BigCo(jboss);
         };
 
         // Parsing of 'constant value'.
         BigCo parsed = Enumerable.parse(BigCo.class, "Microsoft", factory);
-        assertThat("Factory may not have been used", called.get(), is(false));
-        assertThat(parsed, is(sameInstance(BigCo.MICROSOFT)));
+        assertThat(called.get()).as("Factory called").isFalse();
+        assertThat(parsed).isSameAs(BigCo.MICROSOFT);
 
         parsed = Enumerable.parse(BigCo.class, jboss, factory);
-        assertThat("Factory must have been used", called.get(), is(true));
-        assertThat(parsed.getValue(), is(equalTo(jboss)));
-        assertThat(Enumerable.parse(BigCo.class, jboss, factory), is(equalTo(parsed)));
-        assertThat(Enumerable.parse(BigCo.class, jboss, factory), is(not(sameInstance(parsed))));
+        assertThat(called.get()).as("Factory called").isTrue();
+        assertThat(parsed.getValue()).isEqualTo(jboss);
+        assertThat(Enumerable.parse(BigCo.class, jboss, factory)).isEqualTo(parsed);
+        assertThat(Enumerable.parse(BigCo.class, jboss, factory)).isNotSameAs(parsed);
     }
 
     @Test
-    public void testParse_constant_withFactory() {
+    void testParse_constant_withFactory() {
         final String apple = BigCo.APPLE.getValue();
         final AtomicBoolean called = new AtomicBoolean(false);
-        Callable<BigCo> factory = new Callable<BigCo>() {
-            public BigCo call() throws Exception {
-                called.set(true);
-                return new BigCo(apple);
-            }
+        Callable<BigCo> factory = () -> {
+            called.set(true);
+            return new BigCo(apple);
         };
 
-        assertThat(Enumerable.parse(BigCo.class, apple, factory), is(sameInstance(BigCo.APPLE)));
-        assertThat("Factory may not have been called", called.get(), is(false));
+        assertThat(Enumerable.parse(BigCo.class, apple, factory)).isSameAs(BigCo.APPLE);
+        assertThat(called.get()).as("Factory called").isFalse();
     }
 
     static final class EnumerableWithoutStringConstructor extends Enumerable {
@@ -184,223 +170,204 @@ public class EnumerableTest {
     }
 
     @Test
-    public void testParse_classWithoutStringConstructor() {
-        try {
-            Enumerable.parse(EnumerableWithoutStringConstructor.class, "Dummy value");
-            fail("Exception expected.");
-        } catch (RuntimeException expected) {
-            assertThat(expected, hasToString(containsString(
-                    "Could not create new \"" + EnumerableWithoutStringConstructor.class.getName() +
-                            "\" object with value \"Dummy value\"")));
-        }
+    void testParse_classWithoutStringConstructor() {
+        assertThatThrownBy(() -> Enumerable.parse(EnumerableWithoutStringConstructor.class, "Dummy value"))
+                .hasMessageContaining(String.format("Could not create new \"%s\" object", EnumerableWithoutStringConstructor.class.getName()))
+                .hasMessageContaining("value \"Dummy value\"");
     }
 
     @Test
-    public void testValues_typeNull() {
-        try {
-            Enumerable.values(null);
-            fail("Exception expected.");
-        } catch (IllegalArgumentException expected) {
-            assertThat(expected, hasToString(containsString("Enumerable type is <null>")));
-        }
+    void testValues_typeNull() {
+        assertThatThrownBy(() -> Enumerable.values(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Enumerable type is <null>");
     }
 
     @Test
-    public void testValues_AbstractEnumerableType() {
-        assertThat(Enumerable.values(Enumerable.class), is(arrayWithSize(0)));
+    void testValues_AbstractEnumerableType() {
+        assertThat(Enumerable.values(Enumerable.class)).isEmpty();
     }
 
     @Test
-    public void testValues() {
-        assertThat(Enumerable.values(BigCo.class), is(arrayWithSize(4)));
-        assertThat(Enumerable.values(BigCo.class), is(arrayContaining(
-                BigCo.MICROSOFT, BigCo.APPLE, BigCo.IBM, BigCo.ORACLE)));
-        assertThat(Enumerable.values(Fruit.class), is(arrayWithSize(2)));
-        assertThat(Enumerable.values(Fruit.class), is(arrayContaining(Fruit.APPLE, Fruit.ORANGE)));
+    void testValues() {
+        assertThat(Enumerable.values(BigCo.class))
+                .hasSize(4)
+                .contains(BigCo.MICROSOFT, BigCo.APPLE, BigCo.IBM, BigCo.ORACLE);
+        assertThat(Enumerable.values(Fruit.class))
+                .hasSize(2)
+                .contains(Fruit.APPLE, Fruit.ORANGE);
     }
 
     @Test
-    public void testPrint() {
-        assertThat(Enumerable.print(null), is(nullValue()));
-        assertThat(Enumerable.print(BigCo.MICROSOFT), is(equalTo("Microsoft")));
-        assertThat(Enumerable.print(new BigCo("JBoss")), is(equalTo("JBoss")));
+    void testPrint() {
+        assertThat(Enumerable.print(null)).isNull();
+        assertThat(Enumerable.print(BigCo.MICROSOFT)).isEqualTo("Microsoft");
+        assertThat(Enumerable.print(new BigCo("JBoss"))).isEqualTo("JBoss");
     }
 
     @Test
-    public void testEquals() {
-        assertThat(Fruit.APPLE.equals(Fruit.APPLE), is(true));
-        assertThat(Fruit.APPLE.equals(BigCo.APPLE), is(false)); // although both are abstract Enumerable types..
-        assertThat(Fruit.APPLE.equals(Fruit.ORANGE), is(false));
-        assertThat(Fruit.APPLE.equals(Fruit.APPLE.getValue()), is(false));
+    void testEquals() {
+        assertThat(Fruit.APPLE.equals(Fruit.APPLE)).isTrue();
+        assertThat(Fruit.APPLE.equals(BigCo.APPLE)).isFalse(); // although both are abstract Enumerable types..
+        assertThat(Fruit.APPLE.equals(Fruit.ORANGE)).isFalse();
+        assertThat(Fruit.APPLE.equals(Fruit.APPLE.getValue())).isFalse();
     }
 
     @Test
-    public void testHashcode() {
-        assertThat(Fruit.APPLE.hashCode(), is(equalTo(Fruit.APPLE.hashCode())));
-        assertThat(Fruit.APPLE.hashCode(), is(equalTo(new Fruit(Fruit.APPLE.getValue()).hashCode())));
+    void testHashcode() {
+        assertThat(Fruit.APPLE.hashCode()).hasSameHashCodeAs(Fruit.APPLE);
+        assertThat(Fruit.APPLE.hashCode()).hasSameHashCodeAs(new Fruit(Fruit.APPLE.getValue()));
     }
 
     @Test
-    public void testToString() {
-        assertThat(Fruit.APPLE, hasToString("Fruit{name=APPLE, value=Apple}"));
-        assertThat(new Fruit("Apple"), hasToString("Fruit{name=APPLE, value=Apple}"));
-        assertThat(new Fruit("Pineapple"), hasToString("Fruit{value=Pineapple}"));
+    void testToString() {
+        assertThat(Fruit.APPLE).hasToString("Fruit{name=APPLE, value=Apple}");
+        assertThat(new Fruit("Apple")).hasToString("Fruit{name=APPLE, value=Apple}");
+        assertThat(new Fruit("Pineapple")).hasToString("Fruit{value=Pineapple}");
     }
 
     @Test
-    public void testOrdinal() {
-        assertThat(Fruit.APPLE.ordinal(), is(0));
-        assertThat(Fruit.ORANGE.ordinal(), is(1));
-        assertThat(new Fruit(Fruit.APPLE.getValue()).ordinal(), is(0));
-        assertThat(new Fruit("Pineapple").ordinal(), is(Integer.MAX_VALUE));
+    void testOrdinal() {
+        assertThat(Fruit.APPLE.ordinal()).isEqualTo(0);
+        assertThat(Fruit.ORANGE.ordinal()).isEqualTo(1);
+        assertThat(new Fruit(Fruit.APPLE.getValue()).ordinal()).isEqualTo(0);
+        assertThat(new Fruit("Pineapple").ordinal()).isEqualTo(Integer.MAX_VALUE);
 
         BigCo[] bigCo = Enumerable.values(BigCo.class);
         for (int i = 0; i < bigCo.length; i++) {
-            assertThat(bigCo[i].ordinal(), is(equalTo(i)));
+            assertThat(bigCo[i].ordinal()).isEqualTo(i);
         }
 
         Fruit[] fruit = Enumerable.values(Fruit.class);
         for (int i = 0; i < fruit.length; i++) {
-            assertThat(fruit[i].ordinal(), is(equalTo(i)));
+            assertThat(fruit[i].ordinal()).isEqualTo(i);
         }
     }
 
     @Test
-    public void testName() {
-        assertThat(Fruit.APPLE.name(), is(equalTo("APPLE")));
-        assertThat(Fruit.ORANGE.name(), is(equalTo("ORANGE")));
-        assertThat(new Fruit(Fruit.APPLE.getValue()).name(), is(equalTo("APPLE")));
-        assertThat(new Fruit("Pineapple").name(), is(nullValue()));
+    void testName() {
+        assertThat(Fruit.APPLE.name()).isEqualTo("APPLE");
+        assertThat(Fruit.ORANGE.name()).isEqualTo("ORANGE");
+        assertThat(new Fruit(Fruit.APPLE.getValue()).name()).isEqualTo("APPLE");
+        assertThat(new Fruit("Pineapple").name()).isNull();
     }
 
     @Test
-    public void testCompareTo_null() {
-        try {
-            Fruit.APPLE.compareTo(null);
-            fail("Exception with clear message expected.");
-        } catch (NullPointerException expected) {
-            assertThat(expected, hasToString(containsString("Cannot compare with enumerable <null>")));
-        }
+    void testCompareTo_null() {
+        assertThatThrownBy(() -> Fruit.APPLE.compareTo(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessageContaining("Cannot compare with enumerable <null>");
     }
 
     @Test
-    public void testCompareTo() {
+    void testCompareTo() {
         // Clearly an orange is bigger than an apple? ;-)
-        assertThat(signum(Fruit.APPLE.compareTo(Fruit.ORANGE)), is(-1));
-        assertThat(signum(Fruit.APPLE.compareTo(Fruit.APPLE)), is(0));
-        assertThat(signum(Fruit.ORANGE.compareTo(Fruit.ORANGE)), is(0));
-        assertThat(signum(Fruit.ORANGE.compareTo(Fruit.APPLE)), is(1));
+        assertThat(signum(Fruit.APPLE.compareTo(Fruit.ORANGE))).isEqualTo(-1);
+        assertThat(signum(Fruit.APPLE.compareTo(Fruit.APPLE))).isEqualTo(0);
+        assertThat(signum(Fruit.ORANGE.compareTo(Fruit.ORANGE))).isEqualTo(0);
+        assertThat(signum(Fruit.ORANGE.compareTo(Fruit.APPLE))).isEqualTo(1);
 
         // And how about non-constants?
-        assertThat(signum(Fruit.APPLE.compareTo(new Fruit("Grapefruit"))), is(-1));
-        assertThat(signum(Fruit.ORANGE.compareTo(new Fruit("Grapefruit"))), is(-1));
-        assertThat(signum(new Fruit("Grapefruit").compareTo(new Fruit("Grapefruit"))), is(0));
-        assertThat(signum(new Fruit("Grapefruit").compareTo(new Fruit("Pineapple"))), is(-1));
-        assertThat(signum(new Fruit("Grapefruit").compareTo(new Fruit("pineapple"))), is(-1)); // case-insensitive sorting?
-        assertThat(signum(new Fruit("grapefruit").compareTo(new Fruit("Pineapple"))), is(-1));
-        assertThat(signum(new Fruit("Grapefruit").compareTo(new Fruit("grapefruit"))), is(-1)); // equal; then case-sensitive?
-        assertThat(signum(new Fruit("Grapefruit").compareTo(Fruit.APPLE)), is(1));
-        assertThat(signum(new Fruit("Grapefruit").compareTo(Fruit.ORANGE)), is(1));
+        assertThat(signum(Fruit.APPLE.compareTo(new Fruit("Grapefruit")))).isEqualTo(-1);
+        assertThat(signum(Fruit.ORANGE.compareTo(new Fruit("Grapefruit")))).isEqualTo(-1);
+        assertThat(signum(new Fruit("Grapefruit").compareTo(new Fruit("Grapefruit")))).isZero();
+        assertThat(signum(new Fruit("Grapefruit").compareTo(new Fruit("Pineapple")))).isEqualTo(-1);
+        assertThat(signum(new Fruit("Grapefruit").compareTo(new Fruit("pineapple")))).isEqualTo(-1); // case-insensitive sorting?
+        assertThat(signum(new Fruit("grapefruit").compareTo(new Fruit("Pineapple")))).isEqualTo(-1);
+        assertThat(signum(new Fruit("Grapefruit").compareTo(new Fruit("grapefruit")))).isEqualTo(-1); // equal; then case-sensitive?
+        assertThat(signum(new Fruit("Grapefruit").compareTo(Fruit.APPLE))).isEqualTo(1);
+        assertThat(signum(new Fruit("Grapefruit").compareTo(Fruit.ORANGE))).isEqualTo(1);
 
         // Different types should not be equal! (..mumble something about apples and oranges)
-        assertThat(BigCo.APPLE.compareTo(Fruit.ORANGE), is(not(0)));
+        assertThat(BigCo.APPLE.compareTo(Fruit.ORANGE)).isNotZero();
+        assertThat(BigCo.APPLE.compareTo(Fruit.APPLE)).isNotZero();
     }
 
     @Test
-    public void testCompareTo_constantsBeforeParsedValues() {
+    void testCompareTo_constantsBeforeParsedValues() {
         Fruit nonConstant = Enumerable.parse(Fruit.class, "Kiwano");
-        assertThat(nonConstant.ordinal(), is(Integer.MAX_VALUE));
+        assertThat(nonConstant.ordinal()).isEqualTo(Integer.MAX_VALUE);
         for (Fruit fruit : Fruit.VALUES) {
-            assertThat(signum(fruit.compareTo(nonConstant)), is(-1));
+            assertThat(signum(fruit.compareTo(nonConstant))).isEqualTo(-1);
         }
     }
 
     @Test
-    public void testSetOf_null() {
-        assertThat(Enumerable.setOf((Enumerable[]) null), is(notNullValue()));
-        assertThat(Enumerable.setOf((Enumerable[]) null), hasSize(0));
+    void testSetOf_null() {
+        assertThat(Enumerable.setOf((Enumerable[]) null)).isNotNull().isEmpty();
     }
 
     @Test
-    public void testSetOf_empty() {
-        assertThat(Enumerable.setOf(), is(notNullValue()));
-        assertThat(Enumerable.setOf(), hasSize(0));
+    void testSetOf_empty() {
+        assertThat(Enumerable.setOf()).isNotNull().isEmpty();
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void testSetOf_singleValue() {
+    @Test
+    void testSetOf_singleValue() {
         final Set<Fruit> singleValue = Enumerable.setOf(Fruit.APPLE);
-        assertThat(singleValue, hasSize(1));
-        assertThat(singleValue, contains(Fruit.APPLE));
-        singleValue.add(Fruit.ORANGE);
-        fail("setOf(APPLE) should be unmodifiable.");
+        assertThat(singleValue).hasSize(1).contains(Fruit.APPLE);
+        assertThatThrownBy(() -> singleValue.add(Fruit.ORANGE))
+                .isInstanceOf(UnsupportedOperationException.class);
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void testSetOf_multipleValues() {
+    @Test
+    void testSetOf_multipleValues() {
         final Set<Fruit> multipleValues = Enumerable.setOf(Fruit.ORANGE, Fruit.APPLE);
-        assertThat(multipleValues, hasSize(2));
-        assertThat(multipleValues, contains(Fruit.ORANGE, Fruit.APPLE));
-        multipleValues.add(Enumerable.parse(Fruit.class, "Grapefruit"));
-        fail("setOf(ORANGE, APPLE) should be unmodifiable.");
+        assertThat(multipleValues).hasSize(2).contains(Fruit.ORANGE, Fruit.APPLE);
+        Fruit grapefruit = Enumerable.parse(Fruit.class, "Grapefruit");
+        assertThatThrownBy(() -> multipleValues.add(grapefruit))
+                .isInstanceOf(UnsupportedOperationException.class);
     }
 
     @Test
-    public void testValueOf_typeNull() {
-        try {
-            Enumerable.valueOf(null, "someName");
-            fail("Exception expected.");
-        } catch (RuntimeException expected) {
-            assertThat(expected, hasToString(containsString("Enumerable type is <null>")));
-        }
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testValueOf_nameNull() {
-        Enumerable.valueOf(Fruit.class, null);
+    void testValueOf_typeNull() {
+        assertThatThrownBy(() -> Enumerable.valueOf(null, "someName"))
+                .hasMessageContaining("Enumerable type is <null>");
     }
 
     @Test
-    public void testValueOf_allValues() {
+    void testValueOf_nameNull() {
+        assertThatThrownBy(() -> Enumerable.valueOf(Fruit.class, null))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void testValueOf_allValues() {
         for (BigCo bigCo : Enumerable.values(BigCo.class)) {
-            assertThat(bigCo, is(sameInstance(Enumerable.valueOf(BigCo.class, bigCo.name()))));
+            assertThat(bigCo).isSameAs(Enumerable.valueOf(BigCo.class, bigCo.name()));
         }
         for (Fruit fruit : Enumerable.values(Fruit.class)) {
-            assertThat(fruit, is(sameInstance(Enumerable.valueOf(Fruit.class, fruit.name()))));
+            assertThat(fruit).isSameAs(Enumerable.valueOf(Fruit.class, fruit.name()));
         }
     }
 
     @Test
-    public void testValueOf_nonConstantValue() {
+    void testValueOf_nonConstantValue() {
         // First parse a grapefruit so it has been encountered before for this test...
         Fruit grapefruit = Enumerable.parse(Fruit.class, "Grapefruit");
-        assertThat(grapefruit.getValue(), is(equalTo("Grapefruit")));
-        assertThat(grapefruit.name(), is(nullValue())); // Non-constant value.
-        try {
-            Enumerable.valueOf(Fruit.class, "Grapefruit");
-            fail("Exception expected due to non-constant value.");
-        } catch (Enumerable.ConstantNotFoundException expected) {
-            assertThat(expected.getMessage(), is(equalTo("No Enumerable constant \"Fruit.Grapefruit\" found.")));
-        }
+        assertThat(grapefruit.getValue()).isEqualTo("Grapefruit");
+        assertThat(grapefruit.name()).isNull(); // Non-constant value.
+        assertThatThrownBy(() -> Enumerable.valueOf(Fruit.class, "Grapefruit"))
+                .isInstanceOf(Enumerable.ConstantNotFoundException.class)
+                .hasMessageContaining("No Enumerable constant \"Fruit.Grapefruit\" found.");
     }
 
     @Test
-    public void testDeserialize_nonConstantValue() {
+    void testDeserialize_nonConstantValue() {
         Fruit grapefruit = Enumerable.parse(Fruit.class, "Grapefruit");
         Fruit deserialized = deserialize(serialize(grapefruit));
 
-        assertThat(deserialized, is(equalTo(grapefruit)));
+        assertThat(deserialized).isEqualTo(grapefruit);
     }
 
     @Test
-    public void testDeserialize_sameConstantInstance() {
+    void testDeserialize_sameConstantInstance() {
         Fruit deserialized = deserialize(serialize(Fruit.ORANGE));
 
-        assertThat(deserialized, is(equalTo(Fruit.ORANGE)));
-        assertThat(deserialized, is(sameInstance(Fruit.ORANGE)));
+        assertThat(deserialized).isEqualTo(Fruit.ORANGE).isSameAs(Fruit.ORANGE);
     }
 
-    private static byte[] serialize(Serializable value) {
+    static byte[] serialize(Serializable value) {
         try {
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             new ObjectOutputStream(output).writeObject(value);
@@ -411,7 +378,7 @@ public class EnumerableTest {
     }
 
     @SuppressWarnings("unchecked")
-    private static <S extends Serializable> S deserialize(byte[] bytes) {
+    static <S extends Serializable> S deserialize(byte[] bytes) {
         try {
             return (S) new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject();
         } catch (IOException ioe) {

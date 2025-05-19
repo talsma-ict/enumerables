@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 Talsma ICT
+ * Copyright 2016-2025 Talsma ICT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,143 +16,138 @@
 package nl.talsmasoftware.enumerables.jackson2;
 
 import nl.talsmasoftware.enumerables.Enumerable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static java.util.Arrays.asList;
 import static nl.talsmasoftware.enumerables.jackson2.SerializationMethod.AS_OBJECT;
 import static nl.talsmasoftware.enumerables.jackson2.SerializationMethod.AS_STRING;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasToString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sjoerd Talsma
  */
-public class SerializationMethodTest {
+class SerializationMethodTest {
 
     @Test
-    public void testIsObjectSerializationByDefault() {
-        assertThat(AS_STRING.isObjectSerializationByDefault(), is(false));
-        assertThat(AS_OBJECT.isObjectSerializationByDefault(), is(true));
+    void testIsObjectSerializationByDefault() {
+        assertThat(AS_STRING.isObjectSerializationByDefault()).isFalse();
+        assertThat(AS_OBJECT.isObjectSerializationByDefault()).isTrue();
     }
 
     @Test
-    public void testStandardBehaviour() {
-        assertThat(AS_STRING.serializeAsObject(Enumerable1.class), is(false));
-        assertThat(AS_STRING.serializeAsObject(Enumerable2.class), is(false));
-        assertThat(AS_STRING.serializeAsObject(Enumerable3.class), is(false));
+    void testStandardBehaviour() {
+        assertThat(AS_STRING.serializeAsObject(Enumerable1.class)).isFalse();
+        assertThat(AS_STRING.serializeAsObject(Enumerable2.class)).isFalse();
+        assertThat(AS_STRING.serializeAsObject(Enumerable3.class)).isFalse();
 
-        assertThat(AS_OBJECT.serializeAsObject(Enumerable1.class), is(true));
-        assertThat(AS_OBJECT.serializeAsObject(Enumerable2.class), is(true));
-        assertThat(AS_OBJECT.serializeAsObject(Enumerable3.class), is(true));
+        assertThat(AS_OBJECT.serializeAsObject(Enumerable1.class)).isTrue();
+        assertThat(AS_OBJECT.serializeAsObject(Enumerable2.class)).isTrue();
+        assertThat(AS_OBJECT.serializeAsObject(Enumerable3.class)).isTrue();
     }
 
     @Test
-    public void testSerializeAsObjectNull() {
-        assertThat(AS_STRING.serializeAsObject(null), is(false));
-        assertThat(AS_OBJECT.serializeAsObject(null), is(true));
+    void testSerializeAsObjectNull() {
+        assertThat(AS_STRING.serializeAsObject(null)).isFalse();
+        assertThat(AS_OBJECT.serializeAsObject(null)).isTrue();
     }
 
     @Test
     @SuppressWarnings({"unchecked", "deprecation"})
-    public void testAsStringExceptBehaviour() {
+    void testAsStringExceptBehaviour() {
         SerializationMethod serializationMethod = AS_STRING;
-        assertThat(serializationMethod.serializeAsObject(Enumerable1.class), is(false));
-        assertThat(serializationMethod.serializeAsObject(Enumerable2.class), is(false));
-        assertThat(serializationMethod.serializeAsObject(Enumerable3.class), is(false));
+        assertThat(serializationMethod.serializeAsObject(Enumerable1.class)).isFalse();
+        assertThat(serializationMethod.serializeAsObject(Enumerable2.class)).isFalse();
+        assertThat(serializationMethod.serializeAsObject(Enumerable3.class)).isFalse();
 
         serializationMethod = AS_STRING.except(Enumerable3.class);
-        assertThat(serializationMethod.serializeAsObject(Enumerable1.class), is(false));
-        assertThat(serializationMethod.serializeAsObject(Enumerable2.class), is(false));
-        assertThat(serializationMethod.serializeAsObject(Enumerable3.class), is(true));
+        assertThat(serializationMethod.serializeAsObject(Enumerable1.class)).isFalse();
+        assertThat(serializationMethod.serializeAsObject(Enumerable2.class)).isFalse();
+        assertThat(serializationMethod.serializeAsObject(Enumerable3.class)).isTrue();
 
         serializationMethod = AS_STRING.except(Enumerable2.class, Enumerable3.class);
-        assertThat(serializationMethod.serializeAsObject(Enumerable1.class), is(false));
-        assertThat(serializationMethod.serializeAsObject(Enumerable2.class), is(true));
-        assertThat(serializationMethod.serializeAsObject(Enumerable3.class), is(true));
+        assertThat(serializationMethod.serializeAsObject(Enumerable1.class)).isFalse();
+        assertThat(serializationMethod.serializeAsObject(Enumerable2.class)).isTrue();
+        assertThat(serializationMethod.serializeAsObject(Enumerable3.class)).isTrue();
 
         serializationMethod = AS_STRING.except(Enumerable1.class, Enumerable2.class, Enumerable3.class);
-        assertThat(serializationMethod.serializeAsObject(Enumerable1.class), is(true));
-        assertThat(serializationMethod.serializeAsObject(Enumerable2.class), is(true));
-        assertThat(serializationMethod.serializeAsObject(Enumerable3.class), is(true));
-        assertThat(serializationMethod.serializeAsObject(Numbers.class), is(false));
+        assertThat(serializationMethod.serializeAsObject(Enumerable1.class)).isTrue();
+        assertThat(serializationMethod.serializeAsObject(Enumerable2.class)).isTrue();
+        assertThat(serializationMethod.serializeAsObject(Enumerable3.class)).isTrue();
+        assertThat(serializationMethod.serializeAsObject(Numbers.class)).isFalse();
     }
 
     @Test
     @SuppressWarnings({"unchecked", "deprecation"})
-    public void testAsObjectExceptBehaviour() {
+    void testAsObjectExceptBehaviour() {
         SerializationMethod serializationMethod = AS_OBJECT;
-        assertThat(serializationMethod.serializeAsObject(Enumerable1.class), is(true));
-        assertThat(serializationMethod.serializeAsObject(Enumerable2.class), is(true));
-        assertThat(serializationMethod.serializeAsObject(Enumerable3.class), is(true));
+        assertThat(serializationMethod.serializeAsObject(Enumerable1.class)).isTrue();
+        assertThat(serializationMethod.serializeAsObject(Enumerable2.class)).isTrue();
+        assertThat(serializationMethod.serializeAsObject(Enumerable3.class)).isTrue();
 
         serializationMethod = AS_OBJECT.except(Enumerable3.class);
-        assertThat(serializationMethod.serializeAsObject(Enumerable1.class), is(true));
-        assertThat(serializationMethod.serializeAsObject(Enumerable2.class), is(true));
-        assertThat(serializationMethod.serializeAsObject(Enumerable3.class), is(false));
+        assertThat(serializationMethod.serializeAsObject(Enumerable1.class)).isTrue();
+        assertThat(serializationMethod.serializeAsObject(Enumerable2.class)).isTrue();
+        assertThat(serializationMethod.serializeAsObject(Enumerable3.class)).isFalse();
 
         serializationMethod = AS_OBJECT.except(Enumerable2.class, Enumerable3.class);
-        assertThat(serializationMethod.serializeAsObject(Enumerable1.class), is(true));
-        assertThat(serializationMethod.serializeAsObject(Enumerable2.class), is(false));
-        assertThat(serializationMethod.serializeAsObject(Enumerable3.class), is(false));
+        assertThat(serializationMethod.serializeAsObject(Enumerable1.class)).isTrue();
+        assertThat(serializationMethod.serializeAsObject(Enumerable2.class)).isFalse();
+        assertThat(serializationMethod.serializeAsObject(Enumerable3.class)).isFalse();
 
         serializationMethod = AS_OBJECT.except(Enumerable1.class, Enumerable2.class, Enumerable3.class);
-        assertThat(serializationMethod.serializeAsObject(Enumerable1.class), is(false));
-        assertThat(serializationMethod.serializeAsObject(Enumerable2.class), is(false));
-        assertThat(serializationMethod.serializeAsObject(Enumerable3.class), is(false));
-        assertThat(serializationMethod.serializeAsObject(Numbers.class), is(true));
+        assertThat(serializationMethod.serializeAsObject(Enumerable1.class)).isFalse();
+        assertThat(serializationMethod.serializeAsObject(Enumerable2.class)).isFalse();
+        assertThat(serializationMethod.serializeAsObject(Enumerable3.class)).isFalse();
+        assertThat(serializationMethod.serializeAsObject(Numbers.class)).isTrue();
     }
 
     @Test
-    public void testExceptNull() {
-        assertThat(AS_STRING.except((Class<? extends Enumerable>) null), is(sameInstance(AS_STRING)));
+    void testExceptNull() {
+        assertThat(AS_STRING.except((Class<? extends Enumerable>) null)).isSameAs(AS_STRING);
     }
 
     @Test
-    public void testHashCode() {
-        assertThat(AS_STRING.hashCode(), is(AS_STRING.hashCode()));
-        assertThat(AS_STRING.hashCode(), is(not(AS_OBJECT.hashCode()))); // Stronger than hashcode contract
-        assertThat(AS_STRING.hashCode(), is(AS_STRING.except((Class<? extends Enumerable>) null).hashCode()));
+    void testHashCode() {
+        assertThat(AS_STRING).hasSameHashCodeAs(AS_STRING);
+        assertThat(AS_STRING).doesNotHaveSameHashCodeAs(AS_OBJECT); // Stronger than hashcode contract
+        assertThat(AS_STRING).hasSameHashCodeAs(AS_STRING.except((Class<? extends Enumerable>) null));
 
-        assertThat(AS_OBJECT.except(Enumerable2.class).hashCode(), is(AS_OBJECT.except(Enumerable2.class).hashCode()));
+        assertThat(AS_OBJECT.except(Enumerable2.class)).hasSameHashCodeAs(AS_OBJECT.except(Enumerable2.class));
     }
 
     @Test
-    public void testEquals() {
-        assertThat(AS_STRING, is(equalTo(AS_STRING)));
-        assertThat(AS_STRING, is(not(equalTo(AS_STRING.except(Enumerable1.class)))));
-        assertThat(AS_STRING, is(not(equalTo(AS_OBJECT))));
+    void testEquals() {
+        assertThat(AS_STRING).isEqualTo(AS_STRING);
+        assertThat(AS_STRING).isNotEqualTo(AS_STRING.except(Enumerable1.class));
+        assertThat(AS_STRING).isNotEqualTo(AS_OBJECT);
 
-        assertThat(AS_OBJECT.except(Enumerable2.class), is(equalTo(AS_OBJECT.except(Enumerable2.class))));
+        assertThat(AS_OBJECT.except(Enumerable2.class)).isEqualTo(AS_OBJECT.except(Enumerable2.class));
     }
 
     @Test
-    public void testToString() {
-        assertThat(AS_STRING, hasToString("As string"));
-        assertThat(AS_OBJECT, hasToString("As object"));
-        assertThat(AS_STRING.except(Enumerable3.class),
-                hasToString("As string, except [SerializationMethodTest$Enumerable3]"));
-        assertThat(AS_OBJECT.except(asList(Enumerable1.class, Enumerable3.class)), hasToString(
-                "As object, except [SerializationMethodTest$Enumerable1, SerializationMethodTest$Enumerable3]"));
+    void testToString() {
+        assertThat(AS_STRING).hasToString("As string");
+        assertThat(AS_OBJECT).hasToString("As object");
+        assertThat(AS_STRING.except(Enumerable3.class))
+                .hasToString("As string, except [SerializationMethodTest$Enumerable3]");
+        assertThat(AS_OBJECT.except(asList(Enumerable1.class, Enumerable3.class))).hasToString(
+                "As object, except [SerializationMethodTest$Enumerable1, SerializationMethodTest$Enumerable3]");
     }
 
-    private static final class Enumerable1 extends Enumerable {
-        private Enumerable1(String value) {
+    static final class Enumerable1 extends Enumerable {
+        Enumerable1(String value) {
             super(value);
         }
     }
 
-    private static final class Enumerable2 extends Enumerable {
-        private Enumerable2(String value) {
+    static final class Enumerable2 extends Enumerable {
+        Enumerable2(String value) {
             super(value);
         }
     }
 
-    private static final class Enumerable3 extends Enumerable {
-        private Enumerable3(String value) {
+    static final class Enumerable3 extends Enumerable {
+        Enumerable3(String value) {
             super(value);
         }
     }

@@ -87,7 +87,6 @@
 
         <jackson2.version>2.19.0</jackson2.version>
 
-        <junit.version>4.13.2</junit.version>
         <hamcrest.version>3.0</hamcrest.version>
         <mockito.version>5.17.0</mockito.version>
         <slf4j.version>2.0.17</slf4j.version>
@@ -98,22 +97,38 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
+        <!--
+                <dependency>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                    <version>${junit.version}</version>
+                    <scope>test</scope>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.hamcrest</groupId>
+                            <artifactId>*</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+        -->
+        <!--
+                <dependency>
                     <groupId>org.hamcrest</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
+                    <artifactId>hamcrest</artifactId>
+                    <version>${hamcrest.version}</version>
+                    <scope>test</scope>
+                </dependency>
+        -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.12.2</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest</artifactId>
-            <version>${hamcrest.version}</version>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.27.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -453,27 +468,31 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <header>${root.basedir}/.mvn/license/header.txt</header>
+                            <strictCheck>true</strictCheck>
                             <properties>
                                 <owner>${project.organization.name}</owner>
                             </properties>
                             <mapping>
                                 <java>SLASHSTAR_STYLE</java>
                             </mapping>
-                            <excludes>
-                                <exclude>.gitignore</exclude>
-                                <exclude>.github/**</exclude>
-                                <exclude>.mvn/**</exclude>
-                                <exclude>mvnw*</exclude>
-                                <exclude>**/.idea/**</exclude>
-                                <exclude>LICENSE</exclude>
-                                <exclude>**/*.md</exclude>
-                                <exclude>**/*.puml</exclude>
-                                <exclude>**/*.svg</exclude>
-                                <exclude>src/main/resources/**</exclude>
-                                <exclude>src/test/resources/**</exclude>
-                            </excludes>
-                            <strictCheck>true</strictCheck>
+                            <licenseSets>
+                                <licenseSet>
+                                    <header>${root.basedir}/.mvn/license/header.txt</header>
+                                    <excludes>
+                                        <exclude>.gitignore</exclude>
+                                        <exclude>.github/**</exclude>
+                                        <exclude>.mvn/**</exclude>
+                                        <exclude>mvnw*</exclude>
+                                        <exclude>**/.idea/**</exclude>
+                                        <exclude>LICENSE</exclude>
+                                        <exclude>**/*.md</exclude>
+                                        <exclude>**/*.puml</exclude>
+                                        <exclude>**/*.svg</exclude>
+                                        <exclude>src/main/resources/**</exclude>
+                                        <exclude>src/test/resources/**</exclude>
+                                    </excludes>
+                                </licenseSet>
+                            </licenseSets>
                         </configuration>
                     </plugin>
                 </plugins>
