@@ -88,7 +88,7 @@
         <jackson2.version>2.19.0</jackson2.version>
 
         <hamcrest.version>3.0</hamcrest.version>
-        <mockito.version>5.17.0</mockito.version>
+        <mockito.version>5.18.0</mockito.version>
         <slf4j.version>2.0.17</slf4j.version>
         <logback.version>1.5.18</logback.version>
         <jsonassert.version>1.5.3</jsonassert.version>
