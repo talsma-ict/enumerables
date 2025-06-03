@@ -44,6 +44,7 @@
         <module>enumerables-jaxrs</module>
         <module>enumerables-jdbi</module>
         <module>enumerables-jdbi3</module>
+        <module>enumerables-hibernate</module>
         <module>enumerables-gson</module>
         <module>enumerables-swagger</module>
         <!-- relocation -->
