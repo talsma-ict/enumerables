@@ -85,7 +85,7 @@
         <project.moduleName>${project.groupId}.${project.artifactId}</project.moduleName>
         <root.basedir>${project.basedir}</root.basedir>
 
-        <jackson2.version>2.19.1</jackson2.version>
+        <jackson2.version>2.19.2</jackson2.version>
 
         <junit.version>5.13.3</junit.version>
         <assertj.version>3.27.3</assertj.version>
