@@ -94,7 +94,7 @@
         <logback.version>1.5.18</logback.version>
         <jsonassert.version>1.5.3</jsonassert.version>
 
-        <umldoclet.version>2.2.2</umldoclet.version>
+        <umldoclet.version>2.2.3</umldoclet.version>
     </properties>
 
     <dependencies>
