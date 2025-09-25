@@ -35,7 +35,7 @@
         <project.moduleName>${project.groupId}.jdbi3</project.moduleName>
         <root.basedir>${project.parent.basedir}</root.basedir>
         <jdbi3.version>3.49.5</jdbi3.version>
-        <h2db.version>2.3.232</h2db.version>
+        <h2db.version>2.4.240</h2db.version>
     </properties>
 
     <dependencies>
@@ -88,8 +88,8 @@
                         <!-- JDBI 3 requires JDK 11. -->
                         <version>[11,)</version>
                     </jdkToolchain>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>11</source>
+                    <target>11</target>
                     <showDeprecation>true</showDeprecation>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
