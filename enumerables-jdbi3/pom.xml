@@ -88,8 +88,8 @@
                         <!-- JDBI 3 requires JDK 11. -->
                         <version>[11,)</version>
                     </jdkToolchain>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>11</source>
+                    <target>11</target>
                     <showDeprecation>true</showDeprecation>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
