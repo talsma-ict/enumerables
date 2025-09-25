@@ -33,7 +33,7 @@
         <project.moduleName>${project.groupId}.jdbi</project.moduleName>
         <root.basedir>${project.parent.basedir}</root.basedir>
         <jdbi.version>2.78</jdbi.version>
-        <h2db.version>2.2.224</h2db.version>
+        <h2db.version>2.4.240</h2db.version>
     </properties>
 
     <dependencies>
