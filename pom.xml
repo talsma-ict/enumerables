@@ -42,7 +42,6 @@
         <module>enumerables-javax-validation</module>
         <module>enumerables-jakarta-validation</module>
         <module>enumerables-jaxrs</module>
-        <module>enumerables-jdbi</module>
         <module>enumerables-jdbi3</module>
         <module>enumerables-gson</module>
         <module>enumerables-swagger</module>
@@ -171,8 +170,8 @@
                         <id>default-testCompile</id>
                         <configuration>
                             <jdkToolchain>
-                                <!-- Required by new mockito version -->
-                                <version>[11,)</version>
+                                <!-- Required by junit 6 -->
+                                <version>[17,)</version>
                             </jdkToolchain>
                             <testSource>8</testSource>
                             <testTarget>8</testTarget>
@@ -185,7 +184,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <jdkToolchain>
-                        <version>[11,)</version>
+                        <version>[17,)</version>
                     </jdkToolchain>
                 </configuration>
             </plugin>
