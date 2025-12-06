@@ -82,10 +82,10 @@
             </dependency>
 
             <!-- No longer supported, pinned to latest-released versions: -->
-            <dependency><!-- Relocated to enumerables-javax-validation, to be pinned and removed after next release. -->
+            <dependency><!-- Pinned and relocated to enumerables-javax-validation. -->
                 <groupId>nl.talsmasoftware.enumerables</groupId>
                 <artifactId>enumerables-validation</artifactId>
-                <version>${project.version}</version>
+                <version>1.0.13</version>
             </dependency>
             <dependency>
                 <groupId>nl.talsmasoftware.enumerables</groupId>

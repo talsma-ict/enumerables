@@ -45,8 +45,6 @@
         <module>enumerables-jdbi3</module>
         <module>enumerables-gson</module>
         <module>enumerables-swagger</module>
-        <!-- relocation -->
-        <module>enumerables-validation</module>
     </modules>
 
     <licenses>
@@ -234,7 +232,7 @@
                         </goals>
                         <configuration>
                             <jdkToolchain>
-                                <version>[9,)</version>
+                                <version>[17,)</version>
                             </jdkToolchain>
                             <doclet>nl.talsmasoftware.umldoclet.UMLDoclet</doclet>
                             <docletArtifact>
@@ -245,6 +243,7 @@
                             <additionalOptions>
                                 <additionalOption>--create-puml-files</additionalOption>
                             </additionalOptions>
+                            <disableNoFonts>true</disableNoFonts>
                         </configuration>
                     </execution>
                 </executions>
