@@ -80,6 +80,18 @@
                 <artifactId>enumerables-swagger</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
+            <!-- No longer supported, pinned to latest-released versions: -->
+            <dependency><!-- Relocated to enumerables-javax-validation, to be pinned and removed after next release. -->
+                <groupId>nl.talsmasoftware.enumerables</groupId>
+                <artifactId>enumerables-validation</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>nl.talsmasoftware.enumerables</groupId>
+                <artifactId>enumerables-jdbi</artifactId>
+                <version>1.0.12</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
