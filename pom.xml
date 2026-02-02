@@ -88,7 +88,7 @@
         <assertj.version>3.27.7</assertj.version>
         <mockito.version>5.21.0</mockito.version>
         <slf4j.version>2.0.17</slf4j.version>
-        <logback.version>1.5.26</logback.version>
+        <logback.version>1.5.27</logback.version>
         <jsonassert.version>1.5.3</jsonassert.version>
 
         <umldoclet.version>2.2.4</umldoclet.version>
