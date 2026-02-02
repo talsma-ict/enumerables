@@ -24,7 +24,7 @@
 
     <groupId>nl.talsmasoftware.enumerables</groupId>
     <artifactId>enumerables-root</artifactId>
-    <version>1.0.14-SNAPSHOT</version>
+    <version>1.0.14</version>
     <packaging>pom</packaging>
 
     <name>Enumerables</name>
