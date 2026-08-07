@@ -67,6 +67,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>enumerables-jackson3</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>enumerables-gson</artifactId>
                 <version>${project.version}</version>
             </dependency>
