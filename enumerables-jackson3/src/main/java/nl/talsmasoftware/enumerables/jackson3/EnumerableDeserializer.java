@@ -57,21 +57,30 @@ public class EnumerableDeserializer<E extends Enumerable> extends StdDeserialize
     }
 
     private Class<E> determineEnumerableType(JsonParser parser) {
+        Class<?> enumerableType = null;
         if (parser.getTypeId() instanceof JavaType type && type.isTypeOrSubTypeOf(Enumerable.class)) {
-            return (Class<E>) type.getRawClass();
+            enumerableType = type.getRawClass();
+        } else if (this._valueClass != null && Enumerable.class.isAssignableFrom(this._valueClass)) {
+            enumerableType = this._valueClass;
+        } else {
+            enumerableType = UnknownEnumerable.class;
         }
-        return (Class<E>) UnknownEnumerable.class;
+        return (Class<E>) enumerableType;
     }
 
     /// Non-abstract [Enumerable] class to deserialize if the concrete type can somehow not be determined.
     ///
-    /// This type is not for general use.
+    /// @implNote This type is not for general use.
     static final class UnknownEnumerable extends Enumerable {
         private UnknownEnumerable(String value) {
             super(value);
         }
     }
 
+    /// Enumerable deserializer Modifier.
+    ///
+    /// Checks if the bean to be deserialized happens to be a subtype of [Enumerable] and if so,
+    /// returns a typed instance of the [EnumerableDeserializer] to be used as value deserializer.
     static final class Modifier extends ValueDeserializerModifier {
         @Override
         public ValueDeserializer<?> modifyDeserializer(DeserializationConfig config, BeanDescription.Supplier beanDescription, ValueDeserializer<?> deserializer) {
