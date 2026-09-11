@@ -172,8 +172,8 @@
                                 <!-- Required by junit 6 -->
                                 <version>[17,)</version>
                             </jdkToolchain>
-                            <testSource>8</testSource>
-                            <testTarget>8</testTarget>
+                            <testSource>17</testSource>
+                            <testTarget>17</testTarget>
                         </configuration>
                     </execution>
                 </executions>
