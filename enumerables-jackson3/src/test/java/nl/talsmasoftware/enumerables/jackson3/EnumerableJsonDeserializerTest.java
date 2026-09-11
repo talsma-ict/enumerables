@@ -18,6 +18,7 @@ package nl.talsmasoftware.enumerables.jackson3;
 import nl.talsmasoftware.enumerables.Enumerable;
 import nl.talsmasoftware.enumerables.jackson3.model.BigCo;
 import nl.talsmasoftware.enumerables.jackson3.model.PlainTestObject;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -28,14 +29,15 @@ class EnumerableJsonDeserializerTest {
     static final JsonMapper MAPPER = JsonMapper.builder().findAndAddModules().build();
 
     @Test
+    @DisplayName("Json deserialization: Strings are parsed as the correct enumerable type.")
     void testDeserialize() {
-        String json = "{\"bigCo\":\"Open AI\"}";
+        String json = "{\"bigCo\":\"Meta\"}";
 
         PlainTestObject result = MAPPER.readValue(json, PlainTestObject.class);
         assertThat(result).isNotNull();
         assertThat(result.getBigCo())
                 .isInstanceOf(BigCo.class)
-                .isEqualTo(Enumerable.parse(BigCo.class, "Open AI"));
+                .isEqualTo(Enumerable.parse(BigCo.class, "Meta"));
     }
 
 }
