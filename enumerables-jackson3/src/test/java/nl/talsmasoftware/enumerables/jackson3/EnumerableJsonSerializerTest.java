@@ -20,9 +20,13 @@ import nl.talsmasoftware.enumerables.jackson3.model.BigCo;
 import nl.talsmasoftware.enumerables.jackson3.model.PlainTestObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
 import tools.jackson.databind.json.JsonMapper;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 class EnumerableJsonSerializerTest {
 
@@ -49,4 +53,27 @@ class EnumerableJsonSerializerTest {
         }
     }
 
+    @Test
+    @DisplayName("Json serialization: null serializable values can be serialized (handled by Jackson).")
+    void testSerialize_null_serializable() {
+        String result = MAPPER.writeValueAsString(new PlainTestObject(null));
+        assertThatJson(result)
+                .isObject()
+                .containsEntry("bigCo", null);
+    }
+
+    @Test
+    @DisplayName("Json serialization: null value can be serialized (by serializer)")
+    void testSerialize_valueNull() {
+        // given
+        EnumerableSerializer subject = new EnumerableSerializer();
+        JsonGenerator jsonGeneratorMock = mock(JsonGenerator.class);
+        SerializationContext serializationContextMock = mock(SerializationContext.class);
+
+        // when
+        subject.serialize(null, jsonGeneratorMock, serializationContextMock);
+
+        // then
+        verify(jsonGeneratorMock).writeNull();
+    }
 }

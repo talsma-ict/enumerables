@@ -31,8 +31,12 @@ import tools.jackson.databind.type.TypeFactory;
 
 public class EnumerableDeserializer<E extends Enumerable> extends StdDeserializer<E> {
 
+    EnumerableDeserializer() {
+        this((Class<E>) null);
+    }
+
     public EnumerableDeserializer(Class<E> enumerableType) {
-        super(TypeFactory.createDefaultInstance().constructType(enumerableType != null ? enumerableType : Enumerable.class));
+        this(TypeFactory.createDefaultInstance().constructType(enumerableType != null ? enumerableType : Enumerable.class));
     }
 
     protected EnumerableDeserializer(JavaType valueType) {

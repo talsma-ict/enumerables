@@ -22,7 +22,7 @@ public class EnumerableModule extends SimpleModule {
 
     public EnumerableModule() {
         super.addSerializer(new EnumerableSerializer());
-        super.addDeserializer(Enumerable.class, new EnumerableDeserializer<>(Enumerable.class));
+        super.addDeserializer(Enumerable.class, new EnumerableDeserializer<>());
     }
 
     @Override
