@@ -21,12 +21,26 @@ import tools.jackson.core.JsonGenerator;
 import tools.jackson.databind.SerializationContext;
 import tools.jackson.databind.ser.std.StdSerializer;
 
+/// Serializer for [Enumerable] objects using Jackson 3.
+///
+/// Serializes [Enumerable] instances into their string value (obtained via [Enumerable#print(Enumerable)]).
+/// `null` values are written as JSON `null`.
+///
+/// @author Sjoerd Talsma
 public class EnumerableSerializer extends StdSerializer<Enumerable> {
 
+    /// Constructs a default [EnumerableSerializer] for [Enumerable] types.
     public EnumerableSerializer() {
         super(Enumerable.class);
     }
 
+    /// Serializes an [Enumerable] value to JSON.
+    ///
+    /// @param value Value to serialize; written as string or `null` if null
+    /// @param gen Generator used to output JSON content
+    /// @param ctxt Context that can be used to access information about serialization process
+    /// @throws JacksonException if an error occurs during serialization
+    @Override
     public void serialize(Enumerable value, JsonGenerator gen, SerializationContext ctxt) throws JacksonException {
         if (value == null) {
             gen.writeNull();

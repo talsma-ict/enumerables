@@ -29,20 +29,44 @@ import tools.jackson.databind.deser.std.StdDeserializer;
 import tools.jackson.databind.exc.ValueInstantiationException;
 import tools.jackson.databind.type.TypeFactory;
 
+/// Deserializer for [Enumerable] objects using Jackson 3.
+///
+/// Can deserialize either primitive JSON strings or JSON objects containing a `"value"` property
+/// into concrete [Enumerable] instances using [Enumerable#parse(Class, CharSequence)].
+///
+/// @param <E> The concrete [Enumerable] type being deserialized
+/// @author Sjoerd Talsma
 public class EnumerableDeserializer<E extends Enumerable> extends StdDeserializer<E> {
 
+    /// Default constructor for untyped deserialization.
     EnumerableDeserializer() {
         this((Class<E>) null);
     }
 
+    /// Constructs a deserializer for the specified [Enumerable] subtype.
+    ///
+    /// @param enumerableType The concrete [Enumerable] class to deserialize into
     public EnumerableDeserializer(Class<E> enumerableType) {
         this(TypeFactory.createDefaultInstance().constructType(enumerableType != null ? enumerableType : Enumerable.class));
     }
 
+    /// Constructs a deserializer for the specified [JavaType] representing an [Enumerable] subtype.
+    ///
+    /// @param valueType The [JavaType] representing the [Enumerable] subtype
     protected EnumerableDeserializer(JavaType valueType) {
         super(valueType);
     }
 
+    /// Deserializes JSON content into a concrete [Enumerable] instance.
+    ///
+    /// Supports deserialization from:
+    /// - JSON string or null value: parsed directly using [Enumerable#parse(Class, CharSequence)]
+    /// - JSON object: parsed by extracting the `"value"` property
+    ///
+    /// @param parser JSON parser containing the content to deserialize
+    /// @param context Deserialization context
+    /// @return The deserialized [Enumerable] instance
+    /// @throws JacksonException if an error occurs during parsing or if the token is unsupported
     @Override
     public E deserialize(JsonParser parser, DeserializationContext context) throws JacksonException {
         Class<E> enumerableType = determineEnumerableType(parser);
@@ -99,7 +123,7 @@ public class EnumerableDeserializer<E extends Enumerable> extends StdDeserialize
 
     /// Non-abstract [Enumerable] class to deserialize if the concrete type can somehow not be determined.
     ///
-    /// @implNote This type is not for general use.
+    /// _Note:_ This type is not for general use.
     static final class UnknownEnumerable extends Enumerable {
         private UnknownEnumerable(String value) {
             super(value);

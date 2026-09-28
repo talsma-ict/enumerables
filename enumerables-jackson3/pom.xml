@@ -32,6 +32,8 @@
     <properties>
         <project.moduleName>${project.groupId}.jackson3</project.moduleName>
         <root.basedir>${project.parent.basedir}</root.basedir>
+
+        <jackson3.version>3.2.3</jackson3.version>
     </properties>
 
     <dependencies>
@@ -57,7 +59,7 @@
             <dependency>
                 <groupId>tools.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
-                <version>3.2.1</version>
+                <version>${jackson3.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

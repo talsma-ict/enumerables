@@ -18,13 +18,30 @@ package nl.talsmasoftware.enumerables.jackson3;
 import nl.talsmasoftware.enumerables.Enumerable;
 import tools.jackson.databind.module.SimpleModule;
 
+/// Jackson 3 [module][tools.jackson.databind.JacksonModule] for mapping [Enumerable] types to and from JSON.
+///
+/// Registering this module allows deserializing both primitive strings and JSON objects into concrete [Enumerable]
+/// instances, and serializing [Enumerable] instances into their string representation.
+///
+/// ### Usage example:
+/// ```java
+/// JsonMapper mapper = JsonMapper.builder()
+///         .addModule(new EnumerableModule())
+///         .build();
+/// ```
+///
+/// @author Sjoerd Talsma
 public class EnumerableModule extends SimpleModule {
 
+    /// Constructs a new [EnumerableModule] configuring serializer and deserializer for [Enumerable] types.
     public EnumerableModule() {
         super.addSerializer(new EnumerableSerializer());
         super.addDeserializer(Enumerable.class, new EnumerableDeserializer<>());
     }
 
+    /// Sets up the module by registering serializer, deserializer, and a deserializer modifier to handle any subtype of [Enumerable].
+    ///
+    /// @param context The setup context used to register deserializer modifier
     @Override
     public void setupModule(SetupContext context) {
         super.setupModule(context.addDeserializerModifier(new EnumerableDeserializer.Modifier()));
