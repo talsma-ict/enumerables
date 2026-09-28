@@ -83,12 +83,15 @@ public class EnumerableDeserializer<E extends Enumerable> extends StdDeserialize
     }
 
     private Class<E> determineEnumerableType(JsonParser parser) {
-        Class<?> enumerableType = null;
+        Class<?> enumerableType = this._valueClass;
         if (parser.getTypeId() instanceof JavaType type && type.isTypeOrSubTypeOf(Enumerable.class)) {
             enumerableType = type.getRawClass();
-        } else if (this._valueClass != null && Enumerable.class.isAssignableFrom(this._valueClass)) {
-            enumerableType = this._valueClass;
-        } else {
+        }
+        return ensureEnumerableType(enumerableType);
+    }
+
+    private static <E> Class<E> ensureEnumerableType(Class<?> enumerableType) {
+        if (enumerableType == null || Enumerable.class.equals(enumerableType) || !Enumerable.class.isAssignableFrom(enumerableType)) {
             enumerableType = UnknownEnumerable.class;
         }
         return (Class<E>) enumerableType;
