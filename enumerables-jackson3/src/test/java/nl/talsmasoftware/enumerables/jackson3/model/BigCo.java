@@ -17,7 +17,9 @@ package nl.talsmasoftware.enumerables.jackson3.model;
 
 import nl.talsmasoftware.enumerables.Enumerable;
 
-/// Enumerable for testing summarizing a few big corporations.
+/**
+ * Enumerable for testing summarizing a few big corporations.
+ */
 public class BigCo extends Enumerable {
     public static final BigCo APPLE = new BigCo("Apple");
     public static final BigCo MICROSOFT = new BigCo("Microsoft");
