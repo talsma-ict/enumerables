@@ -21,25 +21,32 @@ import tools.jackson.core.JsonGenerator;
 import tools.jackson.databind.SerializationContext;
 import tools.jackson.databind.ser.std.StdSerializer;
 
-/// Serializer for [Enumerable] objects using Jackson 3.
-///
-/// Serializes [Enumerable] instances into their string value (obtained via [Enumerable#print(Enumerable)]).
-/// `null` values are written as JSON `null`.
-///
-/// @author Sjoerd Talsma
+/**
+ * Serializer for {@link Enumerable} objects using Jackson 3.
+ *
+ * <p>
+ * Serializes {@link Enumerable} instances into their string value (obtained via {@link Enumerable#print(Enumerable)}).
+ * {@code null} values are written as JSON {@code null}.
+ *
+ * @author Sjoerd Talsma
+ */
 public class EnumerableSerializer extends StdSerializer<Enumerable> {
 
-    /// Constructs a default [EnumerableSerializer] for [Enumerable] types.
+    /**
+     * Constructs a default {@link EnumerableSerializer} for {@link Enumerable} types.
+     */
     public EnumerableSerializer() {
         super(Enumerable.class);
     }
 
-    /// Serializes an [Enumerable] value to JSON.
-    ///
-    /// @param value Value to serialize; written as string or `null` if null
-    /// @param gen Generator used to output JSON content
-    /// @param ctxt Context that can be used to access information about serialization process
-    /// @throws JacksonException if an error occurs during serialization
+    /**
+     * Serializes an {@link Enumerable} value to JSON.
+     *
+     * @param value Value to serialize; written as string or {@code null} if {@code null}
+     * @param gen   Generator used to output JSON content
+     * @param ctxt  Context that can be used to access information about serialization process
+     * @throws JacksonException if an error occurs during serialization
+     */
     @Override
     public void serialize(Enumerable value, JsonGenerator gen, SerializationContext ctxt) throws JacksonException {
         if (value == null) {

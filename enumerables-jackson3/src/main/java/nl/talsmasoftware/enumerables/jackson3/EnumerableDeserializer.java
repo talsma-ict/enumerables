@@ -29,44 +29,57 @@ import tools.jackson.databind.deser.std.StdDeserializer;
 import tools.jackson.databind.exc.ValueInstantiationException;
 import tools.jackson.databind.type.TypeFactory;
 
-/// Deserializer for [Enumerable] objects using Jackson 3.
-///
-/// Can deserialize either primitive JSON strings or JSON objects containing a `"value"` property
-/// into concrete [Enumerable] instances using [Enumerable#parse(Class, CharSequence)].
-///
-/// @param <E> The concrete [Enumerable] type being deserialized
-/// @author Sjoerd Talsma
+/**
+ * Deserializer for {@link Enumerable} objects using Jackson 3.
+ * <p>
+ * Can deserialize either primitive JSON strings or JSON objects containing a {@code "value"} property
+ * into concrete {@link Enumerable} instances using {@link Enumerable#parse(Class, CharSequence)}.
+ *
+ * @param <E> The concrete {@link Enumerable} type being deserialized
+ * @author Sjoerd Talsma
+ */
 public class EnumerableDeserializer<E extends Enumerable> extends StdDeserializer<E> {
 
-    /// Default constructor for untyped deserialization.
+    /**
+     * Default constructor for untyped deserialization.
+     */
     EnumerableDeserializer() {
         this((Class<E>) null);
     }
 
-    /// Constructs a deserializer for the specified [Enumerable] subtype.
-    ///
-    /// @param enumerableType The concrete [Enumerable] class to deserialize into
+    /**
+     * Constructs a deserializer for the specified {@link Enumerable} subtype.
+     *
+     * @param enumerableType The concrete {@link Enumerable} class to deserialize into
+     */
     public EnumerableDeserializer(Class<E> enumerableType) {
         this(TypeFactory.createDefaultInstance().constructType(enumerableType != null ? enumerableType : Enumerable.class));
     }
 
-    /// Constructs a deserializer for the specified [JavaType] representing an [Enumerable] subtype.
-    ///
-    /// @param valueType The [JavaType] representing the [Enumerable] subtype
+    /**
+     * Constructs a deserializer for the specified {@link JavaType} representing an {@link Enumerable} subtype.
+     *
+     * @param valueType The {@link JavaType} representing the {@link Enumerable} subtype
+     */
     protected EnumerableDeserializer(JavaType valueType) {
         super(valueType);
     }
 
-    /// Deserializes JSON content into a concrete [Enumerable] instance.
-    ///
-    /// Supports deserialization from:
-    /// - JSON string or null value: parsed directly using [Enumerable#parse(Class, CharSequence)]
-    /// - JSON object: parsed by extracting the `"value"` property
-    ///
-    /// @param parser JSON parser containing the content to deserialize
-    /// @param context Deserialization context
-    /// @return The deserialized [Enumerable] instance
-    /// @throws JacksonException if an error occurs during parsing or if the token is unsupported
+    /**
+     * Deserializes JSON content into a concrete {@link Enumerable} instance.
+     *
+     * <p>
+     * Supports deserialization from:
+     * <ul>
+     *     <li>JSON string or null value: parsed directly using {@link Enumerable#parse(Class, CharSequence)}
+     *     <li>JSON object: parsed by extracting the {@code "value"} property
+     * </ul>
+     *
+     * @param parser  JSON parser containing the content to deserialize
+     * @param context Deserialization context
+     * @return The deserialized {@link Enumerable} instance
+     * @throws JacksonException if an error occurs during parsing or if the token is unsupported
+     */
     @Override
     public E deserialize(JsonParser parser, DeserializationContext context) throws JacksonException {
         Class<E> enumerableType = determineEnumerableType(parser);
@@ -76,7 +89,7 @@ public class EnumerableDeserializer<E extends Enumerable> extends StdDeserialize
             case START_OBJECT -> parseObject(parser, enumerableType);
             default ->
                     throw ValueInstantiationException.from(parser, "Could not deserialize a valid Enumerable object.",
-                            this._valueType, new IllegalStateException(String.format("Unexpected parser token: \"%s\".", currentToken)));
+                            this._valueType, new IllegalStateException("Unexpected parser token: \"%s\".".formatted(currentToken)));
         };
     }
 
@@ -101,6 +114,8 @@ public class EnumerableDeserializer<E extends Enumerable> extends StdDeserialize
                     parser.skipChildren();
                     parser.clearCurrentToken();
                     break;
+                default: // ignore other tokens.
+                    break;
             }
         }
         throw new IllegalStateException("JSON stream ended while parsing an Enumerable object.");
@@ -121,19 +136,24 @@ public class EnumerableDeserializer<E extends Enumerable> extends StdDeserialize
         return (Class<E>) enumerableType;
     }
 
-    /// Non-abstract [Enumerable] class to deserialize if the concrete type can somehow not be determined.
-    ///
-    /// _Note:_ This type is not for general use.
+    /**
+     * Non-abstract {@link Enumerable} class to deserialize if the concrete type can somehow not be determined.
+     *
+     * <em>Note:</em> This type is not for general use.
+     */
     static final class UnknownEnumerable extends Enumerable {
+        @SuppressWarnings("unused") // Will be used if no type gets resolved.
         private UnknownEnumerable(String value) {
             super(value);
         }
     }
 
-    /// Enumerable deserializer Modifier.
-    ///
-    /// Checks if the bean to be deserialized happens to be a subtype of [Enumerable] and if so,
-    /// returns a typed instance of the [EnumerableDeserializer] to be used as value deserializer.
+    /**
+     * Enumerable deserializer Modifier.
+     * <p>
+     * Checks if the bean to be deserialized happens to be a subtype of {@link Enumerable} and if so,
+     * returns a typed instance of the {@link EnumerableDeserializer} to be used as value deserializer.
+     */
     static final class Modifier extends ValueDeserializerModifier {
         @Override
         public ValueDeserializer<?> modifyDeserializer(DeserializationConfig config, BeanDescription.Supplier beanDescription, ValueDeserializer<?> deserializer) {

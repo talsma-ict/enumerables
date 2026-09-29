@@ -233,7 +233,7 @@
                         </goals>
                         <configuration>
                             <jdkToolchain>
-                                <version>[25,)</version>
+                                <version>[17,)</version>
                             </jdkToolchain>
                             <doclet>nl.talsmasoftware.umldoclet.UMLDoclet</doclet>
                             <docletArtifact>

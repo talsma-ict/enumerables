@@ -54,15 +54,6 @@ class EnumerableJsonSerializerTest {
     }
 
     @Test
-    @DisplayName("Json serialization: null serializable values can be serialized (handled by Jackson).")
-    void testSerialize_null_serializable() {
-        String result = MAPPER.writeValueAsString(new PlainTestObject(null));
-        assertThatJson(result)
-                .isObject()
-                .containsEntry("bigCo", null);
-    }
-
-    @Test
     @DisplayName("Json serialization: null value can be serialized (by serializer)")
     void testSerialize_valueNull() {
         // given

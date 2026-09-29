@@ -14,26 +14,29 @@
  * limitations under the License.
  */
 
-/// Jackson 3 support for [Enumerable][nl.talsmasoftware.enumerables.Enumerable] types.
-///
-/// This package provides serialization and deserialization capabilities for [Enumerable][nl.talsmasoftware.enumerables.Enumerable]
-/// types using Jackson 3 (`tools.jackson`).
-///
-/// The main entry point is [EnumerableModule], which can be registered with a Jackson 3 mapper:
-///
-/// ```java
-/// JsonMapper mapper = JsonMapper.builder()
-///         .addModule(new EnumerableModule())
-///         .build();
-/// ```
-///
-/// The module can also be automatically discovered by Jackson:
-///
-/// ```java
-/// JsonMapper mapper = JsonMapper.builder()
-///         .findAndAddModules()
-///         .build();
-/// ```
-///
-/// @author Sjoerd Talsma
+/**
+ * Jackson 3 support for {@link nl.talsmasoftware.enumerables.Enumerable Enumerable} types.
+ *
+ * <p>
+ * This package provides serialization and deserialization capabilities for {@link nl.talsmasoftware.enumerables.Enumerable Enumerable}
+ * types using Jackson 3 ({@code tools.jackson}).
+ *
+ * <p>
+ * The main entry point is {@link EnumerableModule}, which can be registered with a Jackson 3 mapper:
+ *
+ * <pre>{@code
+ *  JsonMapper mapper = JsonMapper.builder()
+ *      .addModule(new EnumerableModule())
+ *      .build();
+ * }</pre>
+ *
+ * The module can also be automatically discovered by Jackson:
+ * <pre>{@code
+ *  JsonMapper mapper = JsonMapper.builder()
+ *      .findAndAddModules()
+ *      .build();
+ * }</pre>
+ *
+ * @author Sjoerd Talsma
+ */
 package nl.talsmasoftware.enumerables.jackson3;
