@@ -131,25 +131,28 @@ For a constant value, this method returns the `name` of the defined constant as 
 
 For non-constant values, this method will always return `null`.
 
-## Serialization / deserialization
+## Integration
+
+### Java serialization / deserialization
 
 _Serialization_: The `Enumerable` implements `Serializable`. 
 This means that a concrete subclass is serializable if it does not contain 
 any non-serializable and non-transient fields. 
 Note that additional class fields should be either specified in the 
-constant declaration or be deducable from the `String` constructor 
+constant declaration or must be reproducible from the `String` constructor 
 if they carry meaning after deserialization.
 
 _Deserialization_: Similar to parsing, a deserialized `Enumerable` object 
 resolves back to a listed constant reference if its value matches the constant.  
 Only unanticipated values will result in new objects.
 
-## Add-on modules
+### Jakarta Validation
 
-### Validation
+The [enumerables-jakarta-validation](enumerables-jakarta-validation) module provides several annotations as
+`jakarta.validation` constraints.
 
-The [enumerables-validation](enumerables-validation) module provides several annotations as
-`javax.validation` constraints.
+For backward compatibility, there is also a [enumerables-javax-validation](enumerables-javax-validation) module,
+but maintenance for it will be ending.
 
 ### JAX-RS
 
@@ -159,9 +162,10 @@ for JAX-RS.
 
 ### JSON serialization
 
-The [enumerables-jackson2](enumerables-jackson2) and [enumerables-gson](enumerables-gson)
+The [enumerables-jackson3](enumerables-jackson3) and [enumerables-gson](enumerables-gson)
 modules provide serialization and deserialization functionality to and from [json].  
-[Jackson] also supports other common formats such as [yaml].
+
+For people stuck on Jackson 2, there is a legacy module [enumerables-jackson2](enumerables-jackson2).
 
 ### Swagger documentation
 
