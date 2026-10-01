@@ -21,6 +21,26 @@ Add the following dependency to your project or download it
 </dependency>
 ```
 
+If you're including one or more integration modules, the latest versions
+of the dependencies can be imported into a maven `<dependency-management>` section
+as a _bill of materials_.
+This allows you to leave out the `version` tag for the individual dependencies,
+using the version specified in the bill of materials.
+
+```xml
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>nl.talsmasoftware.enumerables</groupId>
+            <artifactId>enumerables-bom</artifactId>
+            <version>[see maven-central badge]</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>        
+    </dependencies>    
+</dependencyManagement>
+```
+
 ## Example
 
 A working example of an `Enumerable` type:
