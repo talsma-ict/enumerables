@@ -23,7 +23,7 @@
     <parent>
         <groupId>nl.talsmasoftware.enumerables</groupId>
         <artifactId>enumerables-root</artifactId>
-        <version>1.0.15-SNAPSHOT</version>
+        <version>1.0.15</version>
     </parent>
 
     <artifactId>enumerables-javax-validation</artifactId>
