@@ -33,7 +33,7 @@
         <project.moduleName>${project.groupId}.jackson3</project.moduleName>
         <root.basedir>${project.parent.basedir}</root.basedir>
 
-        <jackson3.version>3.2.3</jackson3.version>
+        <jackson3.version>3.2.4</jackson3.version>
     </properties>
 
     <dependencies>
