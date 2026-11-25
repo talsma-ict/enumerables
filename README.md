@@ -171,8 +171,7 @@ Only unanticipated values will result in new objects.
 The [enumerables-jakarta-validation](enumerables-jakarta-validation) module provides several annotations as
 `jakarta.validation` constraints.
 
-For backward compatibility, there is also a [enumerables-javax-validation](enumerables-javax-validation) module,
-but maintenance for it will be ending.
+For backward compatibility, there is a `enumerables-javax-validation` module, but maintenance for it has ended. It's final version is 1.0.15.
 
 ### JAX-RS
 

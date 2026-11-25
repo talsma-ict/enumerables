@@ -41,8 +41,8 @@ The following example validates its
 property type which is enumerable:
 
 ```java
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
 
 import nl.talsmasoftware.enumerables.jakarta.validation.constraints.KnownValue;
 

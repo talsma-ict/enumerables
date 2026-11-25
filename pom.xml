@@ -40,7 +40,6 @@
         <module>enumerables</module>
         <module>enumerables-jackson2</module>
         <module>enumerables-jackson3</module>
-        <module>enumerables-javax-validation</module>
         <module>enumerables-jakarta-validation</module>
         <module>enumerables-jaxrs</module>
         <module>enumerables-jdbi3</module>
