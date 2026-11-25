@@ -52,11 +52,6 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>enumerables-javax-validation</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
                 <artifactId>enumerables-jaxrs</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -92,7 +87,12 @@
                 <artifactId>enumerables-validation</artifactId>
                 <version>1.0.13</version>
             </dependency>
-            <dependency>
+            <dependency><!-- Pinned and replaced by enumerables-jakarta-validation. -->
+                <groupId>nl.talsmasoftware.enumerables</groupId>
+                <artifactId>enumerables-javax-validation</artifactId>
+                <version>1.0.15</version>
+            </dependency>
+            <dependency><!-- Pinned and replaced by enumerables-jdbi3. -->
                 <groupId>nl.talsmasoftware.enumerables</groupId>
                 <artifactId>enumerables-jdbi</artifactId>
                 <version>1.0.12</version>
