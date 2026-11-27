@@ -27,7 +27,7 @@
     </parent>
 
     <artifactId>enumerables-jakarta-validation</artifactId>
-    <name>Enumerables (jakarta validation)</name>
+    <name>Enumerables (validation)</name>
     <packaging>jar</packaging>
 
     <properties>

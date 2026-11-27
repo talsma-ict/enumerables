@@ -29,7 +29,7 @@ Add the following dependency to your project or download it from
 ```xml
 <dependency>
     <groupId>nl.talsmasoftware.enumerables</groupId>
-    <artifactId>enumerables-validation</artifactId>
+    <artifactId>enumerables-jakarta-validation</artifactId>
     <version>[see maven-central badge]</version>
 </dependency>
 ```
